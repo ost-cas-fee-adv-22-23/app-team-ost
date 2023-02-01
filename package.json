@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@next/font": "^13.1.6",
     "@smartive-education/design-system-component-library-team-ost": "^1.45.0",
     "next": "^13.1.6",
     "next-auth": "^4.19.1",
