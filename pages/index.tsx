@@ -15,7 +15,7 @@ export default function PageHome({}: PageProps): InferGetStaticPropsType<
     <>
       <Header title="Mumble">
         <span>
-          Your custom network
+          Your custom network Button Label
           <TextButton
             ariaLabel="Start mumble"
             onClick={function noRefCheck() {}}
