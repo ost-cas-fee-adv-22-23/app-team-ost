@@ -1,7 +1,9 @@
 import { SessionProvider } from "next-auth/react";
 import type { AppProps } from "next/app";
 import { Poppins } from "@next/font/google";
+import PageWithLayoutType from "../components/layouts/types/pageWithLayout";
 import "../styles/globals.css";
+import { ReactElement } from "react";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -10,14 +12,23 @@ const poppins = Poppins({
   variable: "--font-poppins",
 });
 
+type AppLayoutProps = AppProps & {
+  Component: PageWithLayoutType;
+  pageProps: any;
+};
+
 export default function App({
   Component,
   pageProps: { session, ...pageProps },
-}: AppProps) {
+}: AppLayoutProps) {
+  const Layout =
+    Component.layout || ((children: ReactElement) => <>{children}</>);
   return (
     <SessionProvider session={session}>
       <main className={`${poppins.variable} font-poppins`}>
-        <Component {...pageProps} />
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
       </main>
     </SessionProvider>
   );
