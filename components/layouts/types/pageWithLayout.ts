@@ -1,15 +1,15 @@
 import { NextPage } from "next";
 import type { ReactElement } from "react";
-import MainLayout from "../mainLayout";
-import AdminLayout from "../loginLayout";
+import MainLayout from "../MainLayout";
+import SplitScreenLayout from "../SplitScreenLayout";
 
 export type PageWithMainLayoutType = NextPage & { layout: typeof MainLayout };
 
-export type PageWithAdminLayoutType = NextPage & { layout: typeof AdminLayout };
+export type PageWithSplitScreenLayoutType = NextPage & { layout: typeof SplitScreenLayout };
 
 export type PageWithLayoutType =
   | PageWithMainLayoutType
-  | PageWithAdminLayoutType;
+  | PageWithSplitScreenLayoutType;
 
 export type LayoutProps = ({
   children,

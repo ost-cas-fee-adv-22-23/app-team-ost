@@ -1,5 +1,5 @@
 import { GetServerSideProps, InferGetStaticPropsType } from "next";
-import MainLayout from "../components/layouts/mainLayout";
+import MainLayout from "../components/layouts/MainLayout";
 import {
   Stack,
   StackDirection,

@@ -52,7 +52,7 @@ export const Header: FC<HeaderProps> = ({ children }: HeaderProps) => {
 
   return (
     <PageHeader>
-      <div className="flex items-center justify-between gap-56 max-w-lg">
+      <div className="flex items-center justify-between w-full sm:w-7/12">
         <div className="h-10">
           <MumbleWhiteHorizontal ariaLabel="Go to mumble" onClick={() => {}} />
         </div>
