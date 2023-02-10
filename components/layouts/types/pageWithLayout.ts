@@ -5,7 +5,9 @@ import SplitScreenLayout from "../SplitScreenLayout";
 
 export type PageWithMainLayoutType = NextPage & { layout: typeof MainLayout };
 
-export type PageWithSplitScreenLayoutType = NextPage & { layout: typeof SplitScreenLayout };
+export type PageWithSplitScreenLayoutType = NextPage & {
+  layout: typeof SplitScreenLayout;
+};
 
 export type PageWithLayoutType =
   | PageWithMainLayoutType
@@ -16,5 +18,3 @@ export type LayoutProps = ({
 }: {
   children: ReactElement;
 }) => ReactElement;
-
-export default PageWithLayoutType;

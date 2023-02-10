@@ -1,4 +1,5 @@
 import { signIn, signOut, useSession } from "next-auth/react";
+import SplitScreenLayout from "../components/layouts/SplitScreenLayout";
 import Head from "next/head";
 
 export default function Home() {
@@ -8,7 +9,6 @@ export default function Home() {
     <>
       <Head>
         <title>Login</title>
-        <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <main>
@@ -29,3 +29,5 @@ export default function Home() {
     </>
   );
 }
+
+Home.layout = SplitScreenLayout;

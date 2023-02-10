@@ -1,7 +1,7 @@
 import { SessionProvider } from "next-auth/react";
 import type { AppProps } from "next/app";
 import { Poppins } from "@next/font/google";
-import PageWithLayoutType from "../components/layouts/types/PageWithLayout";
+import { PageWithLayoutType } from "../components/layouts/types/PageWithLayout";
 import "../styles/globals.css";
 import { ReactElement } from "react";
 
@@ -14,7 +14,6 @@ const poppins = Poppins({
 
 type AppLayoutProps = AppProps & {
   Component: PageWithLayoutType;
-  pageProps: any;
 };
 
 export default function App({

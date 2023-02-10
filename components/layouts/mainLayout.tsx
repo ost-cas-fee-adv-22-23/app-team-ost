@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { Header } from "../header";
+import { Header } from "../Header";
 import { LayoutProps } from "./types/PageWithLayout";
 
 const MainLayout: LayoutProps = ({ children }) => {

@@ -7,7 +7,6 @@ const SplitScreenLayout: LayoutProps = ({ children }) => {
       <Head>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      Splitscreen Layout
       <main>{children}</main>
     </>
   );
