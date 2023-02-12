@@ -1,34 +1,50 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Mumble App Team Ost
 
-## Getting Started
+![Issues](https://img.shields.io/github/issues/smartive-education/app-team-ost)
+![Pull Requests](https://img.shields.io/github/issues-pr/smartive-education/app-team-ost)
 
-First, run the development server:
+This App is the result of the second part of the CAS Frontend Engineering
+Advanced course. It's our very own Twitter Clone - Mumble.
 
-```bash
-npm run dev
-# or
-yarn dev
+## Live Demo
+
+The latest version of the App is available [here]().
+
+## Development
+
+### Conventional Commits
+The commit message should be structured as follows:
+
+```console
+<type>[optional scope]: <description>
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Types:
+| **Type**       | **Description**                                                                                         |
+| :------------- | :------------------------------------------------------------------------------------------------------ |
+| **build**      | Changes that affect the build system or external dependencies (example scopes: gulp, broccoli, npm)     |
+| **ci**         | Changes to our CI configuration files and scripts                                                       |
+| **docs**       | Documentation only changes                                                                              |
+| **feat**       | A new feature                                                                                           |
+| **fix**        | A bug fix                                                                                               |
+| **perf**       | A code change that improves performance                                                                 |
+| **refactor**   | A code change that neither fixes a bug nor adds a feature                                               |
+| **style**      | Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)  |
+| **test**       | Adding missing tests or correcting existing tests                                                       |
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+Examples: 
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+Commit message with scope:
+```console
+feat(lang): add German language
+```
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+Commit message with ! to draw attention to breaking change:
+```console
+feat!: send an email to the customer when a product is shipped
+```
 
-## Learn More
+## Maintainer
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- Martin Thomann
+- Nando Schär
