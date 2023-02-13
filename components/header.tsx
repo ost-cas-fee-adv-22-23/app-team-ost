@@ -30,6 +30,7 @@ type HeaderProps = {
   children?: ReactElement;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const Header: FC<HeaderProps> = ({ children }: HeaderProps) => {
   const [isOpenSettings, setIsOpenSettings] = useState(false);
   const [isOpenFileUpload, setIsOpenFileUpload] = useState(false);
@@ -54,7 +55,12 @@ export const Header: FC<HeaderProps> = ({ children }: HeaderProps) => {
     <PageHeader>
       <div className="flex items-center justify-between w-full sm:w-7/12">
         <div className="h-10">
-          <MumbleWhiteHorizontal ariaLabel="Go to mumble" onClick={() => {}} />
+          <MumbleWhiteHorizontal
+            ariaLabel="Go to mumble"
+            onClick={() => {
+              console.log("click");
+            }}
+          />
         </div>
         <Navigation>
           <ProfilePictureButton
@@ -64,7 +70,11 @@ export const Header: FC<HeaderProps> = ({ children }: HeaderProps) => {
             src="https://media.licdn.com/dms/image/D4E03AQEXHsHgH4BwJg/profile-displayphoto-shrink_800_800/0/1666815812197?e=2147483647&v=beta&t=Vx6xecdYFjUt3UTCmKdh2U-iHvY0bS-fcxlp_LKbxYw"
           />
           <SettingsButton onClick={() => setIsOpenSettings(true)} />
-          <LogoutButton onClick={() => {}} />
+          <LogoutButton
+            onClick={() => {
+              console.log("click");
+            }}
+          />
         </Navigation>
       </div>
       {/* MODAL for Settings */}
@@ -75,7 +85,9 @@ export const Header: FC<HeaderProps> = ({ children }: HeaderProps) => {
         title="Einstellungen"
       >
         <Form
-          handleSubmit={() => {}}
+          handleSubmit={() => {
+            console.log("click");
+          }}
           stackDir={StackDirection.col}
           stackSpacing={StackSpacing.s}
         >
@@ -129,7 +141,9 @@ export const Header: FC<HeaderProps> = ({ children }: HeaderProps) => {
               color={TextButtonColor.violet}
               displayMode={TextButtonDisplayMode.fullWidth}
               icon={<IconCheckmark />}
-              onClick={() => {}}
+              onClick={() => {
+                console.log("click");
+              }}
               size={TextButtonSize.m}
             >
               Speichern
@@ -145,13 +159,17 @@ export const Header: FC<HeaderProps> = ({ children }: HeaderProps) => {
         onClose={() => setIsOpenFileUpload(false)}
       >
         <Form
-          handleSubmit={() => {}}
+          handleSubmit={() => {
+            console.log("click");
+          }}
           stackDir={StackDirection.col}
           stackSpacing={StackSpacing.s}
         >
           <Fileinput
             description="JPEG oder PNG, maximal 50 MB"
-            onAddFile={(file) => {}}
+            onAddFile={(file) => {
+              console.log(file);
+            }}
             title="Datei hierhin ziehen"
           ></Fileinput>
           <Stack direction={StackDirection.row} spacing={StackSpacing.xs}>

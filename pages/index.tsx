@@ -7,8 +7,10 @@ import {
 } from "@smartive-education/design-system-component-library-team-ost";
 import Head from "next/head";
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 type PageProps = {};
 
+// eslint-disable-next-line no-empty-pattern
 export default function PageHome({}: PageProps): InferGetStaticPropsType<
   typeof getServerSideProps
 > {
