@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@next/font": "^13.1.6",
-    "@smartive-education/design-system-component-library-team-ost": "^1.45.0",
+    "@smartive-education/design-system-component-library-team-ost": "^1.45.1",
     "next": "13.0.2",
     "next-auth": "^4.16.4",
     "react": "18.2.0",
