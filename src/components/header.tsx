@@ -30,8 +30,7 @@ type HeaderProps = {
   children?: ReactElement;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const Header: FC<HeaderProps> = ({ children }: HeaderProps) => {
+export const Header: FC<HeaderProps> = () => {
   const [isOpenSettings, setIsOpenSettings] = useState(false);
   const [isOpenFileUpload, setIsOpenFileUpload] = useState(false);
 
