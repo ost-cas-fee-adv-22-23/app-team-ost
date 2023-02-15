@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { LayoutProps } from "./types/PageWithLayout";
+import { LayoutProps } from "./types/page-with-layout";
 import {
   Heading,
   HeadingSize,
