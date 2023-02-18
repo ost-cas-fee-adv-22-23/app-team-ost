@@ -28,11 +28,15 @@ import {
 } from "@smartive-education/design-system-component-library-team-ost";
 import Head from "next/head";
 import { useState } from "react";
-import { stringify } from "querystring";
 
 export type Mumble = {
   id: string;
-  creator: string;
+  creator: {
+    userName: string;
+    firstName: string;
+    lastName: string;
+    avatarUrl: string;
+  };
   text: string;
   mediaUrl: string;
   mediaType: string;
