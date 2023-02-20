@@ -9,6 +9,8 @@
     "start": "next start",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
+    "format:check": "prettier --check src/**/*.{js,jsx,ts,tsx,css,md,json} --config ./.prettierrc",
+    "format": "prettier --write src/**/*.{js,jsx,ts,tsx,css,md,json} --config ./.prettierrc",
     "dep-graph:validate": "npx depcruise src --include-only \"^src\" --config .dependency-cruiser.js",
     "dep-graph:create-svg": "npx depcruise src --include-only \"^src\" --config .dependency-cruiser.js --output-type dot | dot -T svg > dependency-graph.svg",
     "prepare": "husky install"
@@ -25,6 +27,7 @@
     "@commitlint/cli": "^17.4.2",
     "@commitlint/config-conventional": "^17.4.2",
     "@smartive/eslint-config": "^3.1.1",
+    "@smartive/prettier-config": "^3.0.0",
     "@types/node": "^18.11.18",
     "@types/react": "^18.0.27",
     "@types/react-dom": "^18.0.10",
@@ -32,9 +35,11 @@
     "dependency-cruiser": "^12.9.0",
     "eslint": "^8.33.0",
     "eslint-config-next": "13.0.2",
+    "eslint-config-prettier": "^8.6.0",
     "husky": "^8.0.3",
     "lint-staged": "^13.1.0",
     "postcss": "^8.4.21",
+    "prettier": "2.8.4",
     "tailwindcss": "^3.2.4",
     "typescript": "^4.9.5"
   }
