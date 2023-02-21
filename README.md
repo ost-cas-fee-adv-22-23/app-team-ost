@@ -2,6 +2,7 @@
 
 ![Issues](https://img.shields.io/github/issues/smartive-education/app-team-ost)
 ![Pull Requests](https://img.shields.io/github/issues-pr/smartive-education/app-team-ost)
+![Quality (Prettier, ESLint, Dependency Graph)](https://github.com/smartive-education/app-team-ost/actions/workflows/quality.yml/badge.svg)
 
 This App is the result of the second part of the CAS Frontend Engineering
 Advanced course. It's our very own Twitter Clone - Mumble.
