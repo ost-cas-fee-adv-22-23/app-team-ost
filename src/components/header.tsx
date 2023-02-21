@@ -23,8 +23,8 @@ import {
   TextButtonSize,
   IconCheckmark,
   Fileinput,
-} from "@smartive-education/design-system-component-library-team-ost";
-import { ChangeEvent, FC, ReactElement, useState } from "react";
+} from '@smartive-education/design-system-component-library-team-ost';
+import { ChangeEvent, FC, ReactElement, useState } from 'react';
 
 type HeaderProps = {
   children?: ReactElement;
@@ -35,15 +35,13 @@ export const Header: FC<HeaderProps> = () => {
   const [isOpenFileUpload, setIsOpenFileUpload] = useState(false);
 
   const [form, setForm] = useState({
-    name: "",
-    email: "",
-    city: "",
-    biography: "",
+    name: '',
+    email: '',
+    city: '',
+    biography: '',
   });
 
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm({
       ...form,
       [e.target.name]: e.target.value,
@@ -57,7 +55,7 @@ export const Header: FC<HeaderProps> = () => {
           <MumbleWhiteHorizontal
             ariaLabel="Go to mumble"
             onClick={() => {
-              console.log("click");
+              console.log('click');
             }}
           />
         </div>
@@ -71,7 +69,7 @@ export const Header: FC<HeaderProps> = () => {
           <SettingsButton onClick={() => setIsOpenSettings(true)} />
           <LogoutButton
             onClick={() => {
-              console.log("click");
+              console.log('click');
             }}
           />
         </Navigation>
@@ -85,7 +83,7 @@ export const Header: FC<HeaderProps> = () => {
       >
         <Form
           handleSubmit={() => {
-            console.log("click");
+            console.log('click');
           }}
           stackDir={StackDirection.col}
           stackSpacing={StackSpacing.s}
@@ -141,7 +139,7 @@ export const Header: FC<HeaderProps> = () => {
               displayMode={TextButtonDisplayMode.fullWidth}
               icon={<IconCheckmark />}
               onClick={() => {
-                console.log("click");
+                console.log('click');
               }}
               size={TextButtonSize.m}
             >
@@ -159,7 +157,7 @@ export const Header: FC<HeaderProps> = () => {
       >
         <Form
           handleSubmit={() => {
-            console.log("click");
+            console.log('click');
           }}
           stackDir={StackDirection.col}
           stackSpacing={StackSpacing.s}

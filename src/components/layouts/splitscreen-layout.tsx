@@ -1,10 +1,6 @@
-import Head from "next/head";
-import { LayoutProps } from "./types/page-with-layout";
-import {
-  Heading,
-  HeadingSize,
-  MumbleWhite,
-} from "@smartive-education/design-system-component-library-team-ost";
+import Head from 'next/head';
+import { LayoutProps } from './types/page-with-layout';
+import { Heading, HeadingSize, MumbleWhite } from '@smartive-education/design-system-component-library-team-ost';
 
 const SplitScreenLayout: LayoutProps = ({ children }) => {
   return (
@@ -25,9 +21,7 @@ const SplitScreenLayout: LayoutProps = ({ children }) => {
               </Heading>
             </div>
           </div>
-          <div className="w-screen md:w-1/2 h-full flex justify-center items-center">
-            {children}
-          </div>
+          <div className="w-screen md:w-1/2 h-full flex justify-center items-center">{children}</div>
         </div>
       </main>
     </>
