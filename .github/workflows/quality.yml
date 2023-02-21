@@ -1,4 +1,4 @@
-name: Quality (Prettier, ESLint, Dependency Graph)
+name: Quality (Prettier, ESLint, Dependency Graph, Build)
 
 on:
   pull_request:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   quality:
-    name: Quality (Prettier, ESLint, Dependency Graph)
+    name: Quality (Prettier, ESLint, Dependency Graph, Build)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -26,3 +26,5 @@ jobs:
         run: npm run lint
       - name: Run Dependency Graph
         run: npm run dep-graph:validate
+      - name: Run Build
+        run: npm run build
