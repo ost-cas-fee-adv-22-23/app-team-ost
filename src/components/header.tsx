@@ -5,26 +5,10 @@ import {
   ProfilePictureButton,
   SettingsButton,
   LogoutButton,
-  Modal,
-  ModalType,
-  Form,
-  StackDirection,
-  StackSpacing,
-  Label,
-  LabelSize,
-  Input,
-  InputTypes,
-  Textarea,
-  Stack,
-  TextButton,
-  TextButtonColor,
-  TextButtonDisplayMode,
-  IconCancel,
-  TextButtonSize,
-  IconCheckmark,
-  Fileinput,
 } from '@smartive-education/design-system-component-library-team-ost';
-import { ChangeEvent, FC, ReactElement, useState } from 'react';
+import { SettingsModal } from './modals/settings-modal';
+import { ChangeEvent, FC, FormEvent, ReactElement, useState } from 'react';
+import { FileuploadModal } from './modals/fileupload-modal';
 
 type HeaderProps = {
   children?: ReactElement;
@@ -46,6 +30,29 @@ export const Header: FC<HeaderProps> = () => {
       ...form,
       [e.target.name]: e.target.value,
     });
+  };
+
+  const [file, setFile] = useState<File>();
+
+  const handleFileChange = (file: File) => {
+    console.log(file);
+    setFile(file);
+  };
+
+  const handleSubmitSettings = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    //TODO call api function
+    console.log(form);
+    console.log('submit settings');
+    setIsOpenSettings(false);
+  };
+  const handleSubmitFileupload = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    //TODO call api function
+
+    console.log(file);
+    console.log('submit fileupload');
+    setIsOpenFileUpload(false);
   };
 
   return (
@@ -75,122 +82,21 @@ export const Header: FC<HeaderProps> = () => {
         </Navigation>
       </div>
       {/* MODAL for Settings */}
-      <Modal
+      <SettingsModal
+        form={form}
+        handleChange={handleChange}
         isOpen={isOpenSettings}
-        modalType={ModalType.narrow}
-        onClose={() => setIsOpenSettings(false)}
-        title="Einstellungen"
-      >
-        <Form
-          handleSubmit={() => {
-            console.log('click');
-          }}
-          stackDir={StackDirection.col}
-          stackSpacing={StackSpacing.s}
-        >
-          <Label size={LabelSize.xl}>Persönliche Einstellungen</Label>
-          <Input
-            errorMessage="Error-Message"
-            label="Name Vorname"
-            labelSize={LabelSize.s}
-            name="name"
-            onChange={handleChange}
-            type={InputTypes.text}
-            value={form.name}
-          />
-          <Input
-            label="E-Mail-Adresse"
-            labelSize={LabelSize.s}
-            name="email"
-            onChange={handleChange}
-            placeholder="E-Mail"
-            type={InputTypes.email}
-            value={form.email}
-          />
-          <Input
-            label="Ortschaft"
-            labelSize={LabelSize.s}
-            name="city"
-            onChange={handleChange}
-            type={InputTypes.text}
-            value={form.city}
-          />
-          <Textarea
-            ariaLabel="biography"
-            label="Biografie"
-            labelSize={LabelSize.s}
-            name="biography"
-            onChange={handleChange}
-            rows={2}
-            value={form.biography}
-          />
-          <Stack direction={StackDirection.row} spacing={StackSpacing.xs}>
-            <TextButton
-              color={TextButtonColor.slate}
-              displayMode={TextButtonDisplayMode.fullWidth}
-              icon={<IconCancel />}
-              onClick={() => setIsOpenSettings(false)}
-              size={TextButtonSize.m}
-            >
-              Abbrechen
-            </TextButton>
-            <TextButton
-              color={TextButtonColor.violet}
-              displayMode={TextButtonDisplayMode.fullWidth}
-              icon={<IconCheckmark />}
-              onClick={() => {
-                console.log('click');
-              }}
-              size={TextButtonSize.m}
-            >
-              Speichern
-            </TextButton>
-          </Stack>
-        </Form>
-      </Modal>
+        setIsOpen={setIsOpenSettings}
+        handleSubmit={handleSubmitSettings}
+      />
+
       {/* MODAL for Image Upload */}
-      <Modal
+      <FileuploadModal
+        handleChange={handleFileChange}
         isOpen={isOpenFileUpload}
-        modalType={ModalType.wide}
-        title="Bild hochladen"
-        onClose={() => setIsOpenFileUpload(false)}
-      >
-        <Form
-          handleSubmit={() => {
-            console.log('click');
-          }}
-          stackDir={StackDirection.col}
-          stackSpacing={StackSpacing.s}
-        >
-          <Fileinput
-            description="JPEG oder PNG, maximal 50 MB"
-            onAddFile={(file) => {
-              console.log(file);
-            }}
-            title="Datei hierhin ziehen"
-          ></Fileinput>
-          <Stack direction={StackDirection.row} spacing={StackSpacing.xs}>
-            <TextButton
-              color={TextButtonColor.slate}
-              displayMode={TextButtonDisplayMode.fullWidth}
-              icon={<IconCancel />}
-              onClick={() => setIsOpenFileUpload(false)}
-              size={TextButtonSize.m}
-            >
-              Abbrechen
-            </TextButton>
-            <TextButton
-              color={TextButtonColor.violet}
-              displayMode={TextButtonDisplayMode.fullWidth}
-              icon={<IconCheckmark />}
-              onClick={() => setIsOpenFileUpload(false)}
-              size={TextButtonSize.m}
-            >
-              Speichern
-            </TextButton>
-          </Stack>
-        </Form>
-      </Modal>
+        setIsOpen={setIsOpenFileUpload}
+        handleSubmit={handleSubmitFileupload}
+      />
     </PageHeader>
   );
 };
