@@ -10,6 +10,7 @@ import {
 import Head from 'next/head';
 import { MumbleCard, MumbleCardVariant } from '../components/cards/mumble-card';
 import { MumbleType } from '../types/mumble';
+import { WriteCard, WriteCardVariant } from '../components/cards/write-card';
 
 type PageProps = {
   count: number;
@@ -38,6 +39,8 @@ export default function PageHome({
           </Heading>
         </div>
         <Stack direction={StackDirection.col} spacing={StackSpacing.s} withDivider={true}>
+          {/* eslint-disable-next-line @typescript-eslint/no-empty-function */}
+          <WriteCard variant={WriteCardVariant.main} handleChange={() => {}} handleSubmit={() => {}} />
           {mumbles.map((mumble) => {
             return <MumbleCard key={mumble.id} variant={MumbleCardVariant.timeline} mumble={mumble} />;
           })}

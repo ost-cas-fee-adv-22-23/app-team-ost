@@ -39,7 +39,7 @@ type MumbleCardVariantMapType = {
   userShortRepresentationProfilePictureSize: UserShortRepresentationProfilePictureSize;
 };
 
-const contentCardvariantMap: Record<MumbleCardVariant, MumbleCardVariantMapType> = {
+const MumbleCardVariantMap: Record<MumbleCardVariant, MumbleCardVariantMapType> = {
   detailpage: {
     borderRadiusType: BorderRadiusType.roundedTop,
     isInteractive: false,
@@ -68,21 +68,21 @@ const contentCardvariantMap: Record<MumbleCardVariant, MumbleCardVariantMapType>
 
 //TODO Define state for like counter, handle the like click and pass a callback for handling the like click
 export const MumbleCard: FC<MumbleCardProps> = ({ variant, mumble }) => {
-  const setting = contentCardvariantMap[variant] || contentCardvariantMap.detailpage;
+  const settings = MumbleCardVariantMap[variant] || MumbleCardVariantMap.detailpage;
 
   return (
-    <Card borderRadiusType={setting.borderRadiusType} isInteractive={setting.isInteractive}>
-      {!MumbleCardVariant.response && (
+    <Card borderRadiusType={settings.borderRadiusType} isInteractive={settings.isInteractive}>
+      {variant != MumbleCardVariant.response && (
         <div className="absolute -left-l">
-          <ProfilePicture alt={mumble.creator.userName} size={setting.profilePictureSize} src={mumble.creator.avatarUrl} />
+          <ProfilePicture alt={mumble.creator.userName} size={settings.profilePictureSize} src={mumble.creator.avatarUrl} />
         </div>
       )}
       <Stack direction={StackDirection.col} spacing={StackSpacing.s}>
-        {MumbleCardVariant.response ? (
+        {variant != MumbleCardVariant.response ? (
           <UserShortRepresentation
             displayName={`${mumble.creator.firstName} ${mumble.creator.lastName}`}
             hrefProfile="#"
-            labelType={setting.userShortRepresentationLabelType}
+            labelType={settings.userShortRepresentationLabelType}
             timestamp="vor 42 Minuten"
             username={mumble.creator.userName}
           />
@@ -91,15 +91,15 @@ export const MumbleCard: FC<MumbleCardProps> = ({ variant, mumble }) => {
             alt={mumble.creator.userName}
             displayName={`${mumble.creator.firstName} ${mumble.creator.lastName}`}
             hrefProfile="#"
-            labelType={setting.userShortRepresentationLabelType}
-            profilePictureSize={setting.userShortRepresentationProfilePictureSize}
-            src={mumble.creator.avatarUrl!}
+            labelType={settings.userShortRepresentationLabelType}
+            profilePictureSize={settings.userShortRepresentationProfilePictureSize}
+            src={mumble.creator.avatarUrl || ''}
             timestamp="vor 42 Minuten"
             username={mumble.creator.userName}
           />
         )}
         <div className="text-slate-900">
-          <Paragraph size={setting.textSize}>{mumble.text}</Paragraph>
+          <Paragraph size={settings.textSize}>{mumble.text}</Paragraph>
         </div>
         <ImageContainer
           alt={mumble.text}
