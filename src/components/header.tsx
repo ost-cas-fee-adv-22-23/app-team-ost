@@ -80,7 +80,6 @@ export const Header: FC<HeaderProps> = () => {
           />
         </Navigation>
       </div>
-      {/* MODAL for Settings */}
       <SettingsModal
         form={form}
         handleChange={handleChange}
@@ -88,8 +87,6 @@ export const Header: FC<HeaderProps> = () => {
         setIsOpen={setIsOpenSettings}
         handleSubmit={handleSubmitSettings}
       />
-
-      {/* MODAL for Image Upload */}
       <FileuploadModal
         handleChange={handleFileChange}
         isOpen={isOpenFileUpload}
