@@ -49,7 +49,6 @@ export const Header: FC<HeaderProps> = () => {
   const handleSubmitFileupload = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     //TODO call api function
-
     console.log(file);
     console.log('submit fileupload');
     setIsOpenFileUpload(false);

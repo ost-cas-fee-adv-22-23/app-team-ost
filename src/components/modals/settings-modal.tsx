@@ -20,19 +20,19 @@ import {
 import { ChangeEvent, FC, FormEvent } from 'react';
 
 type SettingsModalProps = {
-  isOpen: boolean;
-  setIsOpen: (e: boolean) => void;
-  handleChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
-  handleSubmit: (e: FormEvent<HTMLFormElement>) => void;
   form: {
     name: string;
     email: string;
     city: string;
     biography: string;
   };
+  handleChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  handleSubmit: (e: FormEvent<HTMLFormElement>) => void;
+  isOpen: boolean;
+  setIsOpen: (e: boolean) => void;
 };
 
-export const SettingsModal: FC<SettingsModalProps> = ({ isOpen, setIsOpen, handleChange, form, handleSubmit }) => {
+export const SettingsModal: FC<SettingsModalProps> = ({ form, handleChange, handleSubmit, isOpen, setIsOpen }) => {
   return (
     <>
       <Modal isOpen={isOpen} modalType={ModalType.narrow} onClose={() => setIsOpen(false)} title="Einstellungen">

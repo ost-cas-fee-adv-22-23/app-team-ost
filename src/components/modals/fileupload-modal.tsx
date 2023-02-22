@@ -17,12 +17,12 @@ import { FC, FormEvent } from 'react';
 
 type FileUploadProps = {
   handleChange: (file: File) => void;
+  handleSubmit: (e: FormEvent<HTMLFormElement>) => void;
   isOpen: boolean;
   setIsOpen: (e: boolean) => void;
-  handleSubmit: (e: FormEvent<HTMLFormElement>) => void;
 };
 
-export const FileuploadModal: FC<FileUploadProps> = ({ handleChange, isOpen, setIsOpen, handleSubmit }) => {
+export const FileuploadModal: FC<FileUploadProps> = ({ handleChange, handleSubmit, isOpen, setIsOpen }) => {
   return (
     <>
       <Modal isOpen={isOpen} modalType={ModalType.wide} title="Bild hochladen" onClose={() => setIsOpen(false)}>
