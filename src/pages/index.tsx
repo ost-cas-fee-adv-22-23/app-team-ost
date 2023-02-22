@@ -39,11 +39,13 @@ export default function PageHome({
           </Heading>
         </div>
         <Stack direction={StackDirection.col} spacing={StackSpacing.s} withDivider={true}>
-          {/* eslint-disable-next-line @typescript-eslint/no-empty-function */}
-          <WriteCard variant={WriteCardVariant.main} handleChange={() => {}} handleSubmit={() => {}} />
-          {mumbles.map((mumble) => {
-            return <MumbleCard key={mumble.id} variant={MumbleCardVariant.timeline} mumble={mumble} />;
-          })}
+          <>
+            {/* eslint-disable-next-line @typescript-eslint/no-empty-function */}
+            <WriteCard variant={WriteCardVariant.main} handleChange={() => {}} handleSubmit={() => {}} />
+            {mumbles.map((mumble) => {
+              return <MumbleCard key={mumble.id} variant={MumbleCardVariant.timeline} mumble={mumble} />;
+            })}
+          </>
         </Stack>
       </>
     </MainLayout>

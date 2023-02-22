@@ -30,7 +30,7 @@ type MumbleCardProps = {
   mumble: MumbleType;
 };
 
-type MumbleCardVariantMapType = {
+type MumbleCardVariantMap = {
   borderRadiusType: BorderRadiusType;
   isInteractive: boolean;
   profilePictureSize: ProfilePictureSize;
@@ -39,7 +39,7 @@ type MumbleCardVariantMapType = {
   userShortRepresentationProfilePictureSize: UserShortRepresentationProfilePictureSize;
 };
 
-const MumbleCardVariantMap: Record<MumbleCardVariant, MumbleCardVariantMapType> = {
+const mumbleCardVariantMap: Record<MumbleCardVariant, MumbleCardVariantMap> = {
   detailpage: {
     borderRadiusType: BorderRadiusType.roundedTop,
     isInteractive: false,
@@ -68,7 +68,7 @@ const MumbleCardVariantMap: Record<MumbleCardVariant, MumbleCardVariantMapType> 
 
 //TODO Define state for like counter, handle the like click and pass a callback for handling the like click
 export const MumbleCard: FC<MumbleCardProps> = ({ variant, mumble }) => {
-  const settings = MumbleCardVariantMap[variant] || MumbleCardVariantMap.detailpage;
+  const settings = mumbleCardVariantMap[variant] || mumbleCardVariantMap.detailpage;
 
   return (
     <Card borderRadiusType={settings.borderRadiusType} isInteractive={settings.isInteractive}>

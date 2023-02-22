@@ -32,12 +32,12 @@ type WriteCardProps = {
   handleSubmit: (e: FormEvent<HTMLFormElement>) => void;
 };
 
-type WriteCardVariantMapType = {
+type WriteCardVariantMap = {
   borderRadiusType: BorderRadiusType;
   isInteractive: boolean;
 };
 
-const WriteCardVariantMap: Record<WriteCardVariant, WriteCardVariantMapType> = {
+const writeCardVariantMap: Record<WriteCardVariant, WriteCardVariantMap> = {
   inline: {
     borderRadiusType: BorderRadiusType.none,
     isInteractive: false,
@@ -50,7 +50,7 @@ const WriteCardVariantMap: Record<WriteCardVariant, WriteCardVariantMapType> = {
 
 //TODO Form handling und Bildupload-Modal integration
 export const WriteCard: FC<WriteCardProps> = ({ variant, handleChange, handleSubmit }) => {
-  const settings = WriteCardVariantMap[variant] || WriteCardVariantMap.inline;
+  const settings = writeCardVariantMap[variant] || writeCardVariantMap.inline;
 
   return (
     <Card borderRadiusType={settings.borderRadiusType} isInteractive={settings.isInteractive}>
