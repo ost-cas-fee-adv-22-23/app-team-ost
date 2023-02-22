@@ -3,13 +3,14 @@
 ![Issues](https://img.shields.io/github/issues/smartive-education/app-team-ost)
 ![Pull Requests](https://img.shields.io/github/issues-pr/smartive-education/app-team-ost)
 ![Quality (Prettier, ESLint, Dependency Graph, Build)](https://github.com/smartive-education/app-team-ost/actions/workflows/quality.yml/badge.svg)
+![Vercel Production Deployment](https://github.com/smartive-education/app-team-ost/actions/workflows/deploy.yml/badge.svg)
 
 This App is the result of the second part of the CAS Frontend Engineering
 Advanced course. It's our very own Twitter Clone - Mumble.
 
 ## Live Demo
 
-The latest version of the App is available [here]().
+The latest version of the App is available [here](https://app-team-ost.vercel.app/).
 
 ## Development
 
