@@ -1,5 +1,5 @@
 import { signIn, signOut, useSession } from 'next-auth/react';
-import SplitScreenLayout from '../components/layouts/splitscreen-layout';
+import SplitScreenLayout from '../components/layouts/split-screen-layout';
 import Head from 'next/head';
 
 export default function Home() {
