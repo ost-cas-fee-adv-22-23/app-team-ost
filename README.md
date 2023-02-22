@@ -51,5 +51,5 @@ feat!: send an email to the customer when a product is shipped
 
 ## Maintainer
 
-- Martin Thomann
-- Nando Schär
+- [Martin Thomann](https://github.com/mthomann)
+- [Nando Schär](https://github.com/nschaer92)
