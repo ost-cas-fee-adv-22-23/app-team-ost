@@ -5,7 +5,7 @@ export type MumbleType = {
   creator: UserType;
   text: string;
   mediaUrl?: string;
-  mediaType: 'image/jpeg';
+  mediaType: 'image/jpeg' | 'image/png' | 'image/gif';
   likeCount: number;
   likedByUser: boolean | string;
   replyCount: number;
