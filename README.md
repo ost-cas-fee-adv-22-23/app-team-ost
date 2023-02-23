@@ -14,6 +14,8 @@ The latest version of the App is available [here](https://app-team-ost.vercel.ap
 
 ## Development
 
+<!--![App architecture](./docs/app-architecture.puml)-->
+
 ### Conventional Commits
 
 The commit message should be structured as follows:
