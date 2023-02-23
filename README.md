@@ -14,7 +14,9 @@ The latest version of the App is available [here](https://app-team-ost.vercel.ap
 
 ## Development
 
-![Mermaid](./docs/test.mmd)
+```mermaid
+[Test](./docs/test.mmd)
+```
 
 ### Conventional Commits
 
