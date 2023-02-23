@@ -14,7 +14,13 @@ The latest version of the App is available [here](https://app-team-ost.vercel.ap
 
 ## Development
 
-<!--![App architecture](./docs/app-architecture.puml)-->
+```mermaid
+  graph TD;
+      A-->B;
+      A-->C;
+      B-->D;
+      C-->D;
+```
 
 ### Conventional Commits
 
