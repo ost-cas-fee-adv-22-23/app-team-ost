@@ -15,7 +15,12 @@ The latest version of the App is available [here](https://app-team-ost.vercel.ap
 ## Development
 
 ```mermaid
-./docs/test.mmd
+flowchart TD
+    A[Christmas] -->|Get money| B(Go shopping)
+    B --> C{Let me think}
+    C -->|One| D[Laptop]
+    C -->|Two| E[iPhone]
+    C -->|Three| F[fa:fa-car Car]
 ```
 
 ### Conventional Commits
