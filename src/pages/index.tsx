@@ -42,9 +42,9 @@ export default function PageHome({
           <>
             {/* eslint-disable-next-line @typescript-eslint/no-empty-function */}
             <WriteCard variant={WriteCardVariant.main} handleChange={() => {}} handleSubmit={() => {}} />
-            {mumbles.map((mumble) => {
-              return <MumbleCard key={mumble.id} variant={MumbleCardVariant.timeline} mumble={mumble} />;
-            })}
+            {mumbles.map((mumble) => (
+              <MumbleCard key={mumble.id} variant={MumbleCardVariant.timeline} mumble={mumble} />
+            ))}
           </>
         </Stack>
       </>
