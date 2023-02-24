@@ -1,3 +1,4 @@
+!include  https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
 @startuml frontend architecture
 
 skinparam BackgroundColor FFFFFF
