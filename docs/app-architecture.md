@@ -1,6 +1,10 @@
+# Mumble App Team Ost - Architecture
+
+The architecture diagram shows the context and the dependencies between users and different systems and system parts.
+
 ```mermaid
 C4Dynamic
-    title Mumble-App team-ost - Architecture
+    title Context Diagram Mumble-App
 
     Boundary(b0, "Mumble") {
         Person(customerA, "User with account", "A user of mumble with a personal account")
