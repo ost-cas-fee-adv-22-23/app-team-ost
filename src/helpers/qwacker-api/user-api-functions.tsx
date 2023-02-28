@@ -1,18 +1,11 @@
 import { decodeTime } from 'ulid';
-
-export type User = {
-  id: string;
-  userName: string;
-  avatarUrl?: string;
-  firstName: string;
-  lastName: string;
-};
+import { UserType } from '../../types/user';
 
 // type RawMumble = Omit<User, "createdTimestamp">;
 
 type QwackerUserResponse = {
   count: number;
-  users: User[];
+  users: UserType[];
 };
 
 export type UploadImage = File & { preview: string };

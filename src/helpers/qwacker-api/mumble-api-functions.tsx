@@ -1,20 +1,7 @@
 import { decodeTime } from 'ulid';
-import { UserType } from '../../types/user';
+import { MumbleType } from '../../types/mumble';
 
-export type Mumble = {
-  id: string;
-  creator: string | UserType;
-  text: string;
-  mediaUrl: string;
-  mediaType: string;
-  likeCount: number;
-  likedByUser: boolean;
-  type: string;
-  replyCount: number;
-  createdTimestamp: number;
-};
-
-type RawMumble = Omit<Mumble, 'createdTimestamp'>;
+type RawMumble = Omit<MumbleType, 'createdTimestamp'>;
 
 type QwackerMumbleResponse = {
   count: number;
@@ -77,5 +64,5 @@ export const postMumble = async (text: string, file: UploadImage | null, accessT
 };
 const transformMumble = (mumble: RawMumble) => ({
   ...mumble,
-  createdTimestamp: decodeTime(mumble.id),
+  createdAt: new Date(decodeTime(mumble.id)).toISOString(),
 });
