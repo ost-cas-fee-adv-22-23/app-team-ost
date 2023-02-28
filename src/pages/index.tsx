@@ -1,4 +1,4 @@
-import { GetServerSideProps, InferGetStaticPropsType } from 'next';
+import { GetServerSideProps, GetServerSidePropsContext, InferGetStaticPropsType } from 'next';
 import MainLayout from '../components/layouts/main-layout';
 import {
   Heading,
@@ -55,19 +55,39 @@ export default function PageHome({
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async ({ req }) => {
-  // eslint-disable-next-line  @typescript-eslint/no-var-requires
-  const session = await getToken({ req });
-  const { count, mumbles } = await fetchMumbles();
-  const { users } = await fetchUsers({ accessToken: session?.accessToken as string });
-  //TODO -> find/map Userdata as creator
+export const getServerSideProps: GetServerSideProps = async ({ req }: GetServerSidePropsContext) => {
+  try {
+    const token = await getToken({ req });
 
-  console.log(users);
+    if (!token) {
+      return {
+        redirect: {
+          destination: '/login',
+          permanent: false,
+        },
+      };
+    }
 
-  return {
-    props: {
-      count,
-      mumbles,
-    },
-  };
+    const { count, mumbles } = await fetchMumbles();
+    const { users } = await fetchUsers({ accessToken: token?.accessToken as string });
+
+    console.log(users);
+
+    //TODO -> find/map Userdata as creator or get User by ID
+    return {
+      props: {
+        count,
+        mumbles,
+      },
+    };
+  } catch (error) {
+    let message;
+    if (error instanceof Error) {
+      message = error.message;
+    } else {
+      message = String(error);
+    }
+
+    return { props: { error: message, mumbles: [], count: 0 } };
+  }
 };

@@ -1,8 +1,9 @@
 import { decodeTime } from 'ulid';
+import { UserType } from '../../types/user';
 
 export type Mumble = {
   id: string;
-  creator: string;
+  creator: string | UserType;
   text: string;
   mediaUrl: string;
   mediaType: string;
@@ -25,7 +26,7 @@ export type UploadImage = File & { preview: string };
 export const fetchMumbles = async (params?: { limit?: number; offset?: number; newerThanMumbleId?: string }) => {
   const { limit, offset, newerThanMumbleId } = params || {};
 
-  const url = `${process.env.NEXT_PUBLIC_QWACKER_API_URL}/posts?${new URLSearchParams({
+  const url = `${process.env.NEXT_PUBLIC_QWACKER_API_URL}posts?${new URLSearchParams({
     limit: limit?.toString() || '10',
     offset: offset?.toString() || '0',
     newerThan: newerThanMumbleId || '',
@@ -58,7 +59,7 @@ export const postMumble = async (text: string, file: UploadImage | null, accessT
   }
 
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_QWACKER_API_URL}/posts`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_QWACKER_API_URL}posts`, {
       method: 'POST',
       body: formData,
       headers: {
