@@ -83,7 +83,7 @@ export const MumbleCard: FC<MumbleCardProps> = ({ variant, mumble }) => {
             displayName={`${mumble.creator.firstName} ${mumble.creator.lastName}`}
             hrefProfile="#"
             labelType={settings.userShortRepresentationLabelType}
-            timestamp="vor 42 Minuten"
+            timestamp={mumble.createdAt}
             username={mumble.creator.userName}
           />
         ) : (
@@ -94,7 +94,7 @@ export const MumbleCard: FC<MumbleCardProps> = ({ variant, mumble }) => {
             labelType={settings.userShortRepresentationLabelType}
             profilePictureSize={settings.userShortRepresentationProfilePictureSize}
             src={mumble.creator.avatarUrl || ''}
-            timestamp="vor 42 Minuten"
+            timestamp={mumble.createdAt}
             username={mumble.creator.userName}
           />
         )}

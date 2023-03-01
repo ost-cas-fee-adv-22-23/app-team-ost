@@ -1,4 +1,4 @@
-import { GetServerSideProps, InferGetStaticPropsType } from 'next';
+import { GetServerSideProps, GetServerSidePropsContext, InferGetStaticPropsType } from 'next';
 import MainLayout from '../components/layouts/main-layout';
 import {
   Heading,
@@ -11,15 +11,18 @@ import Head from 'next/head';
 import { MumbleCard, MumbleCardVariant } from '../components/cards/mumble-card';
 import { MumbleType } from '../types/mumble';
 import { WriteCard, WriteCardVariant } from '../components/cards/write-card';
+import { fetchMumbles } from '../helpers/qwacker-api/mumble-api-functions';
+import { fetchUsers } from '../helpers/qwacker-api/user-api-functions';
+import { getToken } from 'next-auth/jwt';
 
 type PageProps = {
   count: number;
-  data: MumbleType[];
+  mumbles: MumbleType[];
 };
 
 export default function PageHome({
   count: count,
-  data: initialMumbles,
+  mumbles: initialMumbles,
 }: PageProps): InferGetStaticPropsType<typeof getServerSideProps> {
   // const [mumbles, setMumbles] = useState(initialMumbles);
   const mumbles = initialMumbles;
@@ -52,14 +55,39 @@ export default function PageHome({
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async () => {
-  // eslint-disable-next-line  @typescript-eslint/no-var-requires
-  const { count, data } = require('../data/posts.json');
+export const getServerSideProps: GetServerSideProps = async ({ req }: GetServerSidePropsContext) => {
+  try {
+    const token = await getToken({ req });
 
-  return {
-    props: {
-      count,
-      data,
-    },
-  };
+    if (!token) {
+      return {
+        redirect: {
+          destination: '/login',
+          permanent: false,
+        },
+      };
+    }
+
+    const { count, mumbles } = await fetchMumbles();
+    const { users } = await fetchUsers({ accessToken: token?.accessToken as string });
+
+    console.log(users);
+
+    //TODO -> find/map Userdata as creator or get User by ID
+    return {
+      props: {
+        count,
+        mumbles,
+      },
+    };
+  } catch (error) {
+    let message;
+    if (error instanceof Error) {
+      message = error.message;
+    } else {
+      message = String(error);
+    }
+
+    return { props: { error: message, mumbles: [], count: 0 } };
+  }
 };
