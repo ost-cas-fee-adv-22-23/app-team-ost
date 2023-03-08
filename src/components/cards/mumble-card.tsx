@@ -70,13 +70,14 @@ const mumbleCardVariantMap: Record<MumbleCardVariant, MumbleCardVariantMap> = {
 export const MumbleCard: FC<MumbleCardProps> = ({ variant, mumble }) => {
   const settings = mumbleCardVariantMap[variant] || mumbleCardVariantMap.detailpage;
 
-  // If the creator is not resolved (no login) we anonymize the user
+  // If the creator is not resolved (no session/token) have to anonymize the user here
   if (typeof mumble.creator === 'string') {
     const anonymUser: UserType = {
       id: mumble.creator,
       userName: 'anonym',
-      lastName: 'anonym',
-      firstName: 'anonym',
+      lastName: '',
+      firstName: '',
+      displayName: '',
     };
     mumble.creator = anonymUser;
   }
@@ -91,8 +92,8 @@ export const MumbleCard: FC<MumbleCardProps> = ({ variant, mumble }) => {
       <Stack direction={StackDirection.col} spacing={StackSpacing.s}>
         {variant != MumbleCardVariant.response ? (
           <UserShortRepresentation
-            displayName={mumble.creator.userName != 'anonym' ? `${mumble.creator.firstName} ${mumble.creator.lastName}` : ''}
-            hrefProfile={mumble.creator.userName != 'anonym' ? `/profile/${mumble.creator.userName}` : '/login'}
+            displayName={mumble.creator.userName != 'anonym' ? mumble.creator.displayName : ''}
+            hrefProfile={mumble.creator.userName != 'anonym' ? mumble.creator.profileUrl : '/login'}
             labelType={settings.userShortRepresentationLabelType}
             timestamp={mumble.createdAt}
             username={mumble.creator.userName}
@@ -100,8 +101,8 @@ export const MumbleCard: FC<MumbleCardProps> = ({ variant, mumble }) => {
         ) : (
           <UserShortRepresentation
             alt={mumble.creator.userName}
-            displayName={mumble.creator.userName != 'anonym' ? `${mumble.creator.firstName} ${mumble.creator.lastName}` : ''}
-            hrefProfile={mumble.creator.userName != 'anonym' ? `/profile/${mumble.creator.userName}` : '/login'}
+            displayName={mumble.creator.userName != 'anonym' ? mumble.creator.displayName : ''}
+            hrefProfile={mumble.creator.userName != 'anonym' ? mumble.creator.profileUrl : '/login'}
             labelType={settings.userShortRepresentationLabelType}
             profilePictureSize={settings.userShortRepresentationProfilePictureSize}
             src={mumble.creator.avatarUrl || ''}

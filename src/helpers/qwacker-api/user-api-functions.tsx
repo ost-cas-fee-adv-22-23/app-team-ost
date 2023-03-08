@@ -1,6 +1,6 @@
 import { UserType } from '../../types/user';
 
-// type RawMumble = Omit<User, "createdTimestamp">;
+type RawUser = Omit<UserType, 'profileUrl, displayName'>;
 
 type QwackerUserResponse = {
   count: number;
@@ -25,9 +25,11 @@ export const fetchUsers = async (params?: { limit?: number; offset?: number; acc
 
   const { count, users } = (await res.json()) as QwackerUserResponse;
 
+  const transformedUsers = users.map(transformUser) as UserType[];
+
   return {
     count,
-    users,
+    transformedUsers,
   };
 };
 
@@ -43,7 +45,11 @@ export const fetchUserById = async (params: { id: string; accessToken: string })
   });
   const creator = (await res.json()) as UserType;
 
-  return {
-    creator,
-  };
+  return transformUser(creator);
 };
+
+const transformUser = (user: RawUser): UserType => ({
+  ...user,
+  displayName: `${user.firstName} ${user.lastName}`,
+  profileUrl: `/profile/${user.id}`,
+});

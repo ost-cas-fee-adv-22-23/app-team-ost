@@ -12,7 +12,6 @@ import { MumbleCard, MumbleCardVariant } from '../components/cards/mumble-card';
 import { MumbleType } from '../types/mumble';
 import { WriteCard, WriteCardVariant } from '../components/cards/write-card';
 import { fetchMumbles } from '../helpers/qwacker-api/mumble-api-functions';
-import { fetchUserById } from '../helpers/qwacker-api/user-api-functions';
 import { getToken } from 'next-auth/jwt';
 import { useSession } from 'next-auth/react';
 
@@ -71,19 +70,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req }: GetServerS
     // }
 
     // eslint-disable-next-line prefer-const
-    let { count, mumbles } = await fetchMumbles();
-
-    // If user is not logged in, we show anonymised mumbles without user data
-    if (token) {
-      mumbles = await Promise.all(
-        mumbles.map(async (mumble) => {
-          const user = await fetchUserById({ id: mumble.creator as string, accessToken: token.accessToken as string });
-
-          mumble.creator = user.creator;
-          return mumble;
-        })
-      );
-    }
+    let { count, mumbles } = await fetchMumbles({ token: token?.accessToken as string });
 
     mumbles = mumbles.filter((mumble) => mumble.type === 'post');
 
