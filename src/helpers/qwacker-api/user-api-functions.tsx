@@ -1,4 +1,3 @@
-import { decodeTime } from 'ulid';
 import { UserType } from '../../types/user';
 
 // type RawMumble = Omit<User, "createdTimestamp">;
@@ -29,5 +28,22 @@ export const fetchUsers = async (params?: { limit?: number; offset?: number; acc
   return {
     count,
     users,
+  };
+};
+
+export const fetchUserById = async (params: { id: string; accessToken: string }) => {
+  const { id, accessToken } = params || {};
+
+  const url = `${process.env.NEXT_PUBLIC_QWACKER_API_URL}users/${id}`;
+  const res = await fetch(url, {
+    headers: {
+      'content-type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  const creator = (await res.json()) as UserType;
+
+  return {
+    creator,
   };
 };

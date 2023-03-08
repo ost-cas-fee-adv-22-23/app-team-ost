@@ -8,6 +8,6 @@ export type UserType = {
   bio?: string;
   avatarUrl?: string;
   posterImage?: string;
-  createdAt: string;
-  profileLink: string;
+  createdAt?: string;
+  profileLink?: string;
 };

@@ -12,8 +12,9 @@ import { MumbleCard, MumbleCardVariant } from '../components/cards/mumble-card';
 import { MumbleType } from '../types/mumble';
 import { WriteCard, WriteCardVariant } from '../components/cards/write-card';
 import { fetchMumbles } from '../helpers/qwacker-api/mumble-api-functions';
-import { fetchUsers } from '../helpers/qwacker-api/user-api-functions';
+import { fetchUserById } from '../helpers/qwacker-api/user-api-functions';
 import { getToken } from 'next-auth/jwt';
+import { useSession } from 'next-auth/react';
 
 type PageProps = {
   count: number;
@@ -26,6 +27,7 @@ export default function PageHome({
 }: PageProps): InferGetStaticPropsType<typeof getServerSideProps> {
   // const [mumbles, setMumbles] = useState(initialMumbles);
   const mumbles = initialMumbles;
+  const { data: session } = useSession();
 
   return (
     <MainLayout>
@@ -44,7 +46,7 @@ export default function PageHome({
         <Stack direction={StackDirection.col} spacing={StackSpacing.s} withDivider={true}>
           <>
             {/* eslint-disable-next-line @typescript-eslint/no-empty-function */}
-            <WriteCard variant={WriteCardVariant.main} handleChange={() => {}} handleSubmit={() => {}} />
+            {session && <WriteCard variant={WriteCardVariant.main} handleChange={() => {}} handleSubmit={() => {}} />}
             {mumbles.map((mumble) => (
               <MumbleCard key={mumble.id} variant={MumbleCardVariant.timeline} mumble={mumble} />
             ))}
@@ -59,21 +61,32 @@ export const getServerSideProps: GetServerSideProps = async ({ req }: GetServerS
   try {
     const token = await getToken({ req });
 
-    if (!token) {
-      return {
-        redirect: {
-          destination: '/login',
-          permanent: false,
-        },
-      };
+    // if (!token) {
+    //   return {
+    //     redirect: {
+    //       destination: '/login',
+    //       permanent: false,
+    //     },
+    //   };
+    // }
+
+    // eslint-disable-next-line prefer-const
+    let { count, mumbles } = await fetchMumbles();
+
+    // If user is not logged in, we show anonymised mumbles without user data
+    if (token) {
+      mumbles = await Promise.all(
+        mumbles.map(async (mumble) => {
+          const user = await fetchUserById({ id: mumble.creator as string, accessToken: token.accessToken as string });
+
+          mumble.creator = user.creator;
+          return mumble;
+        })
+      );
     }
 
-    const { count, mumbles } = await fetchMumbles();
-    const { users } = await fetchUsers({ accessToken: token?.accessToken as string });
+    mumbles = mumbles.filter((mumble) => mumble.type === 'post');
 
-    console.log(users);
-
-    //TODO -> find/map Userdata as creator or get User by ID
     return {
       props: {
         count,
