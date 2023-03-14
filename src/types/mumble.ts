@@ -1,8 +1,8 @@
-import { UserType } from './user';
+import { User } from './user';
 
-export type MumbleType = {
+export type Mumble = {
   id: string;
-  creator: UserType | string;
+  creator: User;
   text: string;
   mediaUrl?: string;
   mediaType: 'image/jpeg' | 'image/png' | 'image/gif';

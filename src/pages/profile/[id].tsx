@@ -16,14 +16,14 @@ import { getToken } from 'next-auth/jwt';
 import { useSession } from 'next-auth/react';
 import { MumbleCard, MumbleCardVariant } from '../../components/cards/mumble-card';
 import MainLayout from '../../components/layouts/main-layout';
-import { fetchMumblesByUserId } from '../../helpers/qwacker-api/mumble-api-functions';
+import { fetchMumbles } from '../../helpers/qwacker-api/mumble-api-functions';
 import { fetchUserById } from '../../helpers/qwacker-api/user-api-functions';
-import { MumbleType } from '../../types/mumble';
-import { UserType } from '../../types/user';
+import { Mumble } from '../../types/mumble';
+import { User } from '../../types/user';
 
 type ProfilePageProps = {
-  user: UserType;
-  mumbles: MumbleType[];
+  user: User;
+  mumbles: Mumble[];
 };
 
 export default function ProfilePage({
@@ -81,14 +81,17 @@ export default function ProfilePage({
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async ({ req, query: { alias } }) => {
+export const getServerSideProps: GetServerSideProps = async ({ req, query: { id } }) => {
   try {
     const token = await getToken({ req });
     if (!token) {
       throw new Error('No token found');
     }
-    const user = await fetchUserById({ id: alias as string, accessToken: token.accessToken as string });
-    const mumbles = await fetchMumblesByUserId({ userId: alias as string, accessToken: token.accessToken as string });
+    if(!id) {
+      throw new Error('No id found');
+    }
+    const user = await fetchUserById({ id: id as string, accessToken: token.accessToken });
+    const mumbles = await fetchMumbles({ creator: id as string, token: token.accessToken });    
 
     return {
       props: {

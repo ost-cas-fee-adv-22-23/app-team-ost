@@ -17,7 +17,7 @@ import {
   UserShortRepresentationProfilePictureSize,
 } from '@smartive-education/design-system-component-library-team-ost';
 import { FC } from 'react';
-import { MumbleType, UserType } from '../../types/public-api';
+import { Mumble } from '../../types/mumble';
 
 export enum MumbleCardVariant {
   detailpage = 'detailpage',
@@ -27,7 +27,7 @@ export enum MumbleCardVariant {
 
 type MumbleCardProps = {
   variant: MumbleCardVariant;
-  mumble: MumbleType;
+  mumble: Mumble;
 };
 
 type MumbleCardVariantMap = {
@@ -69,18 +69,6 @@ const mumbleCardVariantMap: Record<MumbleCardVariant, MumbleCardVariantMap> = {
 //TODO Define state for like counter, handle the like click and pass a callback for handling the like click
 export const MumbleCard: FC<MumbleCardProps> = ({ variant, mumble }) => {
   const settings = mumbleCardVariantMap[variant] || mumbleCardVariantMap.detailpage;
-
-  // If the creator is not resolved (no session/token) have to anonymize the user here
-  if (typeof mumble.creator === 'string') {
-    const anonymUser: UserType = {
-      id: mumble.creator,
-      userName: 'anonym',
-      lastName: '',
-      firstName: '',
-      displayName: '',
-    };
-    mumble.creator = anonymUser;
-  }
 
   return (
     <Card borderRadiusType={settings.borderRadiusType} isInteractive={settings.isInteractive}>

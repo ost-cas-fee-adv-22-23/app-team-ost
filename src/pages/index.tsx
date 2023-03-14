@@ -16,7 +16,7 @@ import {
 } from '@smartive-education/design-system-component-library-team-ost';
 import Head from 'next/head';
 import { MumbleCard, MumbleCardVariant } from '../components/cards/mumble-card';
-import { MumbleType } from '../types/mumble';
+import { Mumble } from '../types/mumble';
 import { WriteCard, WriteCardVariant } from '../components/cards/write-card';
 import { fetchMumbles } from '../helpers/qwacker-api/mumble-api-functions';
 import { getToken } from 'next-auth/jwt';
@@ -25,7 +25,7 @@ import { useState } from 'react';
 
 type PageProps = {
   count: number;
-  mumbles: MumbleType[];
+  mumbles: Mumble[];
 };
 
 export default function PageHome({
@@ -118,8 +118,6 @@ export const getServerSideProps: GetServerSideProps = async ({ req }: GetServerS
 
     // eslint-disable-next-line prefer-const
     let { count, mumbles } = await fetchMumbles({ token: token?.accessToken as string });
-
-    mumbles = mumbles.filter((mumble) => mumble.type === 'post');
 
     return {
       props: {
