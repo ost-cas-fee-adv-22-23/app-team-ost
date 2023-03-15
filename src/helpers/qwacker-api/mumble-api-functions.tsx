@@ -62,6 +62,41 @@ export const postMumble = async (text: string, file: UploadImage | null, accessT
     throw new Error(error instanceof Error ? error.message : 'Could not post mumble');
   }
 };
+
+export const fetchMumbleById = async (id: string, accessToken?: string) => {
+  // const { limit, offset, newerThanMumbleId } = params || {};
+
+  const url = `${process.env.NEXT_PUBLIC_QWACKER_API_URL}posts/${id}`;
+
+  const res = await fetch(url, {
+    headers: {
+      'content-type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  const mumble = await res.json();
+
+  return mumble;
+};
+
+export const fetchRepliesByMumbleId = async (id: string, accessToken?: string) => {
+  // const { limit, offset, newerThanMumbleId } = params || {};
+
+  const url = `${process.env.NEXT_PUBLIC_QWACKER_API_URL}posts/${id}/replies`;
+
+  const res = await fetch(url, {
+    headers: {
+      'content-type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  const replies = await res.json();
+
+  return replies;
+};
+
 const transformMumble = (mumble: RawMumble) => ({
   ...mumble,
   createdAt: new Date(decodeTime(mumble.id)).toISOString(),
