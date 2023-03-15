@@ -5,10 +5,13 @@ export type Mumble = {
   creator: User;
   text: string;
   mediaUrl?: string;
-  mediaType: 'image/jpeg' | 'image/png' | 'image/gif';
+  // Todo: Typ prüfen
+  // mediaType?: 'image/jpeg' | 'image/png' | 'image/gif';
+  mediaType?: string;
   likeCount: number;
-  likedByUser: boolean | string;
-  replyCount: number;
+  likedByUser: boolean;
+  replyCount?: number;
   createdAt: string;
   type: string;
+  parentId?: string;
 };

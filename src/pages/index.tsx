@@ -18,7 +18,7 @@ import Head from 'next/head';
 import { MumbleCard, MumbleCardVariant } from '../components/cards/mumble-card';
 import { Mumble } from '../types/mumble';
 import { WriteCard, WriteCardVariant } from '../components/cards/write-card';
-import { fetchMumbles } from '../helpers/qwacker-api/mumble-api-functions';
+import { fetchMumbles } from '../services/qwacker-api/posts';
 import { getToken } from 'next-auth/jwt';
 import { useSession } from 'next-auth/react';
 import { useState } from 'react';
@@ -32,8 +32,10 @@ export default function PageHome({
   count: initialCount,
   mumbles: initialMumbles,
 }: PageProps): InferGetStaticPropsType<typeof getServerSideProps> {
+  // todo: reducer statt useState verwenden
   const [mumbles, setMumbles] = useState(initialMumbles);
   const [loading, setLoading] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [count, setCount] = useState(initialCount);
   const [hasMore, setHasMore] = useState(initialMumbles.length < count);
 

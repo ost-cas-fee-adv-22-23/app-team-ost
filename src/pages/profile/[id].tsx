@@ -16,8 +16,8 @@ import { getToken } from 'next-auth/jwt';
 import { useSession } from 'next-auth/react';
 import { MumbleCard, MumbleCardVariant } from '../../components/cards/mumble-card';
 import MainLayout from '../../components/layouts/main-layout';
-import { fetchMumbles } from '../../helpers/qwacker-api/mumble-api-functions';
-import { fetchUserById } from '../../helpers/qwacker-api/user-api-functions';
+import { fetchMumbles } from '../../services/qwacker-api/posts';
+import { fetchUserById } from '../../services/qwacker-api/users';
 import { Mumble } from '../../types/mumble';
 import { User } from '../../types/user';
 
@@ -87,16 +87,18 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query: { id 
     if (!token) {
       throw new Error('No token found');
     }
-    if(!id) {
+    if (!id) {
       throw new Error('No id found');
     }
     const user = await fetchUserById({ id: id as string, accessToken: token.accessToken });
-    const mumbles = await fetchMumbles({ creator: id as string, token: token.accessToken });    
+    // ist vom typ count + mumbles
+    // todo: muss hier ebenfalls ein loadMore eingebaut werden?
+    const mumbles = await fetchMumbles({ creator: id as string, token: token.accessToken });
 
     return {
       props: {
         user,
-        mumbles,
+        mumbles: mumbles.mumbles,
       },
     };
   } catch (error) {

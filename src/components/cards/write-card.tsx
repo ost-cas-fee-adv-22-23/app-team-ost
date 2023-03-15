@@ -24,7 +24,7 @@ import { ChangeEvent, FC, FormEvent } from 'react';
 
 export enum WriteCardVariant {
   inline = 'inline',
-  main = 'main',
+  main = 'main', // todo: besserer Name wie main für die Variant finden
 }
 
 type WriteCardProps = {
@@ -59,11 +59,7 @@ export const WriteCard: FC<WriteCardProps> = ({ variant, handleChange, handleSub
       <Card borderRadiusType={settings.borderRadiusType} isInteractive={settings.isInteractive}>
         {variant === WriteCardVariant.main && (
           <div className="absolute -left-l top-m">
-            <ProfilePicture
-              alt={session?.user.username as string}
-              size={ProfilePictureSize.m}
-              src={session?.user.avatarUrl as string}
-            />
+            <ProfilePicture alt={session.user.username} size={ProfilePictureSize.m} src={session.user.avatarUrl} />
           </div>
         )}
         <Stack direction={StackDirection.col} spacing={StackSpacing.s}>
@@ -71,14 +67,16 @@ export const WriteCard: FC<WriteCardProps> = ({ variant, handleChange, handleSub
 
           {variant === WriteCardVariant.inline && (
             <UserShortRepresentation
-              alt={session.user.username as string}
+              alt={session.user.username}
               displayName={`${session.user.firstname} ${session?.user.lastname}`}
               hrefProfile="#"
               labelType={UserShortRepresentationLabelType.m}
-              username={session.user.username as string}
+              username={session.user.username}
               profilePictureSize={UserShortRepresentationProfilePictureSize.s}
-              src={session.user.avatarUrl as string}
+              src={session.user.avatarUrl ?? ''}
             />
+            /* todo: Typ des src Props prüfen. avatarUrl ist aktuell nullable. Es muss jedoch zwingend eine src angegeben werden */
+            /* todo: Muss der Displayname hier nochmals zusammengesetzt werden? */
           )}
 
           <Form handleSubmit={handleSubmit}>

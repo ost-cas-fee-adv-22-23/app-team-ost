@@ -19,6 +19,7 @@ import {
 import { FC } from 'react';
 import { Mumble } from '../../types/mumble';
 
+// todo: bessere Namen für Variants. Evtl. eigene Components für Variants erstellen
 export enum MumbleCardVariant {
   detailpage = 'detailpage',
   response = 'response',
@@ -80,8 +81,8 @@ export const MumbleCard: FC<MumbleCardProps> = ({ variant, mumble }) => {
       <Stack direction={StackDirection.col} spacing={StackSpacing.s}>
         {variant != MumbleCardVariant.response ? (
           <UserShortRepresentation
-            displayName={mumble.creator.userName != 'anonym' ? mumble.creator.displayName : ''}
-            hrefProfile={mumble.creator.userName != 'anonym' ? mumble.creator.profileUrl : '/login'}
+            displayName={mumble.creator.displayName}
+            hrefProfile={mumble.creator.profileUrl}
             labelType={settings.userShortRepresentationLabelType}
             timestamp={mumble.createdAt}
             username={mumble.creator.userName}
@@ -89,8 +90,8 @@ export const MumbleCard: FC<MumbleCardProps> = ({ variant, mumble }) => {
         ) : (
           <UserShortRepresentation
             alt={mumble.creator.userName}
-            displayName={mumble.creator.userName != 'anonym' ? mumble.creator.displayName : ''}
-            hrefProfile={mumble.creator.userName != 'anonym' ? mumble.creator.profileUrl : '/login'}
+            displayName={mumble.creator.displayName}
+            hrefProfile={mumble.creator.profileUrl}
             labelType={settings.userShortRepresentationLabelType}
             profilePictureSize={settings.userShortRepresentationProfilePictureSize}
             src={mumble.creator.avatarUrl || ''}
@@ -113,7 +114,7 @@ export const MumbleCard: FC<MumbleCardProps> = ({ variant, mumble }) => {
             onClick={function noRefCheck() {
               console.log('click');
             }}
-            repliesCount={mumble.replyCount}
+            repliesCount={mumble.replyCount ?? 0}
             withReaction
           />
           <Like
