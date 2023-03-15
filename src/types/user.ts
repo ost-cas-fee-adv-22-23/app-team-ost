@@ -1,13 +1,14 @@
-export type UserType = {
+export type User = {
   id: string;
   userName: string;
   firstName: string;
   lastName: string;
+  displayName: string;
   email?: string;
   city?: string;
   bio?: string;
   avatarUrl?: string;
   posterImage?: string;
-  createdAt: string;
-  profileLink: string;
+  createdAt?: string;
+  profileUrl?: string;
 };
