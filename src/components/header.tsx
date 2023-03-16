@@ -5,16 +5,21 @@ import {
   ProfilePictureButton,
   SettingsButton,
   LogoutButton,
+  Label,
+  LabelSize,
 } from '@smartive-education/design-system-component-library-team-ost';
 import { SettingsModal } from './modals/settings-modal';
 import { ChangeEvent, FC, FormEvent, ReactElement, useState } from 'react';
 import { FileuploadModal } from './modals/fileupload-modal';
+import { useSession } from 'next-auth/react';
+import Link from 'next/link';
 
 type HeaderProps = {
   children?: ReactElement;
 };
 
 export const Header: FC<HeaderProps> = () => {
+  const { data: session } = useSession();
   const [isOpenSettings, setIsOpenSettings] = useState(false);
   const [isOpenFileUpload, setIsOpenFileUpload] = useState(false);
 
@@ -54,6 +59,31 @@ export const Header: FC<HeaderProps> = () => {
     setIsOpenFileUpload(false);
   };
 
+  const navgation = session ? (
+    <Navigation>
+      <ProfilePictureButton
+        alt={session.user.username}
+        aria-label="Edit profilepicture"
+        onClick={() => setIsOpenFileUpload(true)}
+        src={session.user.avatarUrl as string}
+      />
+      <SettingsButton onClick={() => setIsOpenSettings(true)} />
+      <LogoutButton
+        onClick={() => {
+          console.log('click');
+        }}
+      />
+    </Navigation>
+  ) : (
+    <Navigation>
+      <Link href={'/login'}>
+        <div className="text-white">
+          <Label size={LabelSize.l}>Login</Label>
+        </div>
+      </Link>
+    </Navigation>
+  );
+
   return (
     <PageHeader>
       <div className="flex items-center justify-between w-full sm:w-7/12">
@@ -65,20 +95,7 @@ export const Header: FC<HeaderProps> = () => {
             }}
           />
         </div>
-        <Navigation>
-          <ProfilePictureButton
-            alt="Robert Vogt"
-            aria-label="Edit profilepicture"
-            onClick={() => setIsOpenFileUpload(true)}
-            src="https://media.licdn.com/dms/image/D4E03AQEXHsHgH4BwJg/profile-displayphoto-shrink_800_800/0/1666815812197?e=2147483647&v=beta&t=Vx6xecdYFjUt3UTCmKdh2U-iHvY0bS-fcxlp_LKbxYw"
-          />
-          <SettingsButton onClick={() => setIsOpenSettings(true)} />
-          <LogoutButton
-            onClick={() => {
-              console.log('click');
-            }}
-          />
-        </Navigation>
+        {navgation}
       </div>
       <SettingsModal
         form={form}
