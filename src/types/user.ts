@@ -1,4 +1,4 @@
-export type UserType = {
+export type User = {
   id: string;
   userName: string;
   firstName: string;
@@ -10,5 +10,5 @@ export type UserType = {
   avatarUrl?: string;
   posterImage?: string;
   createdAt?: string;
-  profileLink?: string;
+  profileUrl?: string;
 };

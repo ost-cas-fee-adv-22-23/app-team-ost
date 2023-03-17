@@ -1,16 +1,16 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import { useSession } from 'next-auth/react';
 import MainLayout from '../../components/layouts/main-layout';
-import { fetchMumbleById, fetchRepliesByMumbleId } from '../../helpers/qwacker-api/mumble-api-functions';
-import { MumbleType } from '../../types/mumble';
 import { MumbleCard, MumbleCardVariant } from '../../components/cards/mumble-card';
-import { UserType } from '../../types/user';
+import { User } from '../../types/user';
 import { WriteCard, WriteCardVariant } from '../../components/cards/write-card';
 import { Stack, StackDirection, StackSpacing } from '@smartive-education/design-system-component-library-team-ost';
+import { fetchMumbleById, fetchRepliesByMumbleId } from '../../services/qwacker-api/posts';
+import { Mumble } from '../../types/mumble';
 
 type MumblePageProps = {
-  mumble: MumbleType;
-  replies: MumbleType[];
+  mumble: Mumble;
+  replies: Mumble[];
 };
 
 // todo: Static mit revalidate, wenn neue Response kommt.
@@ -42,7 +42,7 @@ export const getServerSideProps: GetServerSideProps = async ({ query: { id } }) 
   // get replies --> get UserData
   console.warn('fetchMumbleWithId', id);
   const mumble = await fetchMumbleById(id as string);
-  const anonymUser: UserType = {
+  const anonymUser: User = {
     id: mumble.creator,
     userName: 'anonym',
     lastName: '',
