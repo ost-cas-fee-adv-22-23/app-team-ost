@@ -11,11 +11,14 @@ C4Dynamic
         Person(customerB, "User anonym", "A user without an account or not logged in.")
 
         Boundary(b1, "Next.js App") {
-          System(SystemPages, "pages", "Pages folder contains ssr/ssg pages. Auth with NextAuth.")
+          System(SystemPagesLogin, "login/logout pages", "Login pages are open")
+          System(SystemPagesAnonym, "anonymized pages", "Timeline is anonymized wihtout a session.")
+          System(SystemPagesProtected, "protected pages", "Only users with a valid session")
           System(SystemPagesApi, "pages/api", "Api-routes for user interactions (login, loadMore, like/dislike, responseTo, ...). NextAuth for authentication on Zitadel")
           System(SystemComponents, "components", "Some global used components (Cards, Modals)")
-          System(SystemTypes, "types", "Some global used types (mumble, user, ...)")
-          System(SystemHelper, "helper", "Helper and api functions (getAllMumbles, getMoreMumbles, ...)")
+          System(SystemTypes, "types", "Global Types")
+          System(SystemHelper, "helper", "General helpers")
+          System(SystemServices, "services", "Api functions for posts, users and likes")
         }
 
         Boundary(b5, "Qwacker") {
@@ -28,10 +31,10 @@ C4Dynamic
       }
 
       Rel(customerA, SystemPagesApi, "interactions")
-      Rel(SystemPages, customerA, "get")
-      Rel(SystemPages, customerB, "only login page")
-      BiRel(SystemPagesApi, SystemHelper, "")
-      BiRel(SystemHelper, SystemAPI, "")
+      Rel(SystemPagesLogin, customerA, "get")
+      Rel(SystemPagesLogin, customerB, "only login page")
+      BiRel(SystemPagesApi, SystemServices, "")
+      BiRel(SystemServices, SystemAPI, "")
       BiRel(SystemAPI, SystemDB, "Uses")
       BiRel(SystemPagesApi, SystemZitadel, "")
 
