@@ -64,6 +64,33 @@ export const fetchMumbles = async (params?: {
   }
 };
 
+export const searchMumbles = async (params?: {
+  token?: string;
+  likedBy?: string;
+  offset?: number;
+  limit?: number;
+}): Promise<{ count: number; mumbles: Mumble[] }> => {
+  const { token, likedBy, limit, offset } = params || {};
+  const searchParams = new URLSearchParams({
+    likedBy: likedBy?.toString() || '',
+    limit: limit?.toString() || '10',
+    offset: offset?.toString() || '0',
+  });
+
+  try {
+    const { count, data } = await qwackerApi.getWithoutAuth<QwackerMumbleResponse>('posts', searchParams);
+    const mumbles = await Promise.all(data.map(async (mumble) => await transformApiPostResultToMumble(mumble, token)));
+
+    return {
+      count,
+      mumbles,
+    };
+  } catch (error) {
+    // todo: Handle any error happened.
+    throw new Error('Something was not okay');
+  }
+};
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const postMumble = async (text: string, file: UploadImage | null, accessToken?: string) => {
   /*  if (!accessToken) {
