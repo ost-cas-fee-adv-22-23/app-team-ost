@@ -95,6 +95,20 @@ export const postMumble = async (text: string, file: UploadImage | null, accessT
   */
 };
 
+export const fetchMumbleById = async (id: string, accessToken: string) => {
+  const apiPostResult = await qwackerApi.get<Post>(`posts/${id}`, accessToken);
+  const mumble = await transformApiPostResultToMumble(apiPostResult, accessToken);
+  return mumble;
+};
+
+export const fetchRepliesByMumbleId = async (id: string, accessToken: string) => {
+  const apiPostResult = await qwackerApi.get<Reply[]>(`posts/${id}/replies`, accessToken);
+  const replies = await Promise.all(
+    apiPostResult.map(async (reply) => await transformApiPostResultToMumble(reply, accessToken))
+  );
+  return replies;
+};
+
 const transformApiPostResultToMumble = async (mumble: ApiPostResult, token?: string): Promise<Mumble> => {
   const creator = await fetchUserById({ id: mumble.creator as string, accessToken: token });
   return {
