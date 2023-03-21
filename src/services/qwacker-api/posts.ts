@@ -95,37 +95,17 @@ export const postMumble = async (text: string, file: UploadImage | null, accessT
   */
 };
 
-export const fetchMumbleById = async (id: string, accessToken?: string) => {
-  // const { limit, offset, newerThanMumbleId } = params || {};
-
-  const url = `${process.env.NEXT_PUBLIC_QWACKER_API_URL}posts/${id}`;
-
-  const res = await fetch(url, {
-    headers: {
-      'content-type': 'application/json',
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-
-  const mumble = await res.json();
-
+export const fetchMumbleById = async (id: string, accessToken: string) => {
+  const apiPostResult = await qwackerApi.get<Post>(`posts/${id}`, accessToken);
+  const mumble = await transformApiPostResultToMumble(apiPostResult, accessToken);
   return mumble;
 };
 
-export const fetchRepliesByMumbleId = async (id: string, accessToken?: string) => {
-  // const { limit, offset, newerThanMumbleId } = params || {};
-
-  const url = `${process.env.NEXT_PUBLIC_QWACKER_API_URL}posts/${id}/replies`;
-
-  const res = await fetch(url, {
-    headers: {
-      'content-type': 'application/json',
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-
-  const replies = await res.json();
-
+export const fetchRepliesByMumbleId = async (id: string, accessToken: string) => {
+  const apiPostResult = await qwackerApi.get<Reply[]>(`posts/${id}/replies`, accessToken);
+  const replies = await Promise.all(
+    apiPostResult.map(async (reply) => await transformApiPostResultToMumble(reply, accessToken))
+  );
   return replies;
 };
 
