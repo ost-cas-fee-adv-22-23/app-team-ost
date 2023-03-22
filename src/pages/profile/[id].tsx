@@ -24,10 +24,10 @@ import {
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import { getToken } from 'next-auth/jwt';
 import { useSession } from 'next-auth/react';
-import { useState } from 'react';
+import { useReducer } from 'react';
 import { MumbleCard, MumbleCardVariant } from '../../components/cards/mumble-card';
 import MainLayout from '../../components/layouts/main-layout';
-import { fetchMumbles, searchMumbles } from '../../services/qwacker-api/posts';
+import { fetchMumbles } from '../../services/qwacker-api/posts';
 import { fetchUserById } from '../../services/qwacker-api/users';
 import { Mumble } from '../../types/mumble';
 import { User } from '../../types/user';
@@ -35,35 +35,83 @@ import { User } from '../../types/user';
 type ProfilePageProps = {
   count: number;
   mumbles: Mumble[];
+  likedMumbles: Mumble[];
   user: User;
+};
+
+type ProfilePageState = {
+  mumbles: Mumble[];
+  likedMumbles: Mumble[];
+  loading: boolean;
+  count: number;
+  hasMore: boolean;
+  postType: 'mumbles' | 'likes';
+};
+
+type ProfilePageAction =
+  | { type: 'isloading' }
+  | { type: 'loaded' }
+  | { type: 'setmumbles'; payload: Mumble[] }
+  | { type: 'updateposttype' };
+
+const profilPageReducer = (state: ProfilePageState, action: ProfilePageAction): ProfilePageState => {
+  switch (action.type) {
+    case 'setmumbles':
+      return {
+        ...state,
+        mumbles: [...state.mumbles, ...action.payload],
+        hasMore: state.mumbles.length + action.payload.length < state.count,
+      };
+    case 'isloading':
+      return { ...state, loading: true };
+    case 'loaded':
+      return { ...state, loading: true };
+    case 'updateposttype':
+      return { ...state, postType: state.postType == 'mumbles' ? 'likes' : 'mumbles' };
+    default:
+      throw new Error(`Unknown action type`);
+  }
 };
 
 export default function ProfilePage({
   count: initialCount,
   mumbles: initialMumbles,
+  likedMumbles: initialLikes,
   user: user,
 }: ProfilePageProps): InferGetServerSidePropsType<typeof getServerSideProps> {
-  // todo: reducer statt useState verwenden
-  const [mumbles, setMumbles] = useState(initialMumbles);
-  const [loading, setLoading] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [count, setCount] = useState(initialCount);
-  const [hasMore, setHasMore] = useState(initialMumbles.length < count);
+  const initialState: ProfilePageState = {
+    mumbles: initialMumbles,
+    likedMumbles: initialLikes,
+    loading: false,
+    count: initialCount,
+    hasMore: initialMumbles.length < initialCount,
+    postType: 'mumbles',
+  };
+  const [state, dispatch] = useReducer(profilPageReducer, initialState);
 
   const { data: session } = useSession();
   const isCurrentUser = user.id === session?.user.id;
 
+  // TODO Implement a api route for client fetchMumbles
   const loadMore = async () => {
-    const { count, mumbles: newMumbles } = await fetchMumbles({
-      limit: 10,
-      offset: mumbles.length,
-      token: session?.accessToken,
-      creator: user.id,
-    });
+    dispatch({ type: 'isloading' });
+    try {
+      const { count, mumbles: newMumbles } = await fetchMumbles({
+        limit: 10,
+        offset: state.mumbles.length,
+        token: session?.accessToken,
+        creator: user.id,
+      });
+      dispatch({ type: 'setmumbles', payload: newMumbles });
+    } catch (error) {
+      throw new Error(`Unable to load more Mumbles ${error}`);
+    }
+    dispatch({ type: 'loaded' });
+  };
 
-    setLoading(false);
-    setHasMore(mumbles.length + newMumbles.length < count);
-    setMumbles([...mumbles, ...newMumbles]);
+  const mumblesToRender: Record<string, Mumble[]> = {
+    mumbles: state.mumbles,
+    likes: state.likedMumbles,
   };
 
   return (
@@ -104,7 +152,7 @@ export default function ProfilePage({
           </div>
           {isCurrentUser ? (
             <div className="w-fit my-m">
-              <TabNav onTabChange={(e) => console.log('click' + e)} tabNames={['Deine Mumbles', 'Deine Likes']} />
+              <TabNav onTabChange={() => dispatch({ type: 'updateposttype' })} tabNames={['Deine Mumbles', 'Deine Likes']} />
             </div>
           ) : (
             <div className="w-full my-m text-slate-400">
@@ -128,10 +176,12 @@ export default function ProfilePage({
               </Stack>
             </div>
           )}
-          {mumbles.map((mumble) => (
+          {mumblesToRender[state.postType].map((mumble) => (
             <MumbleCard key={mumble.id} variant={MumbleCardVariant.timeline} mumble={mumble} />
           ))}
-          {hasMore && (
+          {/* We decided to show the load-more button only for mumbles and not for likes, 
+          as we the api endpoint (post/search) we use for getting the likes doesn't provide an offset and limit */}
+          {state.hasMore && state.postType == 'mumbles' && (
             <Stack alignItems={StackAlignItems.center} justifyContent={StackJustifyContent.center} spacing={StackSpacing.xl}>
               <TextButton
                 ariaLabel="Start mumble"
@@ -141,7 +191,7 @@ export default function ProfilePage({
                 onClick={() => loadMore()}
                 size={TextButtonSize.l}
               >
-                {loading ? '...' : 'Weitere Mumbles laden'}
+                {state.loading ? '...' : 'Weitere Mumbles laden'}
               </TextButton>
             </Stack>
           )}
@@ -162,18 +212,44 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query: { id 
     }
     const user = await fetchUserById({ id: id as string, accessToken: token.accessToken });
     const { count, mumbles } = await fetchMumbles({ creator: id as string, token: token.accessToken });
-    const { count: likedCount, mumbles: likedMumbles } = await searchMumbles({
-      likedBy: id as string,
-      token: token.accessToken,
-    });
+    // const { count: likedCount, mumbles: likes } = await searchMumbles({
+    //   likedBy: id as string,
+    //   token: token.accessToken,
+    // });
+
+    //TODO integrate searchMumbles by LikedBy
+    const likedMumbles: Mumble[] = [
+      {
+        id: '01GW2GR85REHE19SHTW019R54K',
+        creator: {
+          id: '201164885894103297',
+          userName: 'mthomann',
+          firstName: 'Martin',
+          lastName: 'Thomann',
+          avatarUrl:
+            'https://cas-fee-advanced-ocvdad.zitadel.cloud/assets/v1/179828644300980481/users/201164885894103297/avatar?v=4e270c9e1b43fdcc701bcc315d75ebec',
+          displayName: 'Martin Thomann',
+          profileUrl: '/profile/201164885894103297',
+        },
+        text: 'Hello World! #test',
+        mediaUrl: '',
+        mediaType: '',
+        likeCount: 0,
+        likedByUser: false,
+        type: 'post',
+        replyCount: 1,
+        createdAt: '2023-03-21T16:41:33.624Z',
+      },
+    ];
+    const likedCount = 1;
 
     return {
       props: {
         user,
         count,
         mumbles,
-        likedCount,
         likedMumbles,
+        likedCount,
       },
     };
   } catch (error) {
