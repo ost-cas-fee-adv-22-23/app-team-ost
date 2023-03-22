@@ -1,25 +1,25 @@
 import {
+  IconCheckmark,
+  IconMumble,
+  Label,
+  LabelSize,
   Paragraph,
   ParagraphSize,
   ProfileBanner,
   ProfilePicture,
   ProfilePictureSize,
   Stack,
+  StackAlignItems,
   StackDirection,
+  StackJustifyContent,
   StackSpacing,
   TabNav,
-  UserShortRepresentation,
-  UserShortRepresentationLabelType,
-  Label,
-  LabelSize,
-  StackAlignItems,
-  IconCheckmark,
   TextButton,
-  TextButtonSize,
   TextButtonColor,
   TextButtonDisplayMode,
-  StackJustifyContent,
-  IconMumble,
+  TextButtonSize,
+  UserShortRepresentation,
+  UserShortRepresentationLabelType,
 } from '@smartive-education/design-system-component-library-team-ost';
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import { getToken } from 'next-auth/jwt';
@@ -33,58 +33,67 @@ import { Mumble } from '../../types/mumble';
 import { User } from '../../types/user';
 
 type ProfilePageProps = {
-  count: number;
-  mumbles: Mumble[];
   likedMumbles: Mumble[];
+  mumblesCount: number;
+  mumbles: Mumble[];
   user: User;
 };
 
 type ProfilePageState = {
-  mumbles: Mumble[];
+  errorMessage: string;
+  hasMore: boolean;
   likedMumbles: Mumble[];
   loading: boolean;
-  count: number;
-  hasMore: boolean;
-  postType: 'mumbles' | 'likes';
+  mumblesCount: number;
+  mumbles: Mumble[];
+  postType: 'mumbles' | 'likedMumbles';
 };
 
 type ProfilePageAction =
-  | { type: 'isloading' }
-  | { type: 'loaded' }
-  | { type: 'setmumbles'; payload: Mumble[] }
-  | { type: 'updateposttype' };
+  | { type: 'fetch_mumbles' }
+  | { type: 'fetch_mumbles_success'; payload: Mumble[] }
+  | { type: 'fetch_mumbles_error'; payload: string }
+  | { type: 'switch_post_type' };
 
 const profilPageReducer = (state: ProfilePageState, action: ProfilePageAction): ProfilePageState => {
   switch (action.type) {
-    case 'setmumbles':
+    case 'fetch_mumbles':
+      return { ...state, loading: true };
+    case 'fetch_mumbles_success':
       return {
         ...state,
+        hasMore: state.mumbles.length + action.payload.length < state.mumblesCount,
+        loading: false,
         mumbles: [...state.mumbles, ...action.payload],
-        hasMore: state.mumbles.length + action.payload.length < state.count,
       };
-    case 'isloading':
-      return { ...state, loading: true };
-    case 'loaded':
-      return { ...state, loading: false };
-    case 'updateposttype':
-      return { ...state, postType: state.postType == 'mumbles' ? 'likes' : 'mumbles' };
+    case 'fetch_mumbles_error':
+      return {
+        ...state,
+        errorMessage: action.payload,
+      };
+    case 'switch_post_type':
+      return {
+        ...state,
+        postType: state.postType == 'mumbles' ? 'likedMumbles' : 'mumbles',
+      };
     default:
       throw new Error(`Unknown action type`);
   }
 };
 
 export default function ProfilePage({
-  count: initialCount,
-  mumbles: initialMumbles,
   likedMumbles: initialLikes,
+  mumblesCount: initialCount,
+  mumbles: initialMumbles,
   user: user,
 }: ProfilePageProps): InferGetServerSidePropsType<typeof getServerSideProps> {
   const initialState: ProfilePageState = {
-    mumbles: initialMumbles,
+    errorMessage: '',
+    hasMore: initialMumbles.length < initialCount,
     likedMumbles: initialLikes,
     loading: false,
-    count: initialCount,
-    hasMore: initialMumbles.length < initialCount,
+    mumbles: initialMumbles,
+    mumblesCount: initialCount,
     postType: 'mumbles',
   };
   const [state, dispatch] = useReducer(profilPageReducer, initialState);
@@ -94,24 +103,24 @@ export default function ProfilePage({
 
   // TODO Implement a api route for client fetchMumbles
   const loadMore = async () => {
-    dispatch({ type: 'isloading' });
+    dispatch({ type: 'fetch_mumbles' });
     try {
       const { count, mumbles: newMumbles } = await fetchMumbles({
+        creator: user.id,
         limit: 10,
         offset: state.mumbles.length,
         token: session?.accessToken,
-        creator: user.id,
       });
-      dispatch({ type: 'setmumbles', payload: newMumbles });
+      dispatch({ type: 'fetch_mumbles_success', payload: newMumbles });
     } catch (error) {
+      dispatch({ type: 'fetch_mumbles_error', payload: error as string });
       throw new Error(`Unable to load more Mumbles ${error}`);
     }
-    dispatch({ type: 'loaded' });
   };
 
   const mumblesToRender: Record<string, Mumble[]> = {
+    likedMumbles: state.likedMumbles,
     mumbles: state.mumbles,
-    likes: state.likedMumbles,
   };
 
   return (
@@ -152,7 +161,10 @@ export default function ProfilePage({
           </div>
           {isCurrentUser ? (
             <div className="w-fit my-m">
-              <TabNav onTabChange={() => dispatch({ type: 'updateposttype' })} tabNames={['Deine Mumbles', 'Deine Likes']} />
+              <TabNav
+                onTabChange={() => dispatch({ type: 'switch_post_type' })}
+                tabNames={['Deine Mumbles', 'Deine Likes']}
+              />
             </div>
           ) : (
             <div className="w-full my-m text-slate-400">
