@@ -98,19 +98,22 @@ export const fetchRepliesByMumbleId = async (id: string, accessToken: string) =>
   return replies;
 };
 
+// todo: wäre es nicht besser eine allgemeine search Methode zu erstellen?
+// todo: Type erweitern
+type SearchPostsBody = {
+  likedBy: string[];
+  limit: string;
+  offset: string;
+};
 export const fetchLikedMumblesByUserId = async (id: string, accessToken: string, limit?: number, offset?: number) => {
-  const query = {
+  const body: SearchPostsBody = {
     likedBy: [id],
     limit: limit?.toString() || '10',
     offset: offset?.toString() || '0',
   };
 
   try {
-    const { count, data } = await qwackerApi.post<BodyInit, QwackerMumbleResponse>(
-      `posts/search`,
-      accessToken,
-      JSON.stringify({ query })
-    );
+    const { count, data } = await qwackerApi.post<SearchPostsBody, QwackerMumbleResponse>(`posts/search`, accessToken, body);
     const mumbles = await Promise.all(data.map(async (mumble) => await transformApiPostResultToMumble(mumble, accessToken)));
 
     return { mumbles, count };

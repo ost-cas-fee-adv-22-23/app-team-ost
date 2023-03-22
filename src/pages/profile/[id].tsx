@@ -107,6 +107,7 @@ export default function ProfilePage({
   const loadMore = async () => {
     dispatch({ type: 'fetch_mumbles' });
     try {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { count, mumbles: newMumbles } = await fetchMumbles({
         creator: user.id,
         limit: 10,
@@ -230,6 +231,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query: { id 
     const user = await fetchUserById({ id: id as string, accessToken: decodedToken.accessToken });
     const { count, mumbles } = await fetchMumbles({ creator: id as string, token: decodedToken.accessToken });
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { count: likedCount, mumbles: likedMumbles } = await fetchLikedMumblesByUserId(
       id as string,
       decodedToken.accessToken
