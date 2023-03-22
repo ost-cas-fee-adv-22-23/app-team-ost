@@ -65,7 +65,7 @@ const profilPageReducer = (state: ProfilePageState, action: ProfilePageAction): 
     case 'isloading':
       return { ...state, loading: true };
     case 'loaded':
-      return { ...state, loading: true };
+      return { ...state, loading: false };
     case 'updateposttype':
       return { ...state, postType: state.postType == 'mumbles' ? 'likes' : 'mumbles' };
     default:
