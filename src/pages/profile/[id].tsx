@@ -20,6 +20,7 @@ import { fetchMumbles } from '../../services/qwacker-api/posts';
 import { fetchUserById } from '../../services/qwacker-api/users';
 import { Mumble } from '../../types/mumble';
 import { User } from '../../types/user';
+import Link from 'next/link';
 
 type ProfilePageProps = {
   user: User;
@@ -60,6 +61,7 @@ export default function ProfilePage({
               hrefProfile={user.profileUrl}
               joined="Mitglied seit 4 Wochen"
               labelType={UserShortRepresentationLabelType.h3}
+              linkComponent={Link}
               location="St. Gallen"
               onSettingsClick={() => console.log('click')}
               showSettings={isCurrentUser}

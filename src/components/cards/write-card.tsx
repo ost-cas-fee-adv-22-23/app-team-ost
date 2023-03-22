@@ -21,6 +21,7 @@ import {
 } from '@smartive-education/design-system-component-library-team-ost';
 import { useSession } from 'next-auth/react';
 import { ChangeEvent, FC, FormEvent } from 'react';
+import Link from 'next/link';
 
 export enum WriteCardVariant {
   inline = 'inline',
@@ -74,11 +75,12 @@ export const WriteCard: FC<WriteCardProps> = ({ form, variant, handleChange, han
             <UserShortRepresentation
               alt={session.user.username}
               displayName={`${session.user.firstname} ${session?.user.lastname}`}
-              hrefProfile="#"
+              hrefProfile={`../profile/${session.user.id}`}
               labelType={UserShortRepresentationLabelType.m}
-              username={session.user.username}
+              linkComponent={Link}
               profilePictureSize={UserShortRepresentationProfilePictureSize.s}
               src={session.user.avatarUrl ?? ''}
+              username={session.user.username}
             />
             /* todo: Typ des src Props prüfen. avatarUrl ist aktuell nullable. Es muss jedoch zwingend eine src angegeben werden */
             /* todo: Muss der Displayname hier nochmals zusammengesetzt werden? */

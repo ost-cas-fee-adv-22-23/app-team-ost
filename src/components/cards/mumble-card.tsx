@@ -18,6 +18,7 @@ import {
 } from '@smartive-education/design-system-component-library-team-ost';
 import { FC } from 'react';
 import { Mumble } from '../../types/mumble';
+import Link from 'next/link';
 
 // todo: bessere Namen für Variants. Evtl. eigene Components für Variants erstellen
 export enum MumbleCardVariant {
@@ -78,12 +79,14 @@ export const MumbleCard: FC<MumbleCardProps> = ({ variant, mumble }) => {
           <ProfilePicture alt={mumble.creator.userName} size={settings.profilePictureSize} src={mumble.creator.avatarUrl} />
         </div>
       )}
+
       <Stack direction={StackDirection.col} spacing={StackSpacing.s}>
         {variant != MumbleCardVariant.response ? (
           <UserShortRepresentation
             displayName={mumble.creator.displayName}
             hrefProfile={mumble.creator.profileUrl}
             labelType={settings.userShortRepresentationLabelType}
+            linkComponent={Link}
             timestamp={mumble.createdAt}
             username={mumble.creator.userName}
           />
@@ -93,6 +96,7 @@ export const MumbleCard: FC<MumbleCardProps> = ({ variant, mumble }) => {
             displayName={mumble.creator.displayName}
             hrefProfile={mumble.creator.profileUrl}
             labelType={settings.userShortRepresentationLabelType}
+            linkComponent={Link}
             profilePictureSize={settings.userShortRepresentationProfilePictureSize}
             src={mumble.creator.avatarUrl || ''}
             timestamp={mumble.createdAt}
@@ -110,13 +114,7 @@ export const MumbleCard: FC<MumbleCardProps> = ({ variant, mumble }) => {
           src={mumble.mediaUrl}
         />
         <Stack spacing={StackSpacing.m}>
-          <Reply
-            onClick={function noRefCheck() {
-              console.log('click');
-            }}
-            repliesCount={mumble.replyCount ?? 0}
-            withReaction
-          />
+          <Reply href={`/mumble/${mumble.id}`} linkComponent={Link} repliesCount={mumble.replyCount ?? 0} withReaction />
           <Like
             likesCount={mumble.likeCount}
             onClick={function noRefCheck() {
