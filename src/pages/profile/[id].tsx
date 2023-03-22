@@ -176,6 +176,7 @@ export default function ProfilePage({
               </Stack>
             </div>
           )}
+          {/* TODO Prüfen ob mumble oder likedMumble leer sind -> Fallback -> Wenn beides leer ist, dann NewUser Seite anzeigen */}
           {mumblesToRender[state.postType].map((mumble) => (
             <MumbleCard key={mumble.id} variant={MumbleCardVariant.timeline} mumble={mumble} />
           ))}
