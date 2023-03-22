@@ -27,7 +27,12 @@ export enum WriteCardVariant {
   main = 'main', // todo: besserer Name wie main für die Variant finden
 }
 
+// todo: eigene Typen
+// todo: Frage: Ist ein Context für die Übergabe des States schöner?
 type WriteCardProps = {
+  form?: {
+    text: string;
+  };
   variant: WriteCardVariant;
   handleChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   handleSubmit: (e: FormEvent<HTMLFormElement>) => void;
@@ -50,7 +55,7 @@ const writeCardVariantMap: Record<WriteCardVariant, WriteCardVariantMap> = {
 };
 
 //TODO Form handling und Bildupload-Modal integration
-export const WriteCard: FC<WriteCardProps> = ({ variant, handleChange, handleSubmit }) => {
+export const WriteCard: FC<WriteCardProps> = ({ form, variant, handleChange, handleSubmit }) => {
   const settings = writeCardVariantMap[variant] || writeCardVariantMap.inline;
   const { data: session } = useSession();
 
@@ -88,31 +93,31 @@ export const WriteCard: FC<WriteCardProps> = ({ variant, handleChange, handleSub
               placeholder="Und was meinst du dazu?"
               required
               rows={5}
-              value=""
+              value={form?.text || ''}
             />
-          </Form>
 
-          <Stack spacing={StackSpacing.s}>
-            <TextButton
-              color={TextButtonColor.slate}
-              displayMode={TextButtonDisplayMode.fullWidth}
-              icon={<IconUpload />}
-              onClick={() => console.log('bild upload click')}
-              size={TextButtonSize.m}
-            >
-              Bild hochladen
-            </TextButton>
-            <TextButton
-              color={TextButtonColor.violet}
-              displayMode={TextButtonDisplayMode.fullWidth}
-              icon={<IconUpload />}
-              onClick={() => console.log('absenden click')}
-              size={TextButtonSize.m}
-              type="submit"
-            >
-              Absenden
-            </TextButton>
-          </Stack>
+            <Stack spacing={StackSpacing.s}>
+              <TextButton
+                color={TextButtonColor.slate}
+                displayMode={TextButtonDisplayMode.fullWidth}
+                icon={<IconUpload />}
+                onClick={() => console.log('bild upload click')}
+                size={TextButtonSize.m}
+              >
+                Bild hochladen
+              </TextButton>
+              <TextButton
+                color={TextButtonColor.violet}
+                displayMode={TextButtonDisplayMode.fullWidth}
+                icon={<IconUpload />}
+                onClick={() => console.log('absenden click')}
+                size={TextButtonSize.m}
+                type="submit"
+              >
+                Absenden
+              </TextButton>
+            </Stack>
+          </Form>
         </Stack>
       </Card>
     )
