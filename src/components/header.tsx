@@ -11,7 +11,7 @@ import {
 import { SettingsModal } from './modals/settings-modal';
 import { ChangeEvent, FC, FormEvent, ReactElement, useState } from 'react';
 import { FileuploadModal } from './modals/fileupload-modal';
-import { useSession } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 
 type HeaderProps = {
@@ -68,11 +68,7 @@ export const Header: FC<HeaderProps> = () => {
         src={session.user.avatarUrl as string}
       />
       <SettingsButton onClick={() => setIsOpenSettings(true)} />
-      <LogoutButton
-        onClick={() => {
-          console.log('click');
-        }}
-      />
+      <LogoutButton onClick={() => signOut()} />
     </Navigation>
   ) : (
     <Navigation>
