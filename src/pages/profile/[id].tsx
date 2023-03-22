@@ -70,6 +70,7 @@ const profilPageReducer = (state: ProfilePageState, action: ProfilePageAction): 
       return {
         ...state,
         errorMessage: action.payload,
+        loading: false,
       };
     case 'switch_post_type':
       return {
