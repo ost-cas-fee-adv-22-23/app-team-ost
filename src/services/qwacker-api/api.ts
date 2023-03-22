@@ -1,26 +1,35 @@
-export async function request<TResponse>(
-  urlPart: string,
-  token?: string,
-  searchParams?: URLSearchParams
-): Promise<TResponse> {
+type HttpMethods = 'GET' | 'POST' | 'PUT' | 'DELETE';
+
+const buildRequestConfig = (method: HttpMethods, accessToken?: string, body?: BodyInit): RequestInit => {
+  const config: RequestInit = {};
+  config.method = method;
+  config.body = body instanceof FormData ? body : JSON.stringify(body);
+  config.headers = {
+    Accept: 'application/json',
+    Authorization: `Bearer ${accessToken}`,
+    'content-type': 'application/json',
+  };
+
+  if (!accessToken) {
+    delete config.headers['Authorization'];
+  }
+
+  if (body instanceof FormData) {
+    delete config.headers['content-type'];
+  }
+
+  if (!body) {
+    delete config.body;
+  }
+
+  return config;
+};
+
+async function request<TResponse>(urlPart: string, config: RequestInit, searchParams?: URLSearchParams): Promise<TResponse> {
   const url =
     searchParams !== undefined
       ? `${process.env.NEXT_PUBLIC_QWACKER_API_URL}${urlPart}?${searchParams}`
       : `${process.env.NEXT_PUBLIC_QWACKER_API_URL}${urlPart}`;
-
-  const config: RequestInit =
-    token !== undefined && token !== ''
-      ? {
-          headers: {
-            'content-type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      : {
-          headers: {
-            'content-type': 'application/json',
-          },
-        };
 
   try {
     const response = await fetch(url, config);
@@ -32,12 +41,24 @@ export async function request<TResponse>(
 }
 
 export const qwackerApi = {
+  /*
+   * Sends an anonymous GET request to the qwacker api.
+   */
   getWithoutAuth: <TResponse>(urlPart: string, searchParams?: URLSearchParams) =>
-    request<TResponse>(urlPart, undefined, searchParams),
-  get: <TResponse>(urlPart: string, token: string, searchParams?: URLSearchParams) =>
-    request<TResponse>(urlPart, token, searchParams),
-
-  // todo: request Methode und quackerApi um Post erweitern
-  // Using `extends` to set a type constraint:
-  // post: <TBody extends BodyInit, TResponse>(url: string, body: TBody) => request<TResponse>(url, { method: 'POST', body }),
+    request<TResponse>(urlPart, buildRequestConfig('GET'), searchParams),
+  /*
+   * Sends a GET request to the qwacker api. An access token is required.
+   */
+  get: <TResponse>(urlPart: string, accessToken: string, searchParams?: URLSearchParams) =>
+    request<TResponse>(urlPart, buildRequestConfig('GET', accessToken), searchParams),
+  /*
+   * Sends a POST request to the qwacker api. An access token is required.
+   */
+  post: <TBody extends BodyInit, TResponse>(urlPart: string, accessToken: string, body: TBody) =>
+    request<TResponse>(urlPart, buildRequestConfig('POST', accessToken, body)),
+  /*
+   * Sends a POST request with a FormData body to the qwacker api. An access token is required.
+   */
+  postFormData: <TResponse>(urlPart: string, accessToken: string, body: FormData) =>
+    qwackerApi.post<FormData, TResponse>(urlPart, accessToken, body),
 };

@@ -34,6 +34,7 @@ type QwackerMumbleResponse = {
 export type UploadImage = File & { preview: string };
 
 // todo: Eigener Typ für QueryParams
+// todo: Schreibweise params vereinheitlichen
 // todo: Neuer Type erstellen für ReturnType (count: number, mumbles: Mumble[]), da count benötigt wird
 export const fetchMumbles = async (params?: {
   token?: string;
@@ -64,35 +65,23 @@ export const fetchMumbles = async (params?: {
   }
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const postMumble = async (text: string, file: UploadImage | null, accessToken?: string) => {
-  /*  if (!accessToken) {
-    throw new Error('No access token');
-  }
+// todo: Interface für CreateParameters
+export const postMumble = async (text: string, file: UploadImage | null, accessToken: string) => {
+  // todo: prüfen ob ein Text gesetzt ist
+  const formDataBody = new FormData();
+  formDataBody.append('text', text);
 
-  const formData = new FormData();
-  formData.append('text', text);
   if (file) {
-    formData.append('image', file);
+    formDataBody.append('image', file);
   }
-
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_QWACKER_API_URL}posts`, {
-      method: 'POST',
-      body: formData,
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-    if (!response.ok) {
-      throw new Error('Something was not okay');
-    }
-
-    return transformApiPostResultToMumble(await response.json());
+    const postResult = await qwackerApi.postFormData<Post>(`posts`, accessToken, formDataBody);
+    const mumble = await transformApiPostResultToMumble(postResult, accessToken);
+    return mumble;
   } catch (error) {
-    throw new Error(error instanceof Error ? error.message : 'Could not post mumble');
+    // todo: Handle any error happened.
+    throw new Error('Something was not okay');
   }
-  */
 };
 
 export const fetchMumbleById = async (id: string, accessToken: string) => {

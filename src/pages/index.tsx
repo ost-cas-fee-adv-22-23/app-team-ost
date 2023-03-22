@@ -18,10 +18,10 @@ import Head from 'next/head';
 import { MumbleCard, MumbleCardVariant } from '../components/cards/mumble-card';
 import { Mumble } from '../types/mumble';
 import { WriteCard, WriteCardVariant } from '../components/cards/write-card';
-import { fetchMumbles } from '../services/qwacker-api/posts';
+import { fetchMumbles, postMumble } from '../services/qwacker-api/posts';
 import { getToken } from 'next-auth/jwt';
 import { useSession } from 'next-auth/react';
-import { useState } from 'react';
+import { ChangeEvent, useState } from 'react';
 
 type PageProps = {
   count: number;
@@ -40,6 +40,23 @@ export default function PageHome({
   const [hasMore, setHasMore] = useState(initialMumbles.length < count);
 
   const { data: session } = useSession();
+
+  const [form, setForm] = useState({
+    text: '',
+  });
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async () => {
+    const newMumble = await postMumble(form.text, null, session?.accessToken as string);
+    console.warn('handleSubmit', newMumble);
+    // todo: update state
+  };
 
   const loadMore = async () => {
     const { count, mumbles: newMumbles } = await fetchMumbles({
@@ -70,11 +87,13 @@ export default function PageHome({
         <Stack direction={StackDirection.col} spacing={StackSpacing.s} withDivider={true}>
           <>
             {/* eslint-disable-next-line @typescript-eslint/no-empty-function */}
+            {/* STATE AKTUALISIEREN UND PROXY API CALL*/}
             {session && (
               <WriteCard
+                form={form}
                 variant={WriteCardVariant.main}
-                handleChange={() => console.log('click')}
-                handleSubmit={() => console.log('click')}
+                handleChange={handleChange}
+                handleSubmit={handleSubmit}
               />
             )}
             {mumbles.map((mumble) => (
