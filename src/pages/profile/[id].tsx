@@ -27,7 +27,7 @@ import { useSession } from 'next-auth/react';
 import { useReducer } from 'react';
 import { MumbleCard, MumbleCardVariant } from '../../components/cards/mumble-card';
 import MainLayout from '../../components/layouts/main-layout';
-import { fetchMumbles } from '../../services/qwacker-api/posts';
+import { fetchLikedMumblesByUserId, fetchMumbles } from '../../services/qwacker-api/posts';
 import { fetchUserById } from '../../services/qwacker-api/users';
 import { Mumble } from '../../types/mumble';
 import { User } from '../../types/user';
@@ -219,53 +219,40 @@ export default function ProfilePage({
 
 export const getServerSideProps: GetServerSideProps = async ({ req, query: { id } }) => {
   try {
-    const token = await getToken({ req });
-    if (!token) {
-      throw new Error('No token found');
+    const decodedToken = await getToken({ req });
+    if (!decodedToken || !decodedToken.accessToken) {
+      throw new Error('No decodedToken found');
     }
     if (!id) {
       throw new Error('No id found');
     }
-    const user = await fetchUserById({ id: id as string, accessToken: token.accessToken });
-    const { count, mumbles } = await fetchMumbles({ creator: id as string, token: token.accessToken });
-    // const { count: likedCount, mumbles: likes } = await searchMumbles({
-    //   likedBy: id as string,
-    //   token: token.accessToken,
-    // });
 
-    //TODO integrate searchMumbles by LikedBy
-    const likedMumbles: Mumble[] = [
-      {
-        id: '01GW2GR85REHE19SHTW019R54K',
-        creator: {
-          id: '201164885894103297',
-          userName: 'mthomann',
-          firstName: 'Martin',
-          lastName: 'Thomann',
-          avatarUrl:
-            'https://cas-fee-advanced-ocvdad.zitadel.cloud/assets/v1/179828644300980481/users/201164885894103297/avatar?v=4e270c9e1b43fdcc701bcc315d75ebec',
-          displayName: 'Martin Thomann',
-          profileUrl: '/profile/201164885894103297',
-        },
-        text: 'Hello World! #test',
-        mediaUrl: '',
-        mediaType: '',
-        likeCount: 0,
-        likedByUser: false,
-        type: 'post',
-        replyCount: 1,
-        createdAt: '2023-03-21T16:41:33.624Z',
-      },
-    ];
-    const likedCount = 1;
+    const user = await fetchUserById({ id: id as string, accessToken: decodedToken.accessToken });
+    const { count, mumbles } = await fetchMumbles({ creator: id as string, token: decodedToken.accessToken });
+
+    const { count: likedCount, mumbles: likedMumbles } = await fetchLikedMumblesByUserId(
+      id as string,
+      decodedToken.accessToken
+    );
+
+    console.log(likedMumbles);
+
+    // if (likedCount === 0 && likedMumbles.length === 0) {
+    //   return {
+    //     redirect: {
+    //       destination: '/newuser',
+    //       permanent: false,
+    //     },
+    //   };
+    // }
 
     return {
       props: {
         user,
         count,
         mumbles,
-        likedMumbles,
-        likedCount,
+        // likedMumbles,
+        // likedCount,
       },
     };
   } catch (error) {

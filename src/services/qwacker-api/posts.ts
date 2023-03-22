@@ -98,6 +98,28 @@ export const fetchRepliesByMumbleId = async (id: string, accessToken: string) =>
   return replies;
 };
 
+export const fetchLikedMumblesByUserId = async (id: string, accessToken: string, limit?: number, offset?: number) => {
+  const query = {
+    likedBy: [id],
+    limit: limit?.toString() || '10',
+    offset: offset?.toString() || '0',
+  };
+
+  try {
+    const { count, data } = await qwackerApi.post<BodyInit, QwackerMumbleResponse>(
+      `posts/search`,
+      accessToken,
+      JSON.stringify({ query })
+    );
+    const mumbles = await Promise.all(data.map(async (mumble) => await transformApiPostResultToMumble(mumble, accessToken)));
+
+    return { mumbles, count };
+  } catch (error) {
+    // todo: Handle any error happened.
+    throw new Error('Something was not okay - fetchLikedMumblesByUserId');
+  }
+};
+
 const transformApiPostResultToMumble = async (mumble: ApiPostResult, token?: string): Promise<Mumble> => {
   const creator = await fetchUserById({ id: mumble.creator as string, accessToken: token });
   return {
