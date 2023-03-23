@@ -30,9 +30,6 @@ type QwackerMumbleResponse = {
   data: ApiPostResult[];
 };
 
-// todo: Braucht es diesen noch? Type verschieben? Muss er exportiert werden?
-export type UploadImage = File & { preview: string };
-
 // todo: Eigener Typ für QueryParams
 // todo: Schreibweise params vereinheitlichen
 // todo: Neuer Type erstellen für ReturnType (count: number, mumbles: Mumble[]), da count benötigt wird
@@ -45,7 +42,7 @@ export const fetchMumbles = async (params?: {
 }): Promise<{ count: number; mumbles: Mumble[] }> => {
   const { token, limit, offset, newerThanMumbleId, creator } = params || {};
   const searchParams = new URLSearchParams({
-    limit: limit?.toString() || '10',
+    limit: limit?.toString() || '1',
     offset: offset?.toString() || '0',
     newerThan: newerThanMumbleId || '',
     creator: creator || '',
@@ -64,6 +61,8 @@ export const fetchMumbles = async (params?: {
     throw new Error('Something was not okay');
   }
 };
+
+type UploadImage = File & { preview: string };
 
 // todo: Interface für CreateParameters
 export const postMumble = async (text: string, file: UploadImage | null, accessToken: string) => {
@@ -98,19 +97,49 @@ export const fetchRepliesByMumbleId = async (id: string, accessToken: string) =>
   return replies;
 };
 
-// todo: wäre es nicht besser eine allgemeine search Methode zu erstellen?
-// todo: Type erweitern
 type SearchPostsBody = {
-  likedBy: string[];
-  limit: string;
-  offset: string;
+  isReply?: boolean;
+  likedBy?: string[];
+  limit?: number;
+  mentions?: string[];
+  offset?: number;
+  tags?: string[];
+  text?: string;
 };
-export const fetchLikedMumblesByUserId = async (id: string, accessToken: string, limit?: number, offset?: number) => {
+
+export const fetchMumblesSearch = async (params: {
+  accessToken: string;
+  isReply?: boolean;
+  limit?: number;
+  mentions?: string;
+  offset?: number;
+  tags?: string;
+  text?: string;
+  userid?: string;
+}) => {
+  const { accessToken, isReply, limit, mentions, offset, tags, text, userid } = params || {};
+
   const body: SearchPostsBody = {
-    likedBy: [id],
-    limit: limit?.toString() || '10',
-    offset: offset?.toString() || '0',
+    limit: limit || 1,
+    offset: offset || 0,
   };
+
+  // todo: gibt es einen besseren Weg nur Variablen die nicht null sind zuzufügen
+  if (isReply != null) {
+    body.isReply = isReply;
+  }
+  if (mentions != null) {
+    body.mentions = [mentions];
+  }
+  if (tags != null) {
+    body.tags = [tags];
+  }
+  if (text != null) {
+    body.text = text;
+  }
+  if (userid != null) {
+    body.likedBy = [userid];
+  }
 
   try {
     const { count, data } = await qwackerApi.post<SearchPostsBody, QwackerMumbleResponse>(`posts/search`, accessToken, body);
