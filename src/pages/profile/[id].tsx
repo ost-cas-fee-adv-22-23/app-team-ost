@@ -87,7 +87,7 @@ const profilPageReducer = (state: ProfilePageState, action: ProfilePageAction): 
     case 'switch_post_type':
       return {
         ...state,
-        postType: state.postType == 'mumbles' ? 'likedMumbles' : 'mumbles',
+        postType: state.postType === 'mumbles' ? 'likedMumbles' : 'mumbles',
       };
     default:
       throw new Error(`Unknown action type`);
