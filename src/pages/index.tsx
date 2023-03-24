@@ -41,8 +41,8 @@ export default function PageHome({
 
   const { data: session } = useSession();
 
-  const [file, setFile] = useState<File | null>(null)
-  const [fileError, setFileError] = useState('')
+  const [file, setFile] = useState<File | null>(null);
+  const [fileError, setFileError] = useState('');
   const [form, setForm] = useState({
     text: '',
   });
@@ -58,14 +58,14 @@ export default function PageHome({
     setFileError('');
     if (!file.type.match('image/jpeg|image/jpg|image/png|image/gif')) {
       setFileError('Falsches Bildformat - Probiers mit JPEG, PNG oder einem GIF');
-      return
+      return;
     }
-    if(file.size > 2000000) {
-      setFileError('Maximale Dateigrösse ist 2MB')
-      return
+    if (file.size > 2000000) {
+      setFileError('Maximale Dateigrösse ist 2MB');
+      return;
     }
     setFile(file);
-  }
+  };
 
   const handleSubmit = async () => {
     const newMumble = await postMumble(form.text, file, session?.accessToken as string);

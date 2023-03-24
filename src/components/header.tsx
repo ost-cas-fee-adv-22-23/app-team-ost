@@ -38,8 +38,8 @@ export const Header: FC<HeaderProps> = () => {
   };
 
   const handleProfileButtonClick = () => {
-    router.push(`/profile/${session?.user.id}`)
-  }
+    router.push(`/profile/${session?.user.id}`);
+  };
 
   const handleSubmitSettings = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();

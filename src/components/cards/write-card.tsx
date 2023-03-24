@@ -59,7 +59,15 @@ const writeCardVariantMap: Record<WriteCardVariant, WriteCardVariantMap> = {
   },
 };
 
-export const WriteCard: FC<WriteCardProps> = ({ form, variant, handleChange, handleFileChange, file, fileError, handleSubmit }) => {
+export const WriteCard: FC<WriteCardProps> = ({
+  form,
+  variant,
+  handleChange,
+  handleFileChange,
+  file,
+  fileError,
+  handleSubmit,
+}) => {
   const settings = writeCardVariantMap[variant] || writeCardVariantMap.inline;
   const { data: session } = useSession();
   const [isOpenFileUpload, setIsOpenFileUpload] = useState(false);
