@@ -41,6 +41,8 @@ export default function PageHome({
 
   const { data: session } = useSession();
 
+  const [file, setFile] = useState<File | null>(null)
+  const [fileError, setFileError] = useState('')
   const [form, setForm] = useState({
     text: '',
   });
@@ -52,8 +54,21 @@ export default function PageHome({
     });
   };
 
+  const handleFileChange = (file: File) => {
+    setFileError('');
+    if (!file.type.match('image/jpeg|image/jpg|image/png|image/gif')) {
+      setFileError('Falsches Bildformat - Probiers mit JPEG, PNG oder einem GIF');
+      return
+    }
+    if(file.size > 2000000) {
+      setFileError('Maximale Dateigrösse ist 2MB')
+      return
+    }
+    setFile(file);
+  }
+
   const handleSubmit = async () => {
-    const newMumble = await postMumble(form.text, null, session?.accessToken as string);
+    const newMumble = await postMumble(form.text, file, session?.accessToken as string);
     console.warn('handleSubmit', newMumble);
     // todo: update state
   };
@@ -93,6 +108,9 @@ export default function PageHome({
                 form={form}
                 variant={WriteCardVariant.main}
                 handleChange={handleChange}
+                handleFileChange={handleFileChange}
+                file={file}
+                fileError={fileError}
                 handleSubmit={handleSubmit}
               />
             )}

@@ -30,8 +30,9 @@ type QwackerMumbleResponse = {
   data: ApiPostResult[];
 };
 
-// todo: Braucht es diesen noch? Type verschieben? Muss er exportiert werden?
-export type UploadImage = File & { preview: string };
+// todo: Braucht es das preview string?
+// export type UploadImage = File & { preview: string };
+type UploadImage = File;
 
 // todo: Eigener Typ für QueryParams
 // todo: Schreibweise params vereinheitlichen

@@ -20,6 +20,8 @@ import { FC } from 'react';
 import { Mumble } from '../../types/mumble';
 import Link from 'next/link';
 
+const BASE_URL = process.env.NEXT_PUBLIC_URL;
+
 // todo: bessere Namen für Variants. Evtl. eigene Components für Variants erstellen
 export enum MumbleCardVariant {
   detailpage = 'detailpage',
@@ -122,7 +124,7 @@ export const MumbleCard: FC<MumbleCardProps> = ({ variant, mumble }) => {
             }}
             withReaction
           />
-          <Share linkToCopy="https://www.fcsg.ch/" />
+          <Share linkToCopy={`${BASE_URL}mumble/${mumble.id}`} />
         </Stack>
       </Stack>
     </Card>

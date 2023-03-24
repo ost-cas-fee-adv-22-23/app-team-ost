@@ -20,8 +20,9 @@ import {
   UserShortRepresentationProfilePictureSize,
 } from '@smartive-education/design-system-component-library-team-ost';
 import { useSession } from 'next-auth/react';
-import { ChangeEvent, FC, FormEvent } from 'react';
+import { ChangeEvent, FC, FormEvent, useState } from 'react';
 import Link from 'next/link';
+import { FileuploadModal } from '../modals/fileupload-modal';
 
 export enum WriteCardVariant {
   inline = 'inline',
@@ -36,6 +37,9 @@ type WriteCardProps = {
   };
   variant: WriteCardVariant;
   handleChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  handleFileChange: (file: File) => void;
+  file: File | null;
+  fileError: string;
   handleSubmit: (e: FormEvent<HTMLFormElement>) => void;
 };
 
@@ -55,10 +59,10 @@ const writeCardVariantMap: Record<WriteCardVariant, WriteCardVariantMap> = {
   },
 };
 
-//TODO Form handling und Bildupload-Modal integration
-export const WriteCard: FC<WriteCardProps> = ({ form, variant, handleChange, handleSubmit }) => {
+export const WriteCard: FC<WriteCardProps> = ({ form, variant, handleChange, handleFileChange, file, fileError, handleSubmit }) => {
   const settings = writeCardVariantMap[variant] || writeCardVariantMap.inline;
   const { data: session } = useSession();
+  const [isOpenFileUpload, setIsOpenFileUpload] = useState(false);
 
   return (
     session && (
@@ -103,7 +107,7 @@ export const WriteCard: FC<WriteCardProps> = ({ form, variant, handleChange, han
                 color={TextButtonColor.slate}
                 displayMode={TextButtonDisplayMode.fullWidth}
                 icon={<IconUpload />}
-                onClick={() => console.log('bild upload click')}
+                onClick={() => setIsOpenFileUpload(true)}
                 size={TextButtonSize.m}
               >
                 Bild hochladen
@@ -121,6 +125,13 @@ export const WriteCard: FC<WriteCardProps> = ({ form, variant, handleChange, han
             </Stack>
           </Form>
         </Stack>
+        <FileuploadModal
+          handleChange={handleFileChange}
+          isOpen={isOpenFileUpload}
+          setIsOpen={setIsOpenFileUpload}
+          file={file}
+          fileError={fileError}
+        />
       </Card>
     )
   );
