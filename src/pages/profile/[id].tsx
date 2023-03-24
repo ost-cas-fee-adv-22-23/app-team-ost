@@ -27,7 +27,7 @@ import { useSession } from 'next-auth/react';
 import { useReducer } from 'react';
 import { MumbleCard, MumbleCardVariant } from '../../components/cards/mumble-card';
 import MainLayout from '../../components/layouts/main-layout';
-import { fetchMumbles } from '../../services/qwacker-api/posts';
+import { fetchMumbles, fetchMumblesSearch } from '../../services/qwacker-api/posts';
 import { fetchUserById } from '../../services/qwacker-api/users';
 import { Mumble } from '../../types/mumble';
 import { User } from '../../types/user';
@@ -35,17 +35,20 @@ import Link from 'next/link';
 
 type ProfilePageProps = {
   likedMumbles: Mumble[];
-  mumblesCount: number;
+  likedCount: number;
+  count: number;
   mumbles: Mumble[];
   user: User;
 };
 
 type ProfilePageState = {
   errorMessage: string;
-  hasMore: boolean;
   likedMumbles: Mumble[];
+  likedCount: number;
+  likedhasMore: boolean;
   loading: boolean;
   mumblesCount: number;
+  mumblesHasMore: boolean;
   mumbles: Mumble[];
   postType: 'mumbles' | 'likedMumbles';
 };
@@ -53,6 +56,7 @@ type ProfilePageState = {
 type ProfilePageAction =
   | { type: 'fetch_mumbles' }
   | { type: 'fetch_mumbles_success'; payload: Mumble[] }
+  | { type: 'fetch_likes_success'; payload: Mumble[] }
   | { type: 'fetch_mumbles_error'; payload: string }
   | { type: 'switch_post_type' };
 
@@ -63,7 +67,7 @@ const profilPageReducer = (state: ProfilePageState, action: ProfilePageAction): 
     case 'fetch_mumbles_success':
       return {
         ...state,
-        hasMore: state.mumbles.length + action.payload.length < state.mumblesCount,
+        mumblesHasMore: state.mumbles.length + action.payload.length < state.mumblesCount,
         loading: false,
         mumbles: [...state.mumbles, ...action.payload],
       };
@@ -73,10 +77,17 @@ const profilPageReducer = (state: ProfilePageState, action: ProfilePageAction): 
         errorMessage: action.payload,
         loading: false,
       };
+    case 'fetch_likes_success':
+      return {
+        ...state,
+        likedhasMore: state.likedMumbles.length + action.payload.length < state.likedCount,
+        loading: false,
+        likedMumbles: [...state.likedMumbles, ...action.payload],
+      };
     case 'switch_post_type':
       return {
         ...state,
-        postType: state.postType == 'mumbles' ? 'likedMumbles' : 'mumbles',
+        postType: state.postType === 'mumbles' ? 'likedMumbles' : 'mumbles',
       };
     default:
       throw new Error(`Unknown action type`);
@@ -85,17 +96,20 @@ const profilPageReducer = (state: ProfilePageState, action: ProfilePageAction): 
 
 export default function ProfilePage({
   likedMumbles: initialLikes,
-  mumblesCount: initialCount,
+  likedCount: initialLikesCount,
+  count: initialCount,
   mumbles: initialMumbles,
   user: user,
 }: ProfilePageProps): InferGetServerSidePropsType<typeof getServerSideProps> {
   const initialState: ProfilePageState = {
     errorMessage: '',
-    hasMore: initialMumbles.length < initialCount,
     likedMumbles: initialLikes,
+    likedCount: initialLikesCount,
+    likedhasMore: initialLikes.length < initialLikesCount,
     loading: false,
     mumbles: initialMumbles,
     mumblesCount: initialCount,
+    mumblesHasMore: initialMumbles.length < initialCount,
     postType: 'mumbles',
   };
   const [state, dispatch] = useReducer(profilPageReducer, initialState);
@@ -103,20 +117,44 @@ export default function ProfilePage({
   const { data: session } = useSession();
   const isCurrentUser = user.id === session?.user.id;
 
-  // TODO Implement a api route for client fetchMumbles
   const loadMore = async () => {
     dispatch({ type: 'fetch_mumbles' });
     try {
-      const { count, mumbles: newMumbles } = await fetchMumbles({
-        creator: user.id,
-        limit: 10,
-        offset: state.mumbles.length,
-        token: session?.accessToken,
-      });
-      dispatch({ type: 'fetch_mumbles_success', payload: newMumbles });
+      if (!session || !session.accessToken) {
+        throw new Error('No decodedToken found');
+      }
+      if (state.postType === 'mumbles') {
+        // todo: create api functions/services for next/api?
+        const urlParams = new URLSearchParams();
+        urlParams.set('creator', user.id);
+        urlParams.set('olderThan', state.mumbles[state.mumbles.length - 1].id);
+        const res = await fetch(`/api/posts/loadmore?${urlParams}`);
+        if (res.status === 200) {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { count, mumbles: newMumbles } = await res.json();
+          dispatch({ type: 'fetch_mumbles_success', payload: newMumbles });
+        } else {
+          throw new Error('Unable to load more Mumbles');
+        }
+      }
+      if (state.postType === 'likedMumbles') {
+        // todo: create api functions/services for next/api?
+        const urlParams = new URLSearchParams();
+        urlParams.set('userid', user.id);
+        urlParams.set('offset', state.likedMumbles.length.toString());
+
+        const res = await fetch(`/api/posts/searchmore?${urlParams}`);
+        if (res.status === 200) {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { count, mumbles: newMumbles } = await res.json();
+          dispatch({ type: 'fetch_likes_success', payload: newMumbles });
+        } else {
+          throw new Error('Unable to load more Mumbles');
+        }
+      }
     } catch (error) {
       dispatch({ type: 'fetch_mumbles_error', payload: error as string });
-      throw new Error(`Unable to load more Mumbles ${error}`);
+      throw new Error(`Error: ${error}`);
     }
   };
 
@@ -191,16 +229,18 @@ export default function ProfilePage({
               </Stack>
             </div>
           )}
-          {/* TODO Prüfen ob mumble oder likedMumble leer sind -> Fallback -> Wenn beides leer ist, dann NewUser Seite anzeigen */}
-          {mumblesToRender[state.postType].map((mumble) => (
-            <MumbleCard key={mumble.id} variant={MumbleCardVariant.timeline} mumble={mumble} />
-          ))}
-          {/* We decided to show the load-more button only for mumbles and not for likes, 
-          as we the api endpoint (post/search) we use for getting the likes doesn't provide an offset and limit */}
-          {state.hasMore && state.postType == 'mumbles' && (
+          {mumblesToRender[state.postType].length > 0 ? (
+            mumblesToRender[state.postType].map((mumble) => (
+              <MumbleCard key={mumble.id} variant={MumbleCardVariant.timeline} mumble={mumble} />
+            ))
+          ) : (
+            <Label size={LabelSize.l}>Ziemlich leer hier</Label>
+          )}
+          {((state.mumblesHasMore && state.postType === 'mumbles') ||
+            (state.likedhasMore && state.postType === 'likedMumbles')) && (
             <Stack alignItems={StackAlignItems.center} justifyContent={StackJustifyContent.center} spacing={StackSpacing.xl}>
               <TextButton
-                ariaLabel="Start mumble"
+                ariaLabel="Load more mumbles"
                 color={TextButtonColor.gradient}
                 displayMode={TextButtonDisplayMode.inline}
                 icon={<IconMumble />}
@@ -219,45 +259,30 @@ export default function ProfilePage({
 
 export const getServerSideProps: GetServerSideProps = async ({ req, query: { id } }) => {
   try {
-    const token = await getToken({ req });
-    if (!token) {
-      throw new Error('No token found');
+    const decodedToken = await getToken({ req });
+    if (!decodedToken || !decodedToken.accessToken) {
+      throw new Error('No decodedToken found');
     }
     if (!id) {
       throw new Error('No id found');
     }
-    const user = await fetchUserById({ id: id as string, accessToken: token.accessToken });
-    const { count, mumbles } = await fetchMumbles({ creator: id as string, token: token.accessToken });
-    // const { count: likedCount, mumbles: likes } = await searchMumbles({
-    //   likedBy: id as string,
-    //   token: token.accessToken,
-    // });
 
-    //TODO integrate searchMumbles by LikedBy
-    const likedMumbles: Mumble[] = [
-      {
-        id: '01GW2GR85REHE19SHTW019R54K',
-        creator: {
-          id: '201164885894103297',
-          userName: 'mthomann',
-          firstName: 'Martin',
-          lastName: 'Thomann',
-          avatarUrl:
-            'https://cas-fee-advanced-ocvdad.zitadel.cloud/assets/v1/179828644300980481/users/201164885894103297/avatar?v=4e270c9e1b43fdcc701bcc315d75ebec',
-          displayName: 'Martin Thomann',
-          profileUrl: '/profile/201164885894103297',
+    const user = await fetchUserById({ id: id as string, accessToken: decodedToken.accessToken });
+    const { count, mumbles } = await fetchMumbles({ creator: id as string, token: decodedToken.accessToken });
+
+    const { count: likedCount, mumbles: likedMumbles } = await fetchMumblesSearch({
+      accessToken: decodedToken.accessToken,
+      userid: id as string,
+    });
+
+    if (mumbles.length === 0 && likedMumbles.length === 0) {
+      return {
+        redirect: {
+          destination: '/newuser',
+          permanent: false,
         },
-        text: 'Hello World! #test',
-        mediaUrl: '',
-        mediaType: '',
-        likeCount: 0,
-        likedByUser: false,
-        type: 'post',
-        replyCount: 1,
-        createdAt: '2023-03-21T16:41:33.624Z',
-      },
-    ];
-    const likedCount = 1;
+      };
+    }
 
     return {
       props: {

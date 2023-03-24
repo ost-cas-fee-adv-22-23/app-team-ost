@@ -1,6 +1,10 @@
 type HttpMethods = 'GET' | 'POST' | 'PUT' | 'DELETE';
 
-const buildRequestConfig = (method: HttpMethods, accessToken?: string, body?: BodyInit): RequestInit => {
+const buildRequestConfig = (
+  method: HttpMethods,
+  accessToken?: string,
+  body?: BodyInit | Record<string, unknown>
+): RequestInit => {
   const config: RequestInit = {};
   config.method = method;
   config.body = body instanceof FormData ? body : JSON.stringify(body);
@@ -54,7 +58,7 @@ export const qwackerApi = {
   /*
    * Sends a POST request to the qwacker api. An access token is required.
    */
-  post: <TBody extends BodyInit, TResponse>(urlPart: string, accessToken: string, body: TBody) =>
+  post: <TBody extends BodyInit | Record<string, unknown>, TResponse>(urlPart: string, accessToken: string, body: TBody) =>
     request<TResponse>(urlPart, buildRequestConfig('POST', accessToken, body)),
   /*
    * Sends a POST request with a FormData body to the qwacker api. An access token is required.
