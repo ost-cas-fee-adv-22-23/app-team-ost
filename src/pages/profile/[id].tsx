@@ -117,7 +117,6 @@ export default function ProfilePage({
   const { data: session } = useSession();
   const isCurrentUser = user.id === session?.user.id;
 
-  // TODO Implement a api route for client fetchMumbles
   const loadMore = async () => {
     dispatch({ type: 'fetch_mumbles' });
     try {
@@ -125,28 +124,37 @@ export default function ProfilePage({
         throw new Error('No decodedToken found');
       }
       if (state.postType === 'mumbles') {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { count, mumbles: newMumbles } = await fetchMumbles({
-          creator: user.id,
-          limit: 10,
-          offset: state.mumbles.length,
-          token: session.accessToken,
-        });
-        dispatch({ type: 'fetch_mumbles_success', payload: newMumbles });
+        // todo: create api functions/services for next/api?
+        const urlParams = new URLSearchParams();
+        urlParams.set('creator', user.id);
+        urlParams.set('olderThan', state.mumbles[state.mumbles.length - 1].id);
+        const res = await fetch(`/api/posts/loadmore?${urlParams}`);
+        if (res.status === 200) {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { count, mumbles: newMumbles } = await res.json();
+          dispatch({ type: 'fetch_mumbles_success', payload: newMumbles });
+        } else {
+          throw new Error('Unable to load more Mumbles');
+        }
       }
       if (state.postType === 'likedMumbles') {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { count, mumbles: newLikes } = await fetchMumblesSearch({
-          userid: user.id,
-          limit: 10,
-          offset: state.likedMumbles.length,
-          accessToken: session.accessToken,
-        });
-        dispatch({ type: 'fetch_likes_success', payload: newLikes });
+        // todo: create api functions/services for next/api?
+        const urlParams = new URLSearchParams();
+        urlParams.set('userid', user.id);
+        urlParams.set('offset', state.likedMumbles.length.toString());
+
+        const res = await fetch(`/api/posts/searchmore?${urlParams}`);
+        if (res.status === 200) {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { count, mumbles: newMumbles } = await res.json();
+          dispatch({ type: 'fetch_likes_success', payload: newMumbles });
+        } else {
+          throw new Error('Unable to load more Mumbles');
+        }
       }
     } catch (error) {
       dispatch({ type: 'fetch_mumbles_error', payload: error as string });
-      throw new Error(`Unable to load more Mumbles ${error}`);
+      throw new Error(`Error: ${error}`);
     }
   };
 
