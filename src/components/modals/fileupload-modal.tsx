@@ -19,17 +19,17 @@ type FileuploadProps = {
   isOpen: boolean;
   setIsOpen: (e: boolean) => void;
   file: File | null;
-  fileError: string;
+  fileInputError: string;
 };
 
-export const FileuploadModal: FC<FileuploadProps> = ({ handleChange, isOpen, file, fileError, setIsOpen }) => {
+export const FileuploadModal: FC<FileuploadProps> = ({ handleChange, isOpen, file, fileInputError, setIsOpen }) => {
   return (
     <Modal isOpen={isOpen} modalType={ModalType.wide} title="Bild hochladen" onClose={() => setIsOpen(false)}>
       <Fileinput
         description="JPEG oder PNG, maximal 5 MB"
         onAddFile={(file) => handleChange(file)}
         title="Datei hierhin ziehen"
-        errorMessage={fileError}
+        errorMessage={fileInputError}
       ></Fileinput>
       <Stack direction={StackDirection.row} spacing={StackSpacing.xs}>
         <TextButton
@@ -49,7 +49,7 @@ export const FileuploadModal: FC<FileuploadProps> = ({ handleChange, isOpen, fil
           icon={<IconCheckmark />}
           onClick={() => setIsOpen(false)}
           size={TextButtonSize.m}
-          disabled={!file || fileError != '' ? true : false}
+          disabled={!file || fileInputError != '' ? true : false}
         >
           Speichern
         </TextButton>

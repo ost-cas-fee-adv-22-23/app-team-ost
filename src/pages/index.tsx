@@ -21,68 +21,172 @@ import { WriteCard, WriteCardVariant } from '../components/cards/write-card';
 import { fetchMumbles, postMumble } from '../services/qwacker-api/posts';
 import { getToken } from 'next-auth/jwt';
 import { useSession } from 'next-auth/react';
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, FormEvent, useReducer } from 'react';
+import { validateFileinput } from '../helpers/validate-fileinput';
 
 type PageProps = {
   count: number;
   mumbles: Mumble[];
 };
 
+type FeedPageState = {
+  hasMore: boolean;
+  loading: boolean;
+  mumblesCount: number;
+  mumbles: Mumble[];
+  fileInputError: string;
+  formInputError: string;
+  form: {
+    file: File | null;
+    textinput: string;
+  };
+  formIsSubmitting: boolean;
+};
+
+type FeedPageAction =
+  | { type: 'fetch_mumbles' }
+  | { type: 'fetch_mumbles_error'; payload: string }
+  | { type: 'fetch_mumbles_success'; payload: Mumble[] }
+  | { type: 'file_change_valid'; payload: File }
+  | { type: 'file_change_invalid'; payload: string }
+  | { type: 'file_change_reset' }
+  | { type: 'form_change'; payload: string }
+  | { type: 'submit_form' }
+  | { type: 'submit_form_success'; payload: Mumble }
+  | { type: 'submit_form_error'; payload: string };
+
+const profilPageReducer = (state: FeedPageState, action: FeedPageAction): FeedPageState => {
+  switch (action.type) {
+    case 'fetch_mumbles':
+      return { ...state, loading: true };
+    case 'fetch_mumbles_error':
+      return {
+        ...state,
+        formInputError: action.payload,
+        loading: false,
+      };
+    case 'fetch_mumbles_success':
+      return {
+        ...state,
+        hasMore: state.mumbles.length + action.payload.length < state.mumblesCount,
+        loading: false,
+        mumbles: [...state.mumbles, ...action.payload],
+      };
+    case 'file_change_valid':
+      return {
+        ...state,
+        form: {
+          ...state.form,
+          file: action.payload,
+        },
+      };
+    case 'file_change_invalid':
+      return {
+        ...state,
+        form: {
+          ...state.form,
+          file: null,
+        },
+        fileInputError: action.payload,
+      };
+    case 'file_change_reset':
+      return {
+        ...state,
+        form: {
+          ...state.form,
+          file: null,
+        },
+        fileInputError: '',
+      };
+    case 'form_change':
+      return {
+        ...state,
+        form: {
+          ...state.form,
+          textinput: action.payload,
+        },
+      };
+    case 'submit_form':
+      return {
+        ...state,
+        formIsSubmitting: true,
+      };
+    case 'submit_form_success':
+      return {
+        ...state,
+        mumbles: [action.payload, ...state.mumbles],
+        formIsSubmitting: false,
+        form: {
+          file: null,
+          textinput: '',
+        },
+      };
+    default:
+      throw new Error(`Unknown action type`);
+  }
+};
+
 export default function PageHome({
   count: initialCount,
   mumbles: initialMumbles,
 }: PageProps): InferGetStaticPropsType<typeof getServerSideProps> {
-  // todo: reducer statt useState verwenden
-  const [mumbles, setMumbles] = useState(initialMumbles);
-  const [loading, setLoading] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [count, setCount] = useState(initialCount);
-  const [hasMore, setHasMore] = useState(initialMumbles.length < count);
+  const initialState: FeedPageState = {
+    hasMore: initialMumbles.length < initialCount,
+    loading: false,
+    mumbles: initialMumbles,
+    mumblesCount: initialCount,
+    fileInputError: '',
+    formInputError: '',
+    form: {
+      file: null,
+      textinput: '',
+    },
+    formIsSubmitting: false,
+  };
+  const [state, dispatch] = useReducer(profilPageReducer, initialState);
 
+  //todo: pass session from server with getServerSession (is used to show the writecard)
   const { data: session } = useSession();
 
-  const [file, setFile] = useState<File | null>(null);
-  const [fileError, setFileError] = useState('');
-  const [form, setForm] = useState({
-    text: '',
-  });
-
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
+    //todo validate textinput
+    dispatch({ type: 'form_change', payload: e.target.value });
   };
 
   const handleFileChange = (file: File) => {
-    setFileError('');
-    if (!file.type.match('image/jpeg|image/jpg|image/png|image/gif')) {
-      setFileError('Falsches Bildformat - Probiers mit JPEG, PNG oder einem GIF');
-      return;
-    }
-    if (file.size > 2000000) {
-      setFileError('Maximale Dateigrösse ist 2MB');
-      return;
-    }
-    setFile(file);
+    dispatch({ type: 'file_change_reset' });
+
+    const validationResult = validateFileinput(file);
+    validationResult.valid
+      ? dispatch({ type: 'file_change_valid', payload: file })
+      : dispatch({ type: 'file_change_invalid', payload: validationResult.message });
   };
 
-  const handleSubmit = async () => {
-    const newMumble = await postMumble(form.text, file, session?.accessToken as string);
-    console.warn('handleSubmit', newMumble);
-    // todo: update state
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    dispatch({ type: 'submit_form' });
+    //todo: postMumble über next page/api aufrufen
+    try {
+      const newMumble = await postMumble(state.form.textinput, state.form.file, session?.accessToken as string);
+      dispatch({ type: 'submit_form_success', payload: newMumble });
+    } catch (error) {
+      dispatch({ type: 'submit_form_error', payload: `Ein Fehler ist aufgetreten: ${error}` });
+    }
   };
 
   const loadMore = async () => {
-    const { count, mumbles: newMumbles } = await fetchMumbles({
-      limit: 10,
-      offset: mumbles.length,
-      token: session?.accessToken,
-    });
-
-    setLoading(false);
-    setHasMore(mumbles.length + newMumbles.length < count);
-    setMumbles([...mumbles, ...newMumbles]);
+    dispatch({ type: 'fetch_mumbles' });
+    try {
+      const { count, mumbles: newMumbles } = await fetchMumbles({
+        limit: 10,
+        offset: state.mumbles.length,
+        token: session?.accessToken,
+      });
+      dispatch({ type: 'fetch_mumbles_success', payload: newMumbles });
+    } catch (error) {
+      dispatch({ type: 'fetch_mumbles_error', payload: error as string });
+      throw new Error(`Unable to load more Mumbles ${error}`);
+    }
   };
 
   return (
@@ -92,7 +196,7 @@ export default function PageHome({
           <title>Mumble Home</title>
         </Head>
         <div className="text-violet-600 pt-l">
-          <Heading headingLevel={HeadingSize.h1}>Willkommen auf Mumble {count}</Heading>
+          <Heading headingLevel={HeadingSize.h1}>Willkommen auf Mumble</Heading>
         </div>
         <div className="text-slate-500 pt-xs pb-l">
           <Heading headingLevel={HeadingSize.h4}>
@@ -105,19 +209,20 @@ export default function PageHome({
             {/* STATE AKTUALISIEREN UND PROXY API CALL*/}
             {session && (
               <WriteCard
-                form={form}
+                form={state.form}
                 variant={WriteCardVariant.main}
                 handleChange={handleChange}
                 handleFileChange={handleFileChange}
-                file={file}
-                fileError={fileError}
+                file={state.form.file}
+                fileInputError={state.fileInputError}
                 handleSubmit={handleSubmit}
+                isSubmitting={state.formIsSubmitting}
               />
             )}
-            {mumbles.map((mumble) => (
+            {state.mumbles.map((mumble) => (
               <MumbleCard key={mumble.id} variant={MumbleCardVariant.timeline} mumble={mumble} />
             ))}
-            {hasMore && (
+            {state.hasMore && (
               <Stack
                 alignItems={StackAlignItems.center}
                 justifyContent={StackJustifyContent.center}
@@ -131,7 +236,7 @@ export default function PageHome({
                   onClick={() => loadMore()}
                   size={TextButtonSize.l}
                 >
-                  {loading ? '...' : 'Weitere Mumbles laden'}
+                  {state.loading ? '...' : 'Weitere Mumbles laden'}
                 </TextButton>
               </Stack>
             )}

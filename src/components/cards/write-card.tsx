@@ -32,15 +32,16 @@ export enum WriteCardVariant {
 // todo: eigene Typen
 // todo: Frage: Ist ein Context für die Übergabe des States schöner?
 type WriteCardProps = {
-  form?: {
-    text: string;
+  form: {
+    textinput: string;
   };
   variant: WriteCardVariant;
   handleChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   handleFileChange: (file: File) => void;
   file: File | null;
-  fileError: string;
+  fileInputError: string;
   handleSubmit: (e: FormEvent<HTMLFormElement>) => void;
+  isSubmitting: boolean;
 };
 
 type WriteCardVariantMap = {
@@ -65,12 +66,18 @@ export const WriteCard: FC<WriteCardProps> = ({
   handleChange,
   handleFileChange,
   file,
-  fileError,
+  fileInputError,
   handleSubmit,
+  isSubmitting,
 }) => {
   const settings = writeCardVariantMap[variant] || writeCardVariantMap.inline;
   const { data: session } = useSession();
   const [isOpenFileUpload, setIsOpenFileUpload] = useState(false);
+
+  const submitClick = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log('submit click');
+  };
 
   return (
     session && (
@@ -107,7 +114,8 @@ export const WriteCard: FC<WriteCardProps> = ({
               placeholder="Und was meinst du dazu?"
               required
               rows={5}
-              value={form?.text || ''}
+              value={form.textinput}
+              disabled={isSubmitting}
             />
 
             <Stack spacing={StackSpacing.s}>
@@ -117,6 +125,7 @@ export const WriteCard: FC<WriteCardProps> = ({
                 icon={<IconUpload />}
                 onClick={() => setIsOpenFileUpload(true)}
                 size={TextButtonSize.m}
+                type="button"
               >
                 Bild hochladen
               </TextButton>
@@ -124,7 +133,7 @@ export const WriteCard: FC<WriteCardProps> = ({
                 color={TextButtonColor.violet}
                 displayMode={TextButtonDisplayMode.fullWidth}
                 icon={<IconUpload />}
-                onClick={() => console.log('absenden click')}
+                onClick={() => submitClick}
                 size={TextButtonSize.m}
                 type="submit"
               >
@@ -138,7 +147,7 @@ export const WriteCard: FC<WriteCardProps> = ({
           isOpen={isOpenFileUpload}
           setIsOpen={setIsOpenFileUpload}
           file={file}
-          fileError={fileError}
+          fileInputError={fileInputError}
         />
       </Card>
     )
