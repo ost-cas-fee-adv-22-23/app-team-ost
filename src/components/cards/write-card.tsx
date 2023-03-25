@@ -30,15 +30,15 @@ export enum WriteCardVariant {
 }
 
 // todo: eigene Typen
-// todo: Frage: Ist ein Context für die Übergabe des States schöner?
 type WriteCardProps = {
   form: {
+    textinputError: string;
     textinput: string;
+    file: File | null;
   };
   variant: WriteCardVariant;
   handleChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   handleFileChange: (file: File) => void;
-  file: File | null;
   fileInputError: string;
   handleSubmit: (e: FormEvent<HTMLFormElement>) => void;
   isSubmitting: boolean;
@@ -65,7 +65,6 @@ export const WriteCard: FC<WriteCardProps> = ({
   variant,
   handleChange,
   handleFileChange,
-  file,
   fileInputError,
   handleSubmit,
   isSubmitting,
@@ -108,14 +107,14 @@ export const WriteCard: FC<WriteCardProps> = ({
           <Form handleSubmit={handleSubmit}>
             <Textarea
               ariaLabel="Und was meinst du dazu?"
-              errorMessage=""
-              name="text"
+              disabled={isSubmitting}
+              errorMessage={form.textinputError}
+              name="textinput"
               onChange={handleChange}
               placeholder="Und was meinst du dazu?"
               required
               rows={5}
               value={form.textinput}
-              disabled={isSubmitting}
             />
 
             <Stack spacing={StackSpacing.s}>
@@ -131,6 +130,7 @@ export const WriteCard: FC<WriteCardProps> = ({
               </TextButton>
               <TextButton
                 color={TextButtonColor.violet}
+                disabled={isSubmitting}
                 displayMode={TextButtonDisplayMode.fullWidth}
                 icon={<IconUpload />}
                 onClick={() => submitClick}
@@ -146,7 +146,7 @@ export const WriteCard: FC<WriteCardProps> = ({
           handleChange={handleFileChange}
           isOpen={isOpenFileUpload}
           setIsOpen={setIsOpenFileUpload}
-          file={file}
+          file={form.file}
           fileInputError={fileInputError}
         />
       </Card>

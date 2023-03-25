@@ -39,6 +39,7 @@ type FeedPageState = {
   form: {
     file: File | null;
     textinput: string;
+    textinputError: string;
   };
   formIsSubmitting: boolean;
 };
@@ -119,7 +120,12 @@ const profilPageReducer = (state: FeedPageState, action: FeedPageAction): FeedPa
         form: {
           file: null,
           textinput: '',
+          textinputError: '',
         },
+      };
+    case 'submit_form_error':
+      return {
+        ...state,
       };
     default:
       throw new Error(`Unknown action type`);
@@ -140,6 +146,7 @@ export default function PageHome({
     form: {
       file: null,
       textinput: '',
+      textinputError: '',
     },
     formIsSubmitting: false,
   };
@@ -210,13 +217,12 @@ export default function PageHome({
             {session && (
               <WriteCard
                 form={state.form}
-                variant={WriteCardVariant.main}
                 handleChange={handleChange}
                 handleFileChange={handleFileChange}
-                file={state.form.file}
                 fileInputError={state.fileInputError}
                 handleSubmit={handleSubmit}
                 isSubmitting={state.formIsSubmitting}
+                variant={WriteCardVariant.main}
               />
             )}
             {state.mumbles.map((mumble) => (
