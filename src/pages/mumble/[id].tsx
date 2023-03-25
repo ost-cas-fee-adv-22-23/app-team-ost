@@ -3,7 +3,7 @@ import MainLayout from '../../components/layouts/main-layout';
 import { MumbleCard, MumbleCardVariant } from '../../components/cards/mumble-card';
 import { WriteCard, WriteCardVariant } from '../../components/cards/write-card';
 import { Stack, StackDirection, StackSpacing } from '@smartive-education/design-system-component-library-team-ost';
-import { fetchMumbleById, fetchRepliesByMumbleId, postMumble, postReply } from '../../services/qwacker-api/posts';
+import { fetchMumbleById, fetchRepliesByMumbleId, postReply } from '../../services/qwacker-api/posts';
 import { Mumble } from '../../types/mumble';
 import { getToken } from 'next-auth/jwt';
 import { ChangeEvent, FormEvent, useReducer } from 'react';
@@ -98,6 +98,7 @@ const profilPageReducer = (state: FeedPageState, action: FeedPageAction): FeedPa
   }
 };
 
+//Todo: Reset reducer on navigation to a detailpage of a 'submumble'/reply
 export default function MumblePage(props: MumblePageProps): InferGetServerSidePropsType<typeof getServerSideProps> {
   const initialState: FeedPageState = {
     mumble: props.mumble,
