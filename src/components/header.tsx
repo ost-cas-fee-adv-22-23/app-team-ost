@@ -66,7 +66,6 @@ export const Header: FC<HeaderProps> = () => {
         alt={session.user.username}
         aria-label="edit profile picture"
         imageComponent={Image}
-        // imageComponentArgs={{fill: true, sizes: "3.125rem"}}
         imageComponentArgs={{ width: 50, height: 50 }}
         onClick={() => setIsOpenFileUpload(true)}
         src={session.user.avatarUrl as string}
