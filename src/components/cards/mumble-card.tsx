@@ -19,6 +19,7 @@ import {
 import { FC } from 'react';
 import { Mumble } from '../../types/mumble';
 import Link from 'next/link';
+import { timeAgo } from '../../helpers/time-ago';
 
 // todo: bessere Namen für Variants. Evtl. eigene Components für Variants erstellen
 export enum MumbleCardVariant {
@@ -87,7 +88,7 @@ export const MumbleCard: FC<MumbleCardProps> = ({ variant, mumble }) => {
             hrefProfile={mumble.creator.profileUrl}
             labelType={settings.userShortRepresentationLabelType}
             linkComponent={Link}
-            timestamp={mumble.createdAt}
+            timestamp={timeAgo(mumble.createdAt)}
             username={mumble.creator.userName}
           />
         ) : (
@@ -99,7 +100,7 @@ export const MumbleCard: FC<MumbleCardProps> = ({ variant, mumble }) => {
             linkComponent={Link}
             profilePictureSize={settings.userShortRepresentationProfilePictureSize}
             src={mumble.creator.avatarUrl || ''}
-            timestamp={mumble.createdAt}
+            timestamp={timeAgo(mumble.createdAt)}
             username={mumble.creator.userName}
           />
         )}
