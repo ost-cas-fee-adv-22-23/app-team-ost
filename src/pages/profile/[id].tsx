@@ -32,6 +32,7 @@ import { fetchUserById } from '../../services/qwacker-api/users';
 import { Mumble } from '../../types/mumble';
 import { User } from '../../types/user';
 import Link from 'next/link';
+import Image from 'next/image';
 
 type ProfilePageProps = {
   likedMumbles: Mumble[];
@@ -171,6 +172,10 @@ export default function ProfilePage({
             <ProfileBanner
               alt={user.userName}
               canEdit={isCurrentUser}
+              imageComponent={Image}
+              fill
+              priority
+              sizes={'(max-width: 640px) 100vw, 50vw'}
               onEditClick={() => console.log('click')}
               src="https://newinzurich.com/wp-content/uploads/2013/09/55769975_2481568891894108_3190627635357024256_o-compressed.jpg"
             />
@@ -178,6 +183,9 @@ export default function ProfilePage({
               <ProfilePicture
                 alt={user.userName}
                 canEdit={isCurrentUser}
+                imageComponent={Image}
+                width={200}
+                height={200}
                 onEditClick={() => console.log('click')}
                 size={ProfilePictureSize.xl}
                 src={user.avatarUrl}

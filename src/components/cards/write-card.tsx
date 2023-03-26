@@ -22,6 +22,7 @@ import {
 import { useSession } from 'next-auth/react';
 import { ChangeEvent, FC, FormEvent } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export enum WriteCardVariant {
   inline = 'inline',
@@ -65,7 +66,14 @@ export const WriteCard: FC<WriteCardProps> = ({ form, variant, handleChange, han
       <Card borderRadiusType={settings.borderRadiusType} isInteractive={settings.isInteractive}>
         {variant === WriteCardVariant.main && (
           <div className="absolute -left-l top-m">
-            <ProfilePicture alt={session.user.username} size={ProfilePictureSize.m} src={session.user.avatarUrl} />
+            <ProfilePicture
+              alt={session.user.username}
+              imageComponent={Image}
+              width={80}
+              height={80}
+              size={ProfilePictureSize.m}
+              src={session.user.avatarUrl}
+            />
           </div>
         )}
         <Stack direction={StackDirection.col} spacing={StackSpacing.s}>
@@ -76,6 +84,8 @@ export const WriteCard: FC<WriteCardProps> = ({ form, variant, handleChange, han
               alt={session.user.username}
               displayName={`${session.user.firstname} ${session?.user.lastname}`}
               hrefProfile={`../profile/${session.user.id}`}
+              imageComponent={Image}
+              imageComponentArgs={{ width: 50, height: 50 }}
               labelType={UserShortRepresentationLabelType.m}
               linkComponent={Link}
               profilePictureSize={UserShortRepresentationProfilePictureSize.s}

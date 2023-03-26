@@ -13,6 +13,7 @@ import { ChangeEvent, FC, FormEvent, ReactElement, useState } from 'react';
 import { FileuploadModal } from './modals/fileupload-modal';
 import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 type HeaderProps = {
   children?: ReactElement;
@@ -59,11 +60,14 @@ export const Header: FC<HeaderProps> = () => {
     setIsOpenFileUpload(false);
   };
 
-  const navgation = session ? (
+  const navigation = session ? (
     <Navigation>
       <ProfilePictureButton
         alt={session.user.username}
-        aria-label="Edit profilepicture"
+        aria-label="edit profile picture"
+        imageComponent={Image}
+        // imageComponentArgs={{fill: true, sizes: "3.125rem"}}
+        imageComponentArgs={{ width: 50, height: 50 }}
         onClick={() => setIsOpenFileUpload(true)}
         src={session.user.avatarUrl as string}
       />
@@ -84,14 +88,9 @@ export const Header: FC<HeaderProps> = () => {
     <PageHeader>
       <div className="flex items-center justify-between w-full sm:w-7/12">
         <div className="h-10">
-          <MumbleWhiteHorizontal
-            ariaLabel="Go to mumble"
-            onClick={() => {
-              console.log('click');
-            }}
-          />
+          <MumbleWhiteHorizontal ariaLabel="Go to mumble" linkComponent={Link} href={'/'} renderWithLink />
         </div>
-        {navgation}
+        {navigation}
       </div>
       <SettingsModal
         form={form}
