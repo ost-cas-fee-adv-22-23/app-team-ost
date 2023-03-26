@@ -39,7 +39,7 @@ type WriteCardProps = {
   variant: WriteCardVariant;
   handleChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   handleFileChange: (file: File) => void;
-  fileInputError: string;
+  fileinputError: string;
   handleSubmit: (e: FormEvent<HTMLFormElement>) => void;
   isSubmitting: boolean;
 };
@@ -65,7 +65,7 @@ export const WriteCard: FC<WriteCardProps> = ({
   variant,
   handleChange,
   handleFileChange,
-  fileInputError,
+  fileinputError,
   handleSubmit,
   isSubmitting,
 }) => {
@@ -147,7 +147,7 @@ export const WriteCard: FC<WriteCardProps> = ({
           isOpen={isOpenFileUpload}
           setIsOpen={setIsOpenFileUpload}
           file={form.file}
-          fileInputError={fileInputError}
+          fileInputError={fileinputError}
         />
       </Card>
     )

@@ -15,11 +15,11 @@ type MumblePageProps = {
   replies: Mumble[];
 };
 
-type FeedPageState = {
+type MumblePageState = {
   mumble: Mumble;
   replies: Mumble[];
-  fileInputError: string;
-  replyInputError: string;
+  fileinputError: string;
+  replyinputError: string;
   reply: {
     file: File | null;
     textinput: string;
@@ -28,7 +28,7 @@ type FeedPageState = {
   replyIsSubmitting: boolean;
 };
 
-type FeedPageAction =
+type MumblePageAction =
   | { type: 'file_change_valid'; payload: File }
   | { type: 'file_change_invalid'; payload: string }
   | { type: 'file_change_reset' }
@@ -37,7 +37,7 @@ type FeedPageAction =
   | { type: 'submit_reply_success'; payload: Mumble }
   | { type: 'submit_reply_error'; payload: string };
 
-const profilPageReducer = (state: FeedPageState, action: FeedPageAction): FeedPageState => {
+const mumblePageReducer = (state: MumblePageState, action: MumblePageAction): MumblePageState => {
   switch (action.type) {
     case 'file_change_valid':
       return {
@@ -54,7 +54,7 @@ const profilPageReducer = (state: FeedPageState, action: FeedPageAction): FeedPa
           ...state.reply,
           file: null,
         },
-        fileInputError: action.payload,
+        fileinputError: action.payload,
       };
     case 'file_change_reset':
       return {
@@ -63,7 +63,7 @@ const profilPageReducer = (state: FeedPageState, action: FeedPageAction): FeedPa
           ...state.reply,
           file: null,
         },
-        fileInputError: '',
+        fileinputError: '',
       };
     case 'reply_change':
       return {
@@ -100,11 +100,11 @@ const profilPageReducer = (state: FeedPageState, action: FeedPageAction): FeedPa
 
 //Todo: Reset reducer on navigation to a detailpage of a 'submumble'/reply
 export default function MumblePage(props: MumblePageProps): InferGetServerSidePropsType<typeof getServerSideProps> {
-  const initialState: FeedPageState = {
+  const initialState: MumblePageState = {
     mumble: props.mumble,
     replies: props.replies,
-    fileInputError: '',
-    replyInputError: '',
+    fileinputError: '',
+    replyinputError: '',
     reply: {
       file: null,
       textinput: '',
@@ -112,7 +112,7 @@ export default function MumblePage(props: MumblePageProps): InferGetServerSidePr
     },
     replyIsSubmitting: false,
   };
-  const [state, dispatch] = useReducer(profilPageReducer, initialState);
+  const [state, dispatch] = useReducer(mumblePageReducer, initialState);
   const { data: session } = useSession();
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -155,7 +155,7 @@ export default function MumblePage(props: MumblePageProps): InferGetServerSidePr
           form={state.reply}
           handleChange={handleChange}
           handleFileChange={handleFileChange}
-          fileInputError={state.fileInputError}
+          fileinputError={state.fileinputError}
           handleSubmit={handleSubmit}
           isSubmitting={state.replyIsSubmitting}
           variant={WriteCardVariant.main}

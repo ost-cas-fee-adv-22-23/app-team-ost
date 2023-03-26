@@ -34,8 +34,8 @@ type FeedPageState = {
   loading: boolean;
   mumblesCount: number;
   mumbles: Mumble[];
-  fileInputError: string;
-  formInputError: string;
+  fileinputError: string;
+  forminputError: string;
   form: {
     file: File | null;
     textinput: string;
@@ -63,7 +63,7 @@ const profilPageReducer = (state: FeedPageState, action: FeedPageAction): FeedPa
     case 'fetch_mumbles_error':
       return {
         ...state,
-        formInputError: action.payload,
+        forminputError: action.payload,
         loading: false,
       };
     case 'fetch_mumbles_success':
@@ -88,7 +88,7 @@ const profilPageReducer = (state: FeedPageState, action: FeedPageAction): FeedPa
           ...state.form,
           file: null,
         },
-        fileInputError: action.payload,
+        fileinputError: action.payload,
       };
     case 'file_change_reset':
       return {
@@ -97,7 +97,7 @@ const profilPageReducer = (state: FeedPageState, action: FeedPageAction): FeedPa
           ...state.form,
           file: null,
         },
-        fileInputError: '',
+        fileinputError: '',
       };
     case 'form_change':
       return {
@@ -141,8 +141,8 @@ export default function PageHome({
     loading: false,
     mumbles: initialMumbles,
     mumblesCount: initialCount,
-    fileInputError: '',
-    formInputError: '',
+    fileinputError: '',
+    forminputError: '',
     form: {
       file: null,
       textinput: '',
@@ -219,7 +219,7 @@ export default function PageHome({
                 form={state.form}
                 handleChange={handleChange}
                 handleFileChange={handleFileChange}
-                fileInputError={state.fileInputError}
+                fileinputError={state.fileinputError}
                 handleSubmit={handleSubmit}
                 isSubmitting={state.formIsSubmitting}
                 variant={WriteCardVariant.main}

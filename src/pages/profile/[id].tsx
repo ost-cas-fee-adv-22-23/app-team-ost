@@ -60,7 +60,7 @@ type ProfilePageAction =
   | { type: 'fetch_mumbles_error'; payload: string }
   | { type: 'switch_post_type' };
 
-const profilPageReducer = (state: ProfilePageState, action: ProfilePageAction): ProfilePageState => {
+const profilePageReducer = (state: ProfilePageState, action: ProfilePageAction): ProfilePageState => {
   switch (action.type) {
     case 'fetch_mumbles':
       return { ...state, loading: true };
@@ -112,7 +112,7 @@ export default function ProfilePage({
     mumblesHasMore: initialMumbles.length < initialCount,
     postType: 'mumbles',
   };
-  const [state, dispatch] = useReducer(profilPageReducer, initialState);
+  const [state, dispatch] = useReducer(profilePageReducer, initialState);
 
   const { data: session } = useSession();
   const isCurrentUser = user.id === session?.user.id;
