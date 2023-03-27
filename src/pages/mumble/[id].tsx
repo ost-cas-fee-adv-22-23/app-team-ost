@@ -6,7 +6,7 @@ import { Stack, StackDirection, StackSpacing } from '@smartive-education/design-
 import { fetchMumbleById, fetchRepliesByMumbleId, postReply } from '../../services/qwacker-api/posts';
 import { Mumble } from '../../types/mumble';
 import { getToken } from 'next-auth/jwt';
-import { ChangeEvent, FormEvent, useReducer } from 'react';
+import { ChangeEvent, FormEvent, useEffect, useReducer } from 'react';
 import { validateFileinput } from '../../helpers/validate-fileinput';
 import { useSession } from 'next-auth/react';
 
@@ -29,6 +29,7 @@ type MumblePageState = {
 };
 
 type MumblePageAction =
+  | { type: 'reinitialize'; payload: { mumble: Mumble; replies: Mumble[] } }
   | { type: 'file_change_valid'; payload: File }
   | { type: 'file_change_invalid'; payload: string }
   | { type: 'file_change_reset' }
@@ -39,6 +40,20 @@ type MumblePageAction =
 
 const mumblePageReducer = (state: MumblePageState, action: MumblePageAction): MumblePageState => {
   switch (action.type) {
+    case 'reinitialize': {
+      return {
+        mumble: action.payload.mumble,
+        replies: action.payload.replies,
+        fileinputError: '',
+        replyinputError: '',
+        reply: {
+          file: null,
+          textinput: '',
+          textinputError: '',
+        },
+        replyIsSubmitting: false,
+      };
+    }
     case 'file_change_valid':
       return {
         ...state,
@@ -113,6 +128,11 @@ export default function MumblePage(props: MumblePageProps): InferGetServerSidePr
     replyIsSubmitting: false,
   };
   const [state, dispatch] = useReducer(mumblePageReducer, initialState);
+
+  useEffect(() => {
+    dispatch({ type: 'reinitialize', payload: props });
+  }, [props]);
+
   const { data: session } = useSession();
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {

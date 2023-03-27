@@ -24,7 +24,7 @@ import {
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import { getToken } from 'next-auth/jwt';
 import { useSession } from 'next-auth/react';
-import { useReducer } from 'react';
+import { useEffect, useReducer } from 'react';
 import { MumbleCard, MumbleCardVariant } from '../../components/cards/mumble-card';
 import MainLayout from '../../components/layouts/main-layout';
 import { fetchMumbles, fetchMumblesSearch } from '../../services/qwacker-api/posts';
@@ -55,6 +55,10 @@ type ProfilePageState = {
 };
 
 type ProfilePageAction =
+  | {
+      type: 'reinitialize';
+      payload: { likedMumbles: Mumble[]; likedCount: number; count: number; mumbles: Mumble[]; user: User };
+    }
   | { type: 'fetch_mumbles' }
   | { type: 'fetch_mumbles_success'; payload: Mumble[] }
   | { type: 'fetch_likes_success'; payload: Mumble[] }
@@ -63,6 +67,19 @@ type ProfilePageAction =
 
 const profilePageReducer = (state: ProfilePageState, action: ProfilePageAction): ProfilePageState => {
   switch (action.type) {
+    case 'reinitialize': {
+      return {
+        errorMessage: '',
+        likedMumbles: action.payload.likedMumbles,
+        likedCount: action.payload.likedCount,
+        likedhasMore: action.payload.likedMumbles.length < action.payload.likedCount,
+        loading: false,
+        mumbles: action.payload.mumbles,
+        mumblesCount: action.payload.count,
+        mumblesHasMore: action.payload.mumbles.length < action.payload.count,
+        postType: 'mumbles',
+      };
+    }
     case 'fetch_mumbles':
       return { ...state, loading: true };
     case 'fetch_mumbles_success':
@@ -95,28 +112,26 @@ const profilePageReducer = (state: ProfilePageState, action: ProfilePageAction):
   }
 };
 
-export default function ProfilePage({
-  likedMumbles: initialLikes,
-  likedCount: initialLikesCount,
-  count: initialCount,
-  mumbles: initialMumbles,
-  user: user,
-}: ProfilePageProps): InferGetServerSidePropsType<typeof getServerSideProps> {
+export default function ProfilePage(props: ProfilePageProps): InferGetServerSidePropsType<typeof getServerSideProps> {
   const initialState: ProfilePageState = {
     errorMessage: '',
-    likedMumbles: initialLikes,
-    likedCount: initialLikesCount,
-    likedhasMore: initialLikes.length < initialLikesCount,
+    likedMumbles: props.likedMumbles,
+    likedCount: props.likedCount,
+    likedhasMore: props.likedMumbles.length < props.likedCount,
     loading: false,
-    mumbles: initialMumbles,
-    mumblesCount: initialCount,
-    mumblesHasMore: initialMumbles.length < initialCount,
+    mumbles: props.mumbles,
+    mumblesCount: props.count,
+    mumblesHasMore: props.mumbles.length < props.count,
     postType: 'mumbles',
   };
   const [state, dispatch] = useReducer(profilePageReducer, initialState);
 
+  useEffect(() => {
+    dispatch({ type: 'reinitialize', payload: props });
+  }, [props]);
+
   const { data: session } = useSession();
-  const isCurrentUser = user.id === session?.user.id;
+  const isCurrentUser = props.user.id === session?.user.id;
 
   const loadMore = async () => {
     dispatch({ type: 'fetch_mumbles' });
@@ -127,7 +142,7 @@ export default function ProfilePage({
       if (state.postType === 'mumbles') {
         // todo: create api functions/services for next/api?
         const urlParams = new URLSearchParams();
-        urlParams.set('creator', user.id);
+        urlParams.set('creator', props.user.id);
         urlParams.set('olderThan', state.mumbles[state.mumbles.length - 1].id);
         const res = await fetch(`/api/posts/loadmore?${urlParams}`);
         if (res.status === 200) {
@@ -141,7 +156,7 @@ export default function ProfilePage({
       if (state.postType === 'likedMumbles') {
         // todo: create api functions/services for next/api?
         const urlParams = new URLSearchParams();
-        urlParams.set('userid', user.id);
+        urlParams.set('userid', props.user.id);
         urlParams.set('offset', state.likedMumbles.length.toString());
 
         const res = await fetch(`/api/posts/searchmore?${urlParams}`);
@@ -170,7 +185,7 @@ export default function ProfilePage({
         <Stack direction={StackDirection.col} spacing={StackSpacing.s}>
           <div className="relative">
             <ProfileBanner
-              alt={user.userName}
+              alt={props.user.userName}
               canEdit={isCurrentUser}
               imageComponent={Image}
               fill
@@ -181,32 +196,32 @@ export default function ProfilePage({
             />
             <div className="absolute -bottom-20 right-8">
               <ProfilePicture
-                alt={user.userName}
+                alt={props.user.userName}
                 canEdit={isCurrentUser}
                 imageComponent={Image}
                 width={200}
                 height={200}
                 onEditClick={() => console.log('click')}
                 size={ProfilePictureSize.xl}
-                src={user.avatarUrl}
+                src={props.user.avatarUrl}
               />
             </div>
           </div>
           <div className="text-slate-900>">
             <UserShortRepresentation
-              displayName={user.displayName}
-              hrefProfile={user.profileUrl}
+              displayName={props.user.displayName}
+              hrefProfile={props.user.profileUrl}
               joined="Mitglied seit 4 Wochen"
               labelType={UserShortRepresentationLabelType.h3}
               linkComponent={Link}
               location="St. Gallen"
               onSettingsClick={() => console.log('click')}
               showSettings={isCurrentUser}
-              username={user.userName}
+              username={props.user.userName}
             />
           </div>
           <div className="text-slate-400">
-            <Paragraph size={ParagraphSize.m}>{user.bio || 'Dies ist meine Bio'}</Paragraph>
+            <Paragraph size={ParagraphSize.m}>{props.user.bio || 'Dies ist meine Bio'}</Paragraph>
           </div>
           {isCurrentUser ? (
             <div className="w-fit my-m">
@@ -223,7 +238,7 @@ export default function ProfilePage({
                 spacing={StackSpacing.s}
                 justifyContent={StackJustifyContent.flexend}
               >
-                <Label size={LabelSize.m}>Folge {user.displayName}</Label>
+                <Label size={LabelSize.m}>Folge {props.user.displayName}</Label>
                 <TextButton
                   ariaLabel="Folgen"
                   color={TextButtonColor.slate}
