@@ -19,6 +19,7 @@ import {
 import { FC } from 'react';
 import { Mumble } from '../../types/mumble';
 import Link from 'next/link';
+import Image from 'next/image';
 import { timeAgo } from '../../helpers/time-ago';
 
 const BASE_URL = process.env.NEXT_PUBLIC_URL;
@@ -77,14 +78,21 @@ export const MumbleCard: FC<MumbleCardProps> = ({ variant, mumble }) => {
 
   return (
     <Card borderRadiusType={settings.borderRadiusType} isInteractive={settings.isInteractive}>
-      {variant != MumbleCardVariant.response && (
+      {variant !== MumbleCardVariant.response && (
         <div className="absolute -left-l">
-          <ProfilePicture alt={mumble.creator.userName} size={settings.profilePictureSize} src={mumble.creator.avatarUrl} />
+          <ProfilePicture
+            alt={mumble.creator.userName}
+            imageComponent={Image}
+            width={80}
+            height={80}
+            size={settings.profilePictureSize}
+            src={mumble.creator.avatarUrl}
+          />
         </div>
       )}
 
       <Stack direction={StackDirection.col} spacing={StackSpacing.s}>
-        {variant != MumbleCardVariant.response ? (
+        {variant !== MumbleCardVariant.response ? (
           <UserShortRepresentation
             displayName={mumble.creator.displayName}
             hrefProfile={mumble.creator.profileUrl}
@@ -98,6 +106,8 @@ export const MumbleCard: FC<MumbleCardProps> = ({ variant, mumble }) => {
             alt={mumble.creator.userName}
             displayName={mumble.creator.displayName}
             hrefProfile={mumble.creator.profileUrl}
+            imageComponent={Image}
+            imageComponentArgs={{ width: 50, height: 50 }}
             labelType={settings.userShortRepresentationLabelType}
             linkComponent={Link}
             profilePictureSize={settings.userShortRepresentationProfilePictureSize}
@@ -109,13 +119,20 @@ export const MumbleCard: FC<MumbleCardProps> = ({ variant, mumble }) => {
         <div className="text-slate-900">
           <Paragraph size={settings.textSize}>{mumble.text}</Paragraph>
         </div>
-        <ImageContainer
-          alt={mumble.text}
-          onClick={function noRefCheck() {
-            console.log('click');
-          }}
-          src={mumble.mediaUrl}
-        />
+        {mumble.mediaUrl !== null && (
+          <ImageContainer
+            alt={mumble.text}
+            imageComponent={Image}
+            fill
+            priority
+            sizes="(max-width: 640px) 100vw,
+              50vw"
+            onClick={function noRefCheck() {
+              console.log('click');
+            }}
+            src={mumble.mediaUrl ?? ''}
+          />
+        )}
         <Stack spacing={StackSpacing.m}>
           <Reply href={`/mumble/${mumble.id}`} linkComponent={Link} repliesCount={mumble.replyCount ?? 0} withReaction />
           <Like

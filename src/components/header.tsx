@@ -12,6 +12,7 @@ import { SettingsModal } from './modals/settings-modal';
 import { ChangeEvent, FC, FormEvent, ReactElement, useState } from 'react';
 import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/router';
 
 type HeaderProps = {
@@ -49,12 +50,14 @@ export const Header: FC<HeaderProps> = () => {
     setIsOpenSettings(false);
   };
 
-  const navgation = session ? (
+  const navigation = session ? (
     <Navigation>
       {/* We decided to navigate on the profile picture to the profilepage */}
       <ProfilePictureButton
         alt={session.user.username}
-        aria-label="Edit profilepicture"
+        aria-label="edit profile picture"
+        imageComponent={Image}
+        imageComponentArgs={{ width: 50, height: 50 }}
         onClick={handleProfileButtonClick}
         src={session.user.avatarUrl as string}
       />
@@ -75,14 +78,9 @@ export const Header: FC<HeaderProps> = () => {
     <PageHeader>
       <div className="flex items-center justify-between w-full sm:w-7/12">
         <div className="h-10">
-          <MumbleWhiteHorizontal
-            ariaLabel="Go to mumble"
-            onClick={() => {
-              console.log('click');
-            }}
-          />
+          <MumbleWhiteHorizontal ariaLabel="Go to mumble" linkComponent={Link} href={'/'} renderWithLink />
         </div>
-        {navgation}
+        {navigation}
       </div>
       <SettingsModal
         form={form}
