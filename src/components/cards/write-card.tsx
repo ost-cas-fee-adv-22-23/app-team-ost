@@ -20,8 +20,9 @@ import {
   UserShortRepresentationProfilePictureSize,
 } from '@smartive-education/design-system-component-library-team-ost';
 import { useSession } from 'next-auth/react';
-import { ChangeEvent, FC, FormEvent } from 'react';
+import { ChangeEvent, FC, FormEvent, useState } from 'react';
 import Link from 'next/link';
+import { FileuploadModal } from '../modals/fileupload-modal';
 
 export enum WriteCardVariant {
   inline = 'inline',
@@ -29,14 +30,18 @@ export enum WriteCardVariant {
 }
 
 // todo: eigene Typen
-// todo: Frage: Ist ein Context für die Übergabe des States schöner?
 type WriteCardProps = {
-  form?: {
-    text: string;
+  form: {
+    textinputError: string;
+    textinput: string;
+    file: File | null;
   };
   variant: WriteCardVariant;
   handleChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  handleFileChange: (file: File) => void;
+  fileinputError: string;
   handleSubmit: (e: FormEvent<HTMLFormElement>) => void;
+  isSubmitting: boolean;
 };
 
 type WriteCardVariantMap = {
@@ -55,10 +60,23 @@ const writeCardVariantMap: Record<WriteCardVariant, WriteCardVariantMap> = {
   },
 };
 
-//TODO Form handling und Bildupload-Modal integration
-export const WriteCard: FC<WriteCardProps> = ({ form, variant, handleChange, handleSubmit }) => {
+export const WriteCard: FC<WriteCardProps> = ({
+  form,
+  variant,
+  handleChange,
+  handleFileChange,
+  fileinputError,
+  handleSubmit,
+  isSubmitting,
+}) => {
   const settings = writeCardVariantMap[variant] || writeCardVariantMap.inline;
   const { data: session } = useSession();
+  const [isOpenFileUpload, setIsOpenFileUpload] = useState(false);
+
+  const submitClick = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log('submit click');
+  };
 
   return (
     session && (
@@ -89,13 +107,14 @@ export const WriteCard: FC<WriteCardProps> = ({ form, variant, handleChange, han
           <Form handleSubmit={handleSubmit}>
             <Textarea
               ariaLabel="Und was meinst du dazu?"
-              errorMessage=""
-              name="text"
+              disabled={isSubmitting}
+              errorMessage={form.textinputError}
+              name="textinput"
               onChange={handleChange}
               placeholder="Und was meinst du dazu?"
               required
               rows={5}
-              value={form?.text || ''}
+              value={form.textinput}
             />
 
             <Stack spacing={StackSpacing.s}>
@@ -103,16 +122,18 @@ export const WriteCard: FC<WriteCardProps> = ({ form, variant, handleChange, han
                 color={TextButtonColor.slate}
                 displayMode={TextButtonDisplayMode.fullWidth}
                 icon={<IconUpload />}
-                onClick={() => console.log('bild upload click')}
+                onClick={() => setIsOpenFileUpload(true)}
                 size={TextButtonSize.m}
+                type="button"
               >
                 Bild hochladen
               </TextButton>
               <TextButton
                 color={TextButtonColor.violet}
+                disabled={isSubmitting}
                 displayMode={TextButtonDisplayMode.fullWidth}
                 icon={<IconUpload />}
-                onClick={() => console.log('absenden click')}
+                onClick={() => submitClick}
                 size={TextButtonSize.m}
                 type="submit"
               >
@@ -121,6 +142,13 @@ export const WriteCard: FC<WriteCardProps> = ({ form, variant, handleChange, han
             </Stack>
           </Form>
         </Stack>
+        <FileuploadModal
+          handleChange={handleFileChange}
+          isOpen={isOpenFileUpload}
+          setIsOpen={setIsOpenFileUpload}
+          file={form.file}
+          fileInputError={fileinputError}
+        />
       </Card>
     )
   );
