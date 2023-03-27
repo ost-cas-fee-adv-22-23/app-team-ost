@@ -64,7 +64,9 @@ export const fetchMumbles = async (params?: {
   }
 };
 
-type UploadImage = File & { preview: string };
+// todo: Braucht es das preview string?
+// export type UploadImage = File & { preview: string };
+type UploadImage = File;
 
 // todo: Interface für CreateParameters
 export const postMumble = async (text: string, file: UploadImage | null, accessToken: string) => {
@@ -77,6 +79,25 @@ export const postMumble = async (text: string, file: UploadImage | null, accessT
   }
   try {
     const postResult = await qwackerApi.postFormData<Post>(`posts`, accessToken, formDataBody);
+    const mumble = await transformApiPostResultToMumble(postResult, accessToken);
+    return mumble;
+  } catch (error) {
+    // todo: Handle any error happened.
+    throw new Error('Something was not okay');
+  }
+};
+
+// todo: Interface für CreateParameters
+export const postReply = async (postid: string, text: string, file: UploadImage | null, accessToken: string) => {
+  // todo: prüfen ob ein Text gesetzt ist
+  const formDataBody = new FormData();
+  formDataBody.append('text', text);
+
+  if (file) {
+    formDataBody.append('image', file);
+  }
+  try {
+    const postResult = await qwackerApi.postFormData<Post>(`posts/${postid}`, accessToken, formDataBody);
     const mumble = await transformApiPostResultToMumble(postResult, accessToken);
     return mumble;
   } catch (error) {

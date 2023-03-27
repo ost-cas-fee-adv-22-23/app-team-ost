@@ -10,10 +10,10 @@ import {
 } from '@smartive-education/design-system-component-library-team-ost';
 import { SettingsModal } from './modals/settings-modal';
 import { ChangeEvent, FC, FormEvent, ReactElement, useState } from 'react';
-import { FileuploadModal } from './modals/fileupload-modal';
 import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 
 type HeaderProps = {
   children?: ReactElement;
@@ -22,7 +22,7 @@ type HeaderProps = {
 export const Header: FC<HeaderProps> = () => {
   const { data: session } = useSession();
   const [isOpenSettings, setIsOpenSettings] = useState(false);
-  const [isOpenFileUpload, setIsOpenFileUpload] = useState(false);
+  const router = useRouter();
 
   const [form, setForm] = useState({
     name: '',
@@ -38,11 +38,8 @@ export const Header: FC<HeaderProps> = () => {
     });
   };
 
-  const [file, setFile] = useState<File>();
-
-  const handleFileChange = (file: File) => {
-    console.log(file);
-    setFile(file);
+  const handleProfileButtonClick = () => {
+    router.push(`/profile/${session?.user.id}`);
   };
 
   const handleSubmitSettings = (e: FormEvent<HTMLFormElement>) => {
@@ -52,22 +49,16 @@ export const Header: FC<HeaderProps> = () => {
     console.log('submit settings');
     setIsOpenSettings(false);
   };
-  const handleSubmitFileupload = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    //TODO call api function
-    console.log(file);
-    console.log('submit fileupload');
-    setIsOpenFileUpload(false);
-  };
 
   const navigation = session ? (
     <Navigation>
+      {/* We decided to navigate on the profile picture to the profilepage */}
       <ProfilePictureButton
         alt={session.user.username}
         aria-label="edit profile picture"
         imageComponent={Image}
         imageComponentArgs={{ width: 50, height: 50 }}
-        onClick={() => setIsOpenFileUpload(true)}
+        onClick={handleProfileButtonClick}
         src={session.user.avatarUrl as string}
       />
       <SettingsButton onClick={() => setIsOpenSettings(true)} />
@@ -97,12 +88,6 @@ export const Header: FC<HeaderProps> = () => {
         isOpen={isOpenSettings}
         setIsOpen={setIsOpenSettings}
         handleSubmit={handleSubmitSettings}
-      />
-      <FileuploadModal
-        handleChange={handleFileChange}
-        isOpen={isOpenFileUpload}
-        setIsOpen={setIsOpenFileUpload}
-        handleSubmit={handleSubmitFileupload}
       />
     </PageHeader>
   );
