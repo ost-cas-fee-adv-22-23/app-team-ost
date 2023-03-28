@@ -2,6 +2,8 @@ import {
   Fileinput,
   IconCancel,
   IconCheckmark,
+  Label,
+  LabelSize,
   Modal,
   ModalType,
   Stack,
@@ -12,23 +14,43 @@ import {
   TextButtonDisplayMode,
   TextButtonSize,
 } from '@smartive-education/design-system-component-library-team-ost';
-import { FC } from 'react';
+import { FC, useState } from 'react';
 
 type FileuploadProps = {
-  handleChange: (file: File) => void;
+  handleFileChange: (file: File) => boolean;
   isOpen: boolean;
   setIsOpen: (e: boolean) => void;
   file: File | null;
   fileInputError: string;
 };
 
-export const FileuploadModal: FC<FileuploadProps> = ({ handleChange, isOpen, file, fileInputError, setIsOpen }) => {
+export const FileuploadModal: FC<FileuploadProps> = ({ handleFileChange, isOpen, file, fileInputError, setIsOpen }) => {
+  const [tempfile, setTempfile] = useState<File | null>();
+
+  const handleSaveFile = () => {
+    if (tempfile) {
+      const valid = handleFileChange(tempfile);
+      console.log(`Valid? ${valid}`);
+      setTempfile(null);
+
+      if (valid) {
+        setIsOpen(false);
+      }
+    }
+  };
+
+  const handleAbbort = () => {
+    setIsOpen(false);
+    setTempfile(null);
+  };
+
   return (
     <Modal isOpen={isOpen} modalType={ModalType.wide} title="Bild hochladen" onClose={() => setIsOpen(false)}>
       <Stack direction={StackDirection.col} spacing={StackSpacing.s}>
+        {file && !tempfile && <Label size={LabelSize.l}>Willst du das Bild {file.name} ersetzen?</Label>}
         <Fileinput
           description="JPEG oder PNG, maximal 5 MB"
-          onAddFile={(file) => handleChange(file)}
+          onAddFile={(f) => setTempfile(f)}
           title="Datei hierhin ziehen"
           errorMessage={fileInputError}
         ></Fileinput>
@@ -37,7 +59,7 @@ export const FileuploadModal: FC<FileuploadProps> = ({ handleChange, isOpen, fil
             color={TextButtonColor.slate}
             displayMode={TextButtonDisplayMode.fullWidth}
             icon={<IconCancel />}
-            onClick={() => setIsOpen(false)}
+            onClick={handleAbbort}
             size={TextButtonSize.m}
           >
             Abbrechen
@@ -48,9 +70,9 @@ export const FileuploadModal: FC<FileuploadProps> = ({ handleChange, isOpen, fil
             color={TextButtonColor.violet}
             displayMode={TextButtonDisplayMode.fullWidth}
             icon={<IconCheckmark />}
-            onClick={() => setIsOpen(false)}
+            onClick={handleSaveFile}
             size={TextButtonSize.m}
-            disabled={!file || fileInputError != '' ? true : false}
+            disabled={!tempfile ? true : false}
           >
             Speichern
           </TextButton>

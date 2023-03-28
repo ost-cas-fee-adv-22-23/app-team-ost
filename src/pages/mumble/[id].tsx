@@ -33,6 +33,7 @@ type MumblePageAction =
   | { type: 'file_change_valid'; payload: File }
   | { type: 'file_change_invalid'; payload: string }
   | { type: 'file_change_reset' }
+  | { type: 'file_inputerror_reset' }
   | { type: 'reply_change'; payload: string }
   | { type: 'submit_reply' }
   | { type: 'submit_reply_success'; payload: Mumble }
@@ -78,6 +79,11 @@ const mumblePageReducer = (state: MumblePageState, action: MumblePageAction): Mu
           ...state.reply,
           file: null,
         },
+        fileinputError: '',
+      };
+    case 'file_inputerror_reset':
+      return {
+        ...state,
         fileinputError: '',
       };
     case 'reply_change':
@@ -140,13 +146,19 @@ export default function MumblePage(props: MumblePageProps): InferGetServerSidePr
     dispatch({ type: 'reply_change', payload: e.target.value });
   };
 
-  const handleFileChange = (file: File) => {
+  const handleFileChange = (file: File): boolean => {
     dispatch({ type: 'file_change_reset' });
 
     const validationResult = validateFileinput(file);
     validationResult.valid
       ? dispatch({ type: 'file_change_valid', payload: file })
       : dispatch({ type: 'file_change_invalid', payload: validationResult.message });
+
+    return validationResult.valid;
+  };
+
+  const resetFileinputError = () => {
+    dispatch({ type: 'file_inputerror_reset' });
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -175,6 +187,7 @@ export default function MumblePage(props: MumblePageProps): InferGetServerSidePr
           form={state.reply}
           handleChange={handleChange}
           handleFileChange={handleFileChange}
+          resetFileinputError={resetFileinputError}
           fileinputError={state.fileinputError}
           handleSubmit={handleSubmit}
           isSubmitting={state.replyIsSubmitting}
