@@ -126,6 +126,7 @@ export default function ProfilePage(props: ProfilePageProps): InferGetServerSide
   };
   const [state, dispatch] = useReducer(profilePageReducer, initialState);
 
+  //todo: Evtl. durch Page-Transitions lösen mit key=router.path
   useEffect(() => {
     dispatch({ type: 'reinitialize', payload: props });
   }, [props]);

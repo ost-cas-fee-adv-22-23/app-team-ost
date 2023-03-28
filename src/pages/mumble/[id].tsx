@@ -135,6 +135,7 @@ export default function MumblePage(props: MumblePageProps): InferGetServerSidePr
   };
   const [state, dispatch] = useReducer(mumblePageReducer, initialState);
 
+  //todo: Evtl. durch Page-Transitions lösen mit key=router.path
   useEffect(() => {
     dispatch({ type: 'reinitialize', payload: props });
   }, [props]);

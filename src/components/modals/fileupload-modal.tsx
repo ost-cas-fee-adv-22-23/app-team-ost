@@ -30,7 +30,6 @@ export const FileuploadModal: FC<FileuploadProps> = ({ handleFileChange, isOpen,
   const handleSaveFile = () => {
     if (tempfile) {
       const valid = handleFileChange(tempfile);
-      console.log(`Valid? ${valid}`);
       setTempfile(null);
 
       if (valid) {
