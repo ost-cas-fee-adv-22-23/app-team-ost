@@ -39,7 +39,8 @@ type WriteCardProps = {
   };
   variant: WriteCardVariant;
   handleChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
-  handleFileChange: (file: File) => void;
+  handleFileChange: (file: File) => boolean;
+  resetFileinputError: () => void;
   fileinputError: string;
   handleSubmit: (e: FormEvent<HTMLFormElement>) => void;
   isSubmitting: boolean;
@@ -66,6 +67,7 @@ export const WriteCard: FC<WriteCardProps> = ({
   variant,
   handleChange,
   handleFileChange,
+  resetFileinputError,
   fileinputError,
   handleSubmit,
   isSubmitting,
@@ -77,6 +79,11 @@ export const WriteCard: FC<WriteCardProps> = ({
   const submitClick = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log('submit click');
+  };
+
+  const fileUploadClick = () => {
+    resetFileinputError();
+    setIsOpenFileUpload(true);
   };
 
   return (
@@ -115,6 +122,11 @@ export const WriteCard: FC<WriteCardProps> = ({
           )}
 
           <Form handleSubmit={handleSubmit}>
+            {form.file && (
+              <div className="rounded-lg mx-auto my-0 overflow-hidden">
+                <Image src={URL.createObjectURL(form.file)} alt={form.file.name} width="200" height="200"></Image>
+              </div>
+            )}
             <Textarea
               ariaLabel="Und was meinst du dazu?"
               disabled={isSubmitting}
@@ -126,13 +138,12 @@ export const WriteCard: FC<WriteCardProps> = ({
               rows={5}
               value={form.textinput}
             />
-
             <Stack spacing={StackSpacing.s}>
               <TextButton
                 color={TextButtonColor.slate}
                 displayMode={TextButtonDisplayMode.fullWidth}
                 icon={<IconUpload />}
-                onClick={() => setIsOpenFileUpload(true)}
+                onClick={fileUploadClick}
                 size={TextButtonSize.m}
                 type="button"
               >
@@ -153,7 +164,7 @@ export const WriteCard: FC<WriteCardProps> = ({
           </Form>
         </Stack>
         <FileuploadModal
-          handleChange={handleFileChange}
+          handleFileChange={handleFileChange}
           isOpen={isOpenFileUpload}
           setIsOpen={setIsOpenFileUpload}
           file={form.file}

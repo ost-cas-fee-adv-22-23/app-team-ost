@@ -6,7 +6,7 @@ import { Stack, StackDirection, StackSpacing } from '@smartive-education/design-
 import { fetchMumbleById, fetchRepliesByMumbleId, postReply } from '../../services/qwacker-api/posts';
 import { Mumble } from '../../types/mumble';
 import { getToken } from 'next-auth/jwt';
-import { ChangeEvent, FormEvent, useReducer } from 'react';
+import { ChangeEvent, FormEvent, useEffect, useReducer } from 'react';
 import { validateFileinput } from '../../helpers/validate-fileinput';
 import { useSession } from 'next-auth/react';
 
@@ -29,9 +29,11 @@ type MumblePageState = {
 };
 
 type MumblePageAction =
+  | { type: 'reinitialize'; payload: { mumble: Mumble; replies: Mumble[] } }
   | { type: 'file_change_valid'; payload: File }
   | { type: 'file_change_invalid'; payload: string }
   | { type: 'file_change_reset' }
+  | { type: 'file_inputerror_reset' }
   | { type: 'reply_change'; payload: string }
   | { type: 'submit_reply' }
   | { type: 'submit_reply_success'; payload: Mumble }
@@ -39,6 +41,20 @@ type MumblePageAction =
 
 const mumblePageReducer = (state: MumblePageState, action: MumblePageAction): MumblePageState => {
   switch (action.type) {
+    case 'reinitialize': {
+      return {
+        mumble: action.payload.mumble,
+        replies: action.payload.replies,
+        fileinputError: '',
+        replyinputError: '',
+        reply: {
+          file: null,
+          textinput: '',
+          textinputError: '',
+        },
+        replyIsSubmitting: false,
+      };
+    }
     case 'file_change_valid':
       return {
         ...state,
@@ -63,6 +79,11 @@ const mumblePageReducer = (state: MumblePageState, action: MumblePageAction): Mu
           ...state.reply,
           file: null,
         },
+        fileinputError: '',
+      };
+    case 'file_inputerror_reset':
+      return {
+        ...state,
         fileinputError: '',
       };
     case 'reply_change':
@@ -113,6 +134,12 @@ export default function MumblePage(props: MumblePageProps): InferGetServerSidePr
     replyIsSubmitting: false,
   };
   const [state, dispatch] = useReducer(mumblePageReducer, initialState);
+
+  //todo: Evtl. durch Page-Transitions lösen mit key=router.path
+  useEffect(() => {
+    dispatch({ type: 'reinitialize', payload: props });
+  }, [props]);
+
   const { data: session } = useSession();
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -120,13 +147,19 @@ export default function MumblePage(props: MumblePageProps): InferGetServerSidePr
     dispatch({ type: 'reply_change', payload: e.target.value });
   };
 
-  const handleFileChange = (file: File) => {
+  const handleFileChange = (file: File): boolean => {
     dispatch({ type: 'file_change_reset' });
 
     const validationResult = validateFileinput(file);
     validationResult.valid
       ? dispatch({ type: 'file_change_valid', payload: file })
       : dispatch({ type: 'file_change_invalid', payload: validationResult.message });
+
+    return validationResult.valid;
+  };
+
+  const resetFileinputError = () => {
+    dispatch({ type: 'file_inputerror_reset' });
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -155,6 +188,7 @@ export default function MumblePage(props: MumblePageProps): InferGetServerSidePr
           form={state.reply}
           handleChange={handleChange}
           handleFileChange={handleFileChange}
+          resetFileinputError={resetFileinputError}
           fileinputError={state.fileinputError}
           handleSubmit={handleSubmit}
           isSubmitting={state.replyIsSubmitting}
