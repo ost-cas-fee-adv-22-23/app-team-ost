@@ -18,7 +18,7 @@ import Head from 'next/head';
 import { MumbleCard, MumbleCardVariant } from '../components/cards/mumble-card';
 import { Mumble } from '../types/mumble';
 import { WriteCard, WriteCardVariant } from '../components/cards/write-card';
-import { fetchMumbles, postMumble } from '../services/qwacker-api/posts';
+import { fetchMumbles, likeMumbleById, postMumble, unlikeMumbleById } from '../services/qwacker-api/posts';
 import { getToken } from 'next-auth/jwt';
 import { useSession } from 'next-auth/react';
 import { ChangeEvent, FormEvent, useReducer } from 'react';
@@ -57,7 +57,7 @@ type FeedPageAction =
   | { type: 'submit_form_success'; payload: Mumble }
   | { type: 'submit_form_error'; payload: string };
 
-const profilPageReducer = (state: FeedPageState, action: FeedPageAction): FeedPageState => {
+const profilePageReducer = (state: FeedPageState, action: FeedPageAction): FeedPageState => {
   switch (action.type) {
     case 'fetch_mumbles':
       return { ...state, loading: true };
@@ -156,7 +156,7 @@ export default function PageHome({
     },
     formIsSubmitting: false,
   };
-  const [state, dispatch] = useReducer(profilPageReducer, initialState);
+  const [state, dispatch] = useReducer(profilePageReducer, initialState);
 
   //todo: pass session from server with getServerSession (is used to show the writecard)
   const { data: session } = useSession();
@@ -190,6 +190,18 @@ export default function PageHome({
       dispatch({ type: 'submit_form_success', payload: newMumble });
     } catch (error) {
       dispatch({ type: 'submit_form_error', payload: `Ein Fehler ist aufgetreten: ${error}` });
+    }
+  };
+
+  const onLikeClick = async (mumble: Mumble) => {
+    // useSWR Hook?
+    // optimistic update
+    // errorhandling?
+    const res = await fetch(`/api/posts/${mumble.id}/like`, { method: mumble.likedByUser ? 'DELETE' : 'PUT' });
+    if (res.status === 204) {
+      console.warn('work');
+    } else {
+      console.warn('error');
     }
   };
 
@@ -239,7 +251,7 @@ export default function PageHome({
               />
             )}
             {state.mumbles.map((mumble) => (
-              <MumbleCard key={mumble.id} variant={MumbleCardVariant.timeline} mumble={mumble} />
+              <MumbleCard key={mumble.id} variant={MumbleCardVariant.timeline} mumble={mumble} onLikeClick={onLikeClick} />
             ))}
             {state.hasMore && (
               <Stack

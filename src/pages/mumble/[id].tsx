@@ -179,10 +179,17 @@ export default function MumblePage(props: MumblePageProps): InferGetServerSidePr
     }
   };
 
+  const onLikeClick = async (mumble: Mumble) => {
+    // useSWR Hook?
+    // optimistic update
+    // errorhandling?
+    const res = await fetch(`/api/posts/${mumble.id}/like`, { method: mumble.likedByUser ? 'DELETE' : 'PUT' });
+  };
+
   return (
     <MainLayout>
       <div className="bg-white">
-        <MumbleCard variant={MumbleCardVariant.detailpage} mumble={props.mumble} />
+        <MumbleCard variant={MumbleCardVariant.detailpage} mumble={props.mumble} onLikeClick={onLikeClick} />
         {/* eslint-disable-next-line @typescript-eslint/no-empty-function */}
         <WriteCard
           form={state.reply}
@@ -196,7 +203,7 @@ export default function MumblePage(props: MumblePageProps): InferGetServerSidePr
         />
         <Stack direction={StackDirection.col} spacing={StackSpacing.s} withDivider={true}>
           {state.replies.map((response) => (
-            <MumbleCard key={response.id} variant={MumbleCardVariant.response} mumble={response} />
+            <MumbleCard key={response.id} variant={MumbleCardVariant.response} mumble={response} onLikeClick={onLikeClick} />
           ))}
         </Stack>
       </div>

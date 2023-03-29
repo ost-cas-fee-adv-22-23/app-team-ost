@@ -33,7 +33,7 @@ import { Mumble } from '../../types/mumble';
 import { User } from '../../types/user';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useFetchMumbles, useSearchMumbles } from '../../services/api-hooks/api-hooks';
+import { useFetchMumbles, useSearchMumbles } from '../../hooks/qwacker-api/api-hooks';
 
 type ProfilePageProps = {
   likedMumbles: Mumble[];
@@ -134,6 +134,13 @@ export default function ProfilePage(props: ProfilePageProps): InferGetServerSide
 
   const { data: session } = useSession();
   const isCurrentUser = props.user.id === session?.user.id;
+
+  const onLikeClick = async (mumble: Mumble) => {
+    // useSWR Hook?
+    // optimistic update
+    // errorhandling?
+    const res = await fetch(`/api/posts/${mumble.id}/like`, { method: mumble.likedByUser ? 'DELETE' : 'PUT' });
+  };
 
   const {
     isLoading: mumbleLoading,
@@ -242,7 +249,7 @@ export default function ProfilePage(props: ProfilePageProps): InferGetServerSide
           )}
           {mumblesToRender[state.postType].length > 0 ? (
             mumblesToRender[state.postType].map((mumble) => (
-              <MumbleCard key={mumble.id} variant={MumbleCardVariant.timeline} mumble={mumble} />
+              <MumbleCard key={mumble.id} variant={MumbleCardVariant.timeline} mumble={mumble} onLikeClick={onLikeClick} />
             ))
           ) : (
             <Label size={LabelSize.l}>Ziemlich leer hier</Label>
