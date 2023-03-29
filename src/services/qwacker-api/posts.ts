@@ -43,7 +43,7 @@ export const fetchMumbles = async (params?: {
 }): Promise<{ count: number; mumbles: Mumble[] }> => {
   const { token, limit, offset, newerThanMumbleId, olderThanMumbleId, creator } = params || {};
   const searchParams = new URLSearchParams({
-    limit: limit?.toString() || '10',
+    limit: limit?.toString() || '2',
     offset: offset?.toString() || '0',
     newerThan: newerThanMumbleId || '',
     olderThan: olderThanMumbleId || '',
@@ -143,7 +143,7 @@ export const fetchMumblesSearch = async (params: {
   const { accessToken, isReply, limit, mentions, offset, tags, text, userid } = params || {};
 
   const body: SearchPostsBody = {
-    limit: limit || 10,
+    limit: limit || 2,
     offset: offset || 0,
   };
 
