@@ -33,6 +33,7 @@ import { Mumble } from '../../types/mumble';
 import { User } from '../../types/user';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useFetchMumbles, useSearchMumbles } from '../../services/api-hooks/api-hooks';
 
 type ProfilePageProps = {
   likedMumbles: Mumble[];
@@ -134,40 +135,26 @@ export default function ProfilePage(props: ProfilePageProps): InferGetServerSide
   const { data: session } = useSession();
   const isCurrentUser = props.user.id === session?.user.id;
 
+  const {
+    isLoading: mumbleLoading,
+    error: mumbleError,
+    data: moreMumbles,
+  } = useFetchMumbles(props.user.id, undefined, state.mumbles[state.mumbles.length - 1].id);
+
+  const {
+    isLoading: likedLoading,
+    error: likedError,
+    data: moreLikedMumbles,
+  } = useSearchMumbles(undefined, state.likedMumbles.length.toString(), undefined, undefined, props.user.id);
+
   const loadMore = async () => {
     dispatch({ type: 'fetch_mumbles' });
     try {
-      if (!session || !session.accessToken) {
-        throw new Error('No decodedToken found');
-      }
       if (state.postType === 'mumbles') {
-        // todo: create api functions/services for next/api?
-        const urlParams = new URLSearchParams();
-        urlParams.set('creator', props.user.id);
-        urlParams.set('olderThan', state.mumbles[state.mumbles.length - 1].id);
-        const res = await fetch(`/api/posts/loadmore?${urlParams}`);
-        if (res.status === 200) {
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const { count, mumbles: newMumbles } = await res.json();
-          dispatch({ type: 'fetch_mumbles_success', payload: newMumbles });
-        } else {
-          throw new Error('Unable to load more Mumbles');
-        }
+        moreMumbles && dispatch({ type: 'fetch_mumbles_success', payload: moreMumbles.mumbles });
       }
       if (state.postType === 'likedMumbles') {
-        // todo: create api functions/services for next/api?
-        const urlParams = new URLSearchParams();
-        urlParams.set('userid', props.user.id);
-        urlParams.set('offset', state.likedMumbles.length.toString());
-
-        const res = await fetch(`/api/posts/searchmore?${urlParams}`);
-        if (res.status === 200) {
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const { count, mumbles: newMumbles } = await res.json();
-          dispatch({ type: 'fetch_likes_success', payload: newMumbles });
-        } else {
-          throw new Error('Unable to load more Mumbles');
-        }
+        moreLikedMumbles && dispatch({ type: 'fetch_likes_success', payload: moreLikedMumbles.mumbles });
       }
     } catch (error) {
       dispatch({ type: 'fetch_mumbles_error', payload: error as string });
@@ -302,7 +289,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query: { id 
     if (mumbles.length === 0 && likedMumbles.length === 0) {
       return {
         redirect: {
-          destination: '/newuser',
+          destination: `/newuser/${id}`,
           permanent: false,
         },
       };
