@@ -270,15 +270,6 @@ export const getServerSideProps: GetServerSideProps = async ({ req }: GetServerS
   try {
     const token = await getToken({ req });
 
-    // if (!token) {
-    //   return {
-    //     redirect: {
-    //       destination: '/login',
-    //       permanent: false,
-    //     },
-    //   };
-    // }
-
     // eslint-disable-next-line prefer-const
     let { count, mumbles } = await fetchMumbles({ token: token?.accessToken as string });
 
