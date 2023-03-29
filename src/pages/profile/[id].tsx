@@ -146,7 +146,6 @@ export default function ProfilePage(props: ProfilePageProps): InferGetServerSide
     error: likedError,
     data: moreLikedMumbles,
   } = useSearchMumbles(undefined, state.likedMumbles.length.toString(), undefined, undefined, props.user.id);
-  console.log(moreLikedMumbles);
 
   const loadMore = async () => {
     dispatch({ type: 'fetch_mumbles' });

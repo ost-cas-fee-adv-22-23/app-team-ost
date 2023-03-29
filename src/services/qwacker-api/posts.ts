@@ -143,7 +143,7 @@ export const fetchMumblesSearch = async (params: {
   const { accessToken, isReply, limit, mentions, offset, tags, text, userid } = params || {};
 
   const body: SearchPostsBody = {
-    limit: limit || 1,
+    limit: limit || 2,
     offset: offset || 0,
   };
 

@@ -15,7 +15,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   fetchMumblesSearch({
     accessToken: decodedToken.accessToken,
-    limit: 1,
+    limit: 2,
     mentions: mentions as string | undefined,
     offset: Number(offset) | 0,
     tags: tags as string | undefined,
