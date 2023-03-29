@@ -1,6 +1,6 @@
-import NextAuth from 'next-auth';
+import NextAuth, { NextAuthOptions } from 'next-auth';
 
-export default NextAuth({
+export const authOptions: NextAuthOptions = {
   providers: [
     {
       id: 'zitadel',
@@ -22,6 +22,7 @@ export default NextAuth({
         const { userinfo_endpoint } = await (
           await fetch(`${process.env.ZITADEL_ISSUER}/.well-known/openid-configuration`)
         ).json();
+
         const profile = await (
           await fetch(userinfo_endpoint, {
             headers: {
@@ -50,6 +51,7 @@ export default NextAuth({
         token.accessToken = account.access_token;
         token.expiresAt = (account.expires_at as number) * 1000;
       }
+
       if (user) {
         token.user = user;
       }
@@ -66,4 +68,13 @@ export default NextAuth({
       return session;
     },
   },
-});
+  pages: {
+    signIn: '/auth/login',
+    signOut: '/auth/logout',
+    error: '/auth/error', // Error code passed in query string as ?error=
+    newUser: '/auth/new-profile', // New users will be directed here on first sign in (leave the property out if not of interest)
+  },
+  secret: process.env.NEXTAUTH_SECRET,
+};
+
+export default NextAuth(authOptions);
