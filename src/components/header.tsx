@@ -10,7 +10,7 @@ import {
 } from '@smartive-education/design-system-component-library-team-ost';
 import { SettingsModal } from './modals/settings-modal';
 import { ChangeEvent, FC, FormEvent, ReactElement, useState } from 'react';
-import { signOut, useSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
@@ -42,6 +42,10 @@ export const Header: FC<HeaderProps> = () => {
     router.push(`/profile/${session?.user.id}`);
   };
 
+  const handleLogoutButtonClick = () => {
+    router.push(`/auth/logout?callbackUrl=${router.asPath}`);
+  };
+
   const handleSubmitSettings = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     //TODO call api function
@@ -62,11 +66,11 @@ export const Header: FC<HeaderProps> = () => {
         src={session.user.avatarUrl as string}
       />
       <SettingsButton onClick={() => setIsOpenSettings(true)} />
-      <LogoutButton onClick={() => signOut()} />
+      <LogoutButton onClick={handleLogoutButtonClick} />
     </Navigation>
   ) : (
     <Navigation>
-      <Link href={'/login'}>
+      <Link href={`/auth/login?callbackUrl=${router.asPath}`}>
         <div className="text-white">
           <Label size={LabelSize.l}>Login</Label>
         </div>
