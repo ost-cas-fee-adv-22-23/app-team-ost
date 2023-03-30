@@ -20,6 +20,7 @@ const nextConfig = {
         port: '',
         pathname: '/wp-content/uploads/**',
       },
+      // todo: caching
     ],
   },
   reactStrictMode: true,
