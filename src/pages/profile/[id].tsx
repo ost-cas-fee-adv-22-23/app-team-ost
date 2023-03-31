@@ -33,7 +33,7 @@ import { Mumble } from '../../types/mumble';
 import { User } from '../../types/user';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useFetchMumbles, useSearchMumbles } from '../../hooks/qwacker-api/api-hooks';
+import { useFetchMumbles, useSearchMumbles } from '../../hooks/api/qwacker-api';
 
 type ProfilePageProps = {
   likedMumbles: Mumble[];

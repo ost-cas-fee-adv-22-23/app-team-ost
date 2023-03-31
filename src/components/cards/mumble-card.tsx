@@ -73,7 +73,6 @@ const mumbleCardVariantMap: Record<MumbleCardVariant, MumbleCardVariantMap> = {
   },
 };
 
-//TODO Define state for like counter, handle the like click and pass a callback for handling the like click
 export const MumbleCard: FC<MumbleCardProps> = ({ variant, mumble, onLikeClick }) => {
   const settings = mumbleCardVariantMap[variant] || mumbleCardVariantMap.detailpage;
 
