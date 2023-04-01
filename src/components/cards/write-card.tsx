@@ -138,7 +138,8 @@ export const WriteCard: FC<WriteCardProps> = ({
               rows={5}
               value={form.textinput}
             />
-            <Stack spacing={StackSpacing.s}>
+            {/* todo: stack direction auf col bei breakpoint sm*/}
+            <Stack direction={StackDirection.row} spacing={StackSpacing.s}>
               <TextButton
                 color={TextButtonColor.slate}
                 displayMode={TextButtonDisplayMode.fullWidth}

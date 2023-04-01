@@ -133,7 +133,8 @@ export const MumbleCard: FC<MumbleCardProps> = ({ variant, mumble, onLikeClick }
             src={mumble.mediaUrl ?? ''}
           />
         )}
-        <Stack spacing={StackSpacing.m}>
+        {/* todo: stack direction auf col bei breakpoint sm*/}
+        <Stack direction={StackDirection.row} spacing={StackSpacing.m}>
           <Reply
             href={`/mumble/${mumble.id}`}
             linkComponent={Link}

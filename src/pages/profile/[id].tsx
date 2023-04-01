@@ -34,6 +34,7 @@ import { User } from '../../types/user';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useFetchMumbles, useSearchMumbles } from '../../hooks/api/qwacker-api';
+import Head from 'next/head';
 
 type ProfilePageProps = {
   likedMumbles: Mumble[];
@@ -177,6 +178,9 @@ export default function ProfilePage(props: ProfilePageProps): InferGetServerSide
   return (
     <MainLayout>
       <>
+        <Head>
+          <title>Mumble - {props.user.displayName}</title>
+        </Head>
         <Stack direction={StackDirection.col} spacing={StackSpacing.s}>
           <div className="relative">
             <ProfileBanner

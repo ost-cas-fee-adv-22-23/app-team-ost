@@ -225,9 +225,9 @@ export default function TimelinePage({
     <MainLayout>
       <>
         <Head>
-          <title>Timeline</title>
+          <title>Mumble - Timeline</title>
         </Head>
-        <div className="text-violet-600 pt-l">
+        <div className="text-violet-600">
           <Heading headingLevel={HeadingSize.h1}>Willkommen auf Mumble</Heading>
         </div>
         <div className="text-slate-500 pt-xs pb-l">

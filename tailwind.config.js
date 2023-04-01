@@ -13,6 +13,9 @@ module.exports = {
       fontFamily: {
         poppins: ['var(--font-poppins)', ...fontFamily.sans],
       },
+      minHeight: {
+        'main-layout-content': 'calc(100vh - 88px)',
+      },
     },
   },
   plugins: [],
