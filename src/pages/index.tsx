@@ -24,12 +24,12 @@ import { useSession } from 'next-auth/react';
 import { ChangeEvent, FormEvent, useReducer } from 'react';
 import { validateFileinput } from '../helpers/validate-fileinput';
 
-type PageProps = {
+type TimelinePageProps = {
   count: number;
   mumbles: Mumble[];
 };
 
-type FeedPageState = {
+type TimelinePageState = {
   hasMore: boolean;
   loading: boolean;
   mumblesCount: number;
@@ -44,7 +44,7 @@ type FeedPageState = {
   formIsSubmitting: boolean;
 };
 
-type FeedPageAction =
+type TimelinePageAction =
   | { type: 'fetch_mumbles' }
   | { type: 'fetch_mumbles_error'; payload: string }
   | { type: 'fetch_mumbles_success'; payload: Mumble[] }
@@ -57,7 +57,8 @@ type FeedPageAction =
   | { type: 'submit_form_success'; payload: Mumble }
   | { type: 'submit_form_error'; payload: string };
 
-const profilPageReducer = (state: FeedPageState, action: FeedPageAction): FeedPageState => {
+// todo: sollen die reducer ausgelagert werden?
+const timelinePageReducer = (state: TimelinePageState, action: TimelinePageAction): TimelinePageState => {
   switch (action.type) {
     case 'fetch_mumbles':
       return { ...state, loading: true };
@@ -138,11 +139,11 @@ const profilPageReducer = (state: FeedPageState, action: FeedPageAction): FeedPa
   }
 };
 
-export default function PageHome({
+export default function TimelinePage({
   count: initialCount,
   mumbles: initialMumbles,
-}: PageProps): InferGetStaticPropsType<typeof getServerSideProps> {
-  const initialState: FeedPageState = {
+}: TimelinePageProps): InferGetStaticPropsType<typeof getServerSideProps> {
+  const initialState: TimelinePageState = {
     hasMore: initialMumbles.length < initialCount,
     loading: false,
     mumbles: initialMumbles,
@@ -156,7 +157,7 @@ export default function PageHome({
     },
     formIsSubmitting: false,
   };
-  const [state, dispatch] = useReducer(profilPageReducer, initialState);
+  const [state, dispatch] = useReducer(timelinePageReducer, initialState);
 
   //todo: pass session from server with getServerSession (is used to show the writecard)
   const { data: session } = useSession();
@@ -193,6 +194,18 @@ export default function PageHome({
     }
   };
 
+  const onLikeClick = async (mumble: Mumble) => {
+    // useSWR Hook?
+    // optimistic update
+    // errorhandling?
+    const res = await fetch(`/api/posts/${mumble.id}/like`, { method: mumble.likedByUser ? 'DELETE' : 'PUT' });
+    if (res.status === 204) {
+      console.warn('work');
+    } else {
+      console.warn('error');
+    }
+  };
+
   const loadMore = async () => {
     dispatch({ type: 'fetch_mumbles' });
     try {
@@ -212,7 +225,7 @@ export default function PageHome({
     <MainLayout>
       <>
         <Head>
-          <title>Mumble Home</title>
+          <title>Timeline</title>
         </Head>
         <div className="text-violet-600 pt-l">
           <Heading headingLevel={HeadingSize.h1}>Willkommen auf Mumble</Heading>
@@ -239,7 +252,7 @@ export default function PageHome({
               />
             )}
             {state.mumbles.map((mumble) => (
-              <MumbleCard key={mumble.id} variant={MumbleCardVariant.timeline} mumble={mumble} />
+              <MumbleCard key={mumble.id} variant={MumbleCardVariant.timeline} mumble={mumble} onLikeClick={onLikeClick} />
             ))}
             {state.hasMore && (
               <Stack
@@ -269,15 +282,6 @@ export default function PageHome({
 export const getServerSideProps: GetServerSideProps = async ({ req }: GetServerSidePropsContext) => {
   try {
     const token = await getToken({ req });
-
-    // if (!token) {
-    //   return {
-    //     redirect: {
-    //       destination: '/login',
-    //       permanent: false,
-    //     },
-    //   };
-    // }
 
     // eslint-disable-next-line prefer-const
     let { count, mumbles } = await fetchMumbles({ token: token?.accessToken as string });

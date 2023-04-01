@@ -44,5 +44,5 @@ export const fetchUserById = async (params: { id: string; accessToken?: string }
 const transformApiUserResultToUser = (user: ApiUserResult): User => ({
   ...user,
   displayName: user.userName === 'anonymous' ? '' : `${user.firstName} ${user.lastName}`,
-  profileUrl: user.userName === 'anonymous' ? `/login` : `/profile/${user.id}`,
+  profileUrl: user.userName === 'anonymous' ? `/auth/login` : `/profile/${user.id}`,
 });

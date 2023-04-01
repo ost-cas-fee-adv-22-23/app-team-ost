@@ -34,6 +34,7 @@ export enum MumbleCardVariant {
 type MumbleCardProps = {
   variant: MumbleCardVariant;
   mumble: Mumble;
+  onLikeClick: (mumble: Mumble) => void;
 };
 
 type MumbleCardVariantMap = {
@@ -72,8 +73,7 @@ const mumbleCardVariantMap: Record<MumbleCardVariant, MumbleCardVariantMap> = {
   },
 };
 
-//TODO Define state for like counter, handle the like click and pass a callback for handling the like click
-export const MumbleCard: FC<MumbleCardProps> = ({ variant, mumble }) => {
+export const MumbleCard: FC<MumbleCardProps> = ({ variant, mumble, onLikeClick }) => {
   const settings = mumbleCardVariantMap[variant] || mumbleCardVariantMap.detailpage;
 
   return (
@@ -134,14 +134,13 @@ export const MumbleCard: FC<MumbleCardProps> = ({ variant, mumble }) => {
           />
         )}
         <Stack spacing={StackSpacing.m}>
-          <Reply href={`/mumble/${mumble.id}`} linkComponent={Link} repliesCount={mumble.replyCount ?? 0} withReaction />
-          <Like
-            likesCount={mumble.likeCount}
-            onClick={function noRefCheck() {
-              console.log('click');
-            }}
-            withReaction
+          <Reply
+            href={`/mumble/${mumble.id}`}
+            linkComponent={Link}
+            repliesCount={mumble.replyCount ?? 0}
+            withReaction={(mumble.replyCount ?? 0) > 0}
           />
+          <Like likesCount={mumble.likeCount} onClick={() => onLikeClick(mumble)} withReaction={mumble.likedByUser} />
           <Share linkToCopy={`${BASE_URL}mumble/${mumble.id}`} />
         </Stack>
       </Stack>

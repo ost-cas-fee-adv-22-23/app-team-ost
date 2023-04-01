@@ -51,7 +51,11 @@ export const fetchMumbles = async (params?: {
   });
 
   try {
-    const { count, data } = await qwackerApi.getWithoutAuth<QwackerMumbleResponse>('posts', searchParams);
+    // likes mittels auth nicht vorhanden. Was ist mit dem transformApiPostResultToMumble?
+    // todo: muss nach dem login/auth merge geprüft werden
+    const { count, data } = token
+      ? await qwackerApi.get<QwackerMumbleResponse>('posts', token, searchParams)
+      : await qwackerApi.getWithoutAuth<QwackerMumbleResponse>('posts', searchParams);
     const mumbles = await Promise.all(data.map(async (mumble) => await transformApiPostResultToMumble(mumble, token)));
 
     return {
@@ -175,6 +179,14 @@ export const fetchMumblesSearch = async (params: {
   }
 };
 
+export const likeMumbleById = async (id: string, accessToken: string) => {
+  // errorhandling wird nicht hier gemacht, da client api function
+  return qwackerApi.put(`posts/${id}/likes`, accessToken);
+};
+
+export const unlikeMumbleById = async (id: string, accessToken: string) => {
+  return qwackerApi.delete(`posts/${id}/likes`, accessToken);
+};
 const transformApiPostResultToMumble = async (mumble: ApiPostResult, token?: string): Promise<Mumble> => {
   const creator = await fetchUserById({ id: mumble.creator as string, accessToken: token });
   return {

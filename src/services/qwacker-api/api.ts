@@ -37,8 +37,18 @@ async function request<TResponse>(urlPart: string, config: RequestInit, searchPa
 
   try {
     const response = await fetch(url, config);
+
+    if (!response.ok) {
+      throw new Error('Something was not okay');
+    }
+
+    if (response.status === 204) {
+      return true as TResponse;
+    }
+
     return (await response.json()) as TResponse;
   } catch (error) {
+    console.warn('error', error);
     // todo: Handle the error. eg. unresolved promises and basic network errors (Page Not Found, Bad Request, etc.)
     throw new Error('Something was not okay');
   }
@@ -65,4 +75,12 @@ export const qwackerApi = {
    */
   postFormData: <TResponse>(urlPart: string, accessToken: string, body: FormData) =>
     qwackerApi.post<FormData, TResponse>(urlPart, accessToken, body),
+  /*
+   * Sends a PUT request to the qwacker api. An access token is required.
+   */
+  put: (urlPart: string, accessToken: string) => request<boolean>(urlPart, buildRequestConfig('PUT', accessToken)),
+  /*
+   * Sends a PUT request to the qwacker api. An access token is required.
+   */
+  delete: (urlPart: string, accessToken: string) => request<boolean>(urlPart, buildRequestConfig('DELETE', accessToken)),
 };

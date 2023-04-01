@@ -8,6 +8,7 @@ type FetchMumbles = {
   error: string | any;
 };
 
+// todo: file ebenfalls aufteilen
 export const useFetchMumbles = (creator?: string, newerThanMumbleId?: string, olderThanMumbleId?: string) => {
   const urlParams = new URLSearchParams();
   if (creator) {
