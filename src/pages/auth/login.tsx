@@ -58,7 +58,7 @@ export default function Login() {
     <SplitScreenLayout>
       <>
         <Head>
-          <title>Anmelden</title>
+          <title>Mumble - Anmelden</title>
         </Head>
 
         <div className="w-full lg:w-4/5 2xl:w-1/2 p-xl">

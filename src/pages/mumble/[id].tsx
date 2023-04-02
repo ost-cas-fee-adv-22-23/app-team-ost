@@ -9,6 +9,7 @@ import { getToken } from 'next-auth/jwt';
 import { ChangeEvent, FormEvent, useEffect, useReducer } from 'react';
 import { validateFileinput } from '../../helpers/validate-fileinput';
 import { useSession } from 'next-auth/react';
+import Head from 'next/head';
 
 type MumblePageProps = {
   mumble: Mumble;
@@ -188,25 +189,35 @@ export default function MumblePage(props: MumblePageProps): InferGetServerSidePr
 
   return (
     <MainLayout>
-      <div className="bg-white">
-        <MumbleCard variant={MumbleCardVariant.detailpage} mumble={props.mumble} onLikeClick={onLikeClick} />
-        {/* eslint-disable-next-line @typescript-eslint/no-empty-function */}
-        <WriteCard
-          form={state.reply}
-          handleChange={handleChange}
-          handleFileChange={handleFileChange}
-          resetFileinputError={resetFileinputError}
-          fileinputError={state.fileinputError}
-          handleSubmit={handleSubmit}
-          isSubmitting={state.replyIsSubmitting}
-          variant={WriteCardVariant.main}
-        />
-        <Stack direction={StackDirection.col} spacing={StackSpacing.s} withDivider={true}>
-          {state.replies.map((response) => (
-            <MumbleCard key={response.id} variant={MumbleCardVariant.response} mumble={response} onLikeClick={onLikeClick} />
-          ))}
-        </Stack>
-      </div>
+      <>
+        <Head>
+          <title>Mumble - {props.mumble.id}</title>
+        </Head>
+        <div className="bg-white">
+          <MumbleCard variant={MumbleCardVariant.detailpage} mumble={props.mumble} onLikeClick={onLikeClick} />
+          {/* eslint-disable-next-line @typescript-eslint/no-empty-function */}
+          <WriteCard
+            form={state.reply}
+            handleChange={handleChange}
+            handleFileChange={handleFileChange}
+            resetFileinputError={resetFileinputError}
+            fileinputError={state.fileinputError}
+            handleSubmit={handleSubmit}
+            isSubmitting={state.replyIsSubmitting}
+            variant={WriteCardVariant.main}
+          />
+          <Stack direction={StackDirection.col} spacing={StackSpacing.s} withDivider={true}>
+            {state.replies.map((response) => (
+              <MumbleCard
+                key={response.id}
+                variant={MumbleCardVariant.response}
+                mumble={response}
+                onLikeClick={onLikeClick}
+              />
+            ))}
+          </Stack>
+        </div>
+      </>
     </MainLayout>
   );
 }

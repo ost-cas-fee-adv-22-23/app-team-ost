@@ -125,15 +125,22 @@ export const MumbleCard: FC<MumbleCardProps> = ({ variant, mumble, onLikeClick }
             imageComponent={Image}
             fill
             priority
-            sizes="(max-width: 640px) 100vw,
-              50vw"
+            sizes="(max-width: 640px) 80vw, (max-width: 1536px) 50vw, 30vw"
             onClick={function noRefCheck() {
               console.log('click');
             }}
             src={mumble.mediaUrl ?? ''}
           />
         )}
-        <Stack spacing={StackSpacing.m}>
+        <Stack
+          direction={{
+            default: StackDirection.col,
+            sm: StackDirection.col,
+            md: StackDirection.col,
+            lg: StackDirection.row,
+          }}
+          spacing={StackSpacing.m}
+        >
           <Reply
             href={`/mumble/${mumble.id}`}
             linkComponent={Link}

@@ -56,10 +56,10 @@ export const Header: FC<HeaderProps> = () => {
 
   const navigation = session ? (
     <Navigation>
-      {/* We decided to navigate on the profile picture to the profilepage */}
+      {/* We decided to navigate on the profile picture to the profile page */}
       <ProfilePictureButton
         alt={session.user.username}
-        aria-label="edit profile picture"
+        aria-label="go to profile page"
         imageComponent={Image}
         imageComponentArgs={{ width: 50, height: 50 }}
         onClick={handleProfileButtonClick}
@@ -80,9 +80,9 @@ export const Header: FC<HeaderProps> = () => {
 
   return (
     <PageHeader>
-      <div className="flex items-center justify-between w-full sm:w-7/12">
+      <div className="flex items-center justify-between h-14 w-full sm:w-2/3 2xl:w-1/2">
         <div className="h-10">
-          <MumbleWhiteHorizontal ariaLabel="Go to mumble" linkComponent={Link} href={'/'} renderWithLink />
+          <MumbleWhiteHorizontal ariaLabel="go to timeline" linkComponent={Link} href={'/'} renderWithLink />
         </div>
         {navigation}
       </div>
