@@ -51,7 +51,7 @@ export default function Register() {
     <SplitScreenLayout>
       <>
         <Head>
-          <title>Registrieren</title>
+          <title>Mumble - Registrieren</title>
         </Head>
 
         {!session && (

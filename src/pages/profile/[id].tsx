@@ -183,17 +183,19 @@ export default function ProfilePage(props: ProfilePageProps): InferGetServerSide
         </Head>
         <Stack direction={StackDirection.col} spacing={StackSpacing.s}>
           <div className="relative">
-            <ProfileBanner
-              alt={props.user.userName}
-              canEdit={isCurrentUser}
-              imageComponent={Image}
-              fill
-              priority
-              sizes={'(max-width: 640px) 100vw, 50vw'}
-              onEditClick={() => console.log('click')}
-              src="https://newinzurich.com/wp-content/uploads/2013/09/55769975_2481568891894108_3190627635357024256_o-compressed.jpg"
-            />
-            <div className="absolute -bottom-20 right-8">
+            <div className="hidden md:block">
+              <ProfileBanner
+                alt={props.user.userName}
+                canEdit={isCurrentUser}
+                imageComponent={Image}
+                fill
+                priority
+                sizes="(max-width: 768px) 0vw, (max-width: 1536px) 50vw, 30vw"
+                onEditClick={() => console.log('click')}
+                src="https://newinzurich.com/wp-content/uploads/2013/09/55769975_2481568891894108_3190627635357024256_o-compressed.jpg"
+              />
+            </div>
+            <div className="flex justify-center md:absolute md:-bottom-20 md:right-8">
               <ProfilePicture
                 alt={props.user.userName}
                 canEdit={isCurrentUser}
