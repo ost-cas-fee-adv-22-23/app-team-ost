@@ -23,6 +23,7 @@ import { getToken } from 'next-auth/jwt';
 import { useSession } from 'next-auth/react';
 import { ChangeEvent, FormEvent, useReducer } from 'react';
 import { validateFileinput } from '../helpers/validate-fileinput';
+import { useFetchMumbles } from '../hooks/api/qwacker-api';
 
 type TimelinePageProps = {
   count: number;
@@ -162,6 +163,12 @@ export default function TimelinePage({
   //todo: pass session from server with getServerSession (is used to show the writecard)
   const { data: session } = useSession();
 
+  const {
+    isLoading: mumbleLoading,
+    error: mumbleError,
+    data: moreMumbles,
+  } = useFetchMumbles(undefined, undefined, state.mumbles[state.mumbles.length - 1].id);
+
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     //todo validate textinput
     dispatch({ type: 'form_change', payload: e.target.value });
@@ -209,15 +216,10 @@ export default function TimelinePage({
   const loadMore = async () => {
     dispatch({ type: 'fetch_mumbles' });
     try {
-      const { count, mumbles: newMumbles } = await fetchMumbles({
-        limit: 10,
-        offset: state.mumbles.length,
-        token: session?.accessToken,
-      });
-      dispatch({ type: 'fetch_mumbles_success', payload: newMumbles });
+      moreMumbles && dispatch({ type: 'fetch_mumbles_success', payload: moreMumbles.mumbles });
     } catch (error) {
       dispatch({ type: 'fetch_mumbles_error', payload: error as string });
-      throw new Error(`Unable to load more Mumbles ${error}`);
+      throw new Error(`Error: ${error}`);
     }
   };
 

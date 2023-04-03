@@ -14,7 +14,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   fetchMumbles({
-    limit: 1,
+    limit: 5,
     creator: creator as string | undefined,
     newerThanMumbleId: newerThan as string | undefined,
     olderThanMumbleId: olderThan as string | undefined,
