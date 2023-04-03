@@ -20,14 +20,15 @@ import { Mumble } from '../types/mumble';
 import { WriteCard, WriteCardVariant } from '../components/cards/write-card';
 import { fetchMumbles, postMumble } from '../services/qwacker-api/posts';
 import { getToken } from 'next-auth/jwt';
-import { useSession } from 'next-auth/react';
 import { ChangeEvent, FormEvent, useReducer } from 'react';
 import { validateFileinput } from '../helpers/validate-fileinput';
 import { useFetchMumbles } from '../hooks/api/qwacker-api';
+import { Session } from 'next-auth';
 
 type TimelinePageProps = {
   count: number;
   mumbles: Mumble[];
+  token: Session;
 };
 
 type TimelinePageState = {
@@ -143,6 +144,7 @@ const timelinePageReducer = (state: TimelinePageState, action: TimelinePageActio
 export default function TimelinePage({
   count: initialCount,
   mumbles: initialMumbles,
+  token,
 }: TimelinePageProps): InferGetStaticPropsType<typeof getServerSideProps> {
   const initialState: TimelinePageState = {
     hasMore: initialMumbles.length < initialCount,
@@ -159,9 +161,6 @@ export default function TimelinePage({
     formIsSubmitting: false,
   };
   const [state, dispatch] = useReducer(timelinePageReducer, initialState);
-
-  //todo: pass session from server with getServerSession (is used to show the writecard)
-  const { data: session } = useSession();
 
   const {
     isLoading: mumbleLoading,
@@ -194,7 +193,7 @@ export default function TimelinePage({
     dispatch({ type: 'submit_form' });
     //todo: postMumble über next page/api aufrufen
     try {
-      const newMumble = await postMumble(state.form.textinput, state.form.file, session?.accessToken as string);
+      const newMumble = await postMumble(state.form.textinput, state.form.file, token.accessToken as string);
       dispatch({ type: 'submit_form_success', payload: newMumble });
     } catch (error) {
       dispatch({ type: 'submit_form_error', payload: `Ein Fehler ist aufgetreten: ${error}` });
@@ -239,9 +238,8 @@ export default function TimelinePage({
         </div>
         <Stack direction={StackDirection.col} spacing={StackSpacing.s} withDivider={true}>
           <>
-            {/* eslint-disable-next-line @typescript-eslint/no-empty-function */}
-            {/* STATE AKTUALISIEREN UND PROXY API CALL*/}
-            {session && (
+            {/* TODO PROXY API CALL*/}
+            {token && (
               <WriteCard
                 form={state.form}
                 handleChange={handleChange}
@@ -284,14 +282,13 @@ export default function TimelinePage({
 export const getServerSideProps: GetServerSideProps = async ({ req }: GetServerSidePropsContext) => {
   try {
     const token = await getToken({ req });
-
-    // eslint-disable-next-line prefer-const
-    let { count, mumbles } = await fetchMumbles({ token: token?.accessToken as string });
+    const { count, mumbles } = await fetchMumbles({ token: token?.accessToken as string });
 
     return {
       props: {
         count,
         mumbles,
+        token,
       },
     };
   } catch (error) {
