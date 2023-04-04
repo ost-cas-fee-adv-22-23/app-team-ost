@@ -38,14 +38,6 @@ export const Header: FC<HeaderProps> = () => {
     });
   };
 
-  const handleProfileButtonClick = () => {
-    router.push(`/profile/${session?.user.id}`);
-  };
-
-  const handleLogoutButtonClick = () => {
-    router.push(`/auth/logout?callbackUrl=${router.asPath}`);
-  };
-
   const handleSubmitSettings = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     //TODO call api function
@@ -62,11 +54,17 @@ export const Header: FC<HeaderProps> = () => {
         aria-label="go to profile page"
         imageComponent={Image}
         imageComponentArgs={{ width: 50, height: 50 }}
-        onClick={handleProfileButtonClick}
+        linkComponent={Link}
+        linkComponentArgs={{ href: `/profile/${session?.user.id}` }}
+        renderAsLink={true}
         src={session.user.avatarUrl as string}
       />
       <SettingsButton onClick={() => setIsOpenSettings(true)} />
-      <LogoutButton onClick={handleLogoutButtonClick} />
+      <LogoutButton
+        linkComponent={Link}
+        linkComponentArgs={{ href: `/auth/logout?callbackUrl=${router.asPath}` }}
+        renderAsLink={true}
+      />
     </Navigation>
   ) : (
     <Navigation>
