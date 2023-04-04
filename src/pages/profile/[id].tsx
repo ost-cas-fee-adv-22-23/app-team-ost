@@ -128,6 +128,18 @@ export default function ProfilePage(props: ProfilePageProps): InferGetServerSide
   };
   const [state, dispatch] = useReducer(profilePageReducer, initialState);
 
+  const {
+    isLoading: mumbleLoading,
+    error: mumbleError,
+    data: moreMumbles,
+  } = useFetchMumbles(props.user.id, undefined, state.mumbles[state.mumbles.length - 1].id);
+
+  const {
+    isLoading: likedLoading,
+    error: likedError,
+    data: moreLikedMumbles,
+  } = useSearchMumbles(undefined, state.likedMumbles.length.toString(), undefined, undefined, props.user.id);
+
   //todo: Evtl. durch Page-Transitions lösen mit key=router.path
   useEffect(() => {
     dispatch({ type: 'reinitialize', payload: props });
@@ -142,18 +154,6 @@ export default function ProfilePage(props: ProfilePageProps): InferGetServerSide
     // errorhandling?
     const res = await fetch(`/api/posts/${mumble.id}/like`, { method: mumble.likedByUser ? 'DELETE' : 'PUT' });
   };
-
-  const {
-    isLoading: mumbleLoading,
-    error: mumbleError,
-    data: moreMumbles,
-  } = useFetchMumbles(props.user.id, undefined, state.mumbles[state.mumbles.length - 1].id);
-
-  const {
-    isLoading: likedLoading,
-    error: likedError,
-    data: moreLikedMumbles,
-  } = useSearchMumbles(undefined, state.likedMumbles.length.toString(), undefined, undefined, props.user.id);
 
   const loadMore = async () => {
     dispatch({ type: 'fetch_mumbles' });

@@ -43,7 +43,7 @@ export const fetchMumbles = async (params?: {
 }): Promise<{ count: number; mumbles: Mumble[] }> => {
   const { token, limit, offset, newerThanMumbleId, olderThanMumbleId, creator } = params || {};
   const searchParams = new URLSearchParams({
-    limit: limit?.toString() || '2',
+    limit: limit?.toString() || '5',
     offset: offset?.toString() || '0',
     newerThan: newerThanMumbleId || '',
     olderThan: olderThanMumbleId || '',
