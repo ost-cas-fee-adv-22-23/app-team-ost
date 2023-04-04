@@ -19,16 +19,15 @@ import { MumbleCard, MumbleCardVariant } from '../components/cards/mumble-card';
 import { Mumble } from '../types/mumble';
 import { WriteCard, WriteCardVariant } from '../components/cards/write-card';
 import { fetchMumbles, postMumble } from '../services/qwacker-api/posts';
-import { getToken } from 'next-auth/jwt';
+import { getToken, JWT } from 'next-auth/jwt';
 import { ChangeEvent, FormEvent, useReducer } from 'react';
 import { validateFileinput } from '../helpers/validate-fileinput';
 import { useFetchMumbles } from '../hooks/api/qwacker-api';
-import { Session } from 'next-auth';
 
 type TimelinePageProps = {
   count: number;
   mumbles: Mumble[];
-  token: Session;
+  decodedToken: JWT | null;
 };
 
 type TimelinePageState = {
@@ -144,7 +143,7 @@ const timelinePageReducer = (state: TimelinePageState, action: TimelinePageActio
 export default function TimelinePage({
   count: initialCount,
   mumbles: initialMumbles,
-  token,
+  decodedToken,
 }: TimelinePageProps): InferGetStaticPropsType<typeof getServerSideProps> {
   const initialState: TimelinePageState = {
     hasMore: initialMumbles.length < initialCount,
@@ -193,7 +192,7 @@ export default function TimelinePage({
     dispatch({ type: 'submit_form' });
     //todo: postMumble über next page/api aufrufen
     try {
-      const newMumble = await postMumble(state.form.textinput, state.form.file, token.accessToken as string);
+      const newMumble = await postMumble(state.form.textinput, state.form.file, decodedToken?.accessToken as string);
       dispatch({ type: 'submit_form_success', payload: newMumble });
     } catch (error) {
       dispatch({ type: 'submit_form_error', payload: `Ein Fehler ist aufgetreten: ${error}` });
@@ -239,7 +238,7 @@ export default function TimelinePage({
         <Stack direction={StackDirection.col} spacing={StackSpacing.s} withDivider={true}>
           <>
             {/* TODO PROXY API CALL*/}
-            {token && (
+            {decodedToken && (
               <WriteCard
                 form={state.form}
                 handleChange={handleChange}
@@ -279,16 +278,19 @@ export default function TimelinePage({
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async ({ req }: GetServerSidePropsContext) => {
+export const getServerSideProps: GetServerSideProps = async ({ req, res }: GetServerSidePropsContext) => {
   try {
-    const token = await getToken({ req });
-    const { count, mumbles } = await fetchMumbles({ token: token?.accessToken as string });
+    const decodedToken = await getToken({ req });
+    if (!decodedToken || !decodedToken.accessToken) {
+      throw new Error('No decodedToken found');
+    }
+    const { count, mumbles } = await fetchMumbles({ token: decodedToken?.accessToken as string });
 
     return {
       props: {
         count,
         mumbles,
-        token,
+        decodedToken,
       },
     };
   } catch (error) {
