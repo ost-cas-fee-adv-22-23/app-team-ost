@@ -281,9 +281,6 @@ export default function TimelinePage({
 export const getServerSideProps: GetServerSideProps = async ({ req, res }: GetServerSidePropsContext) => {
   try {
     const decodedToken = await getToken({ req });
-    if (!decodedToken || !decodedToken.accessToken) {
-      throw new Error('No decodedToken found');
-    }
     const { count, mumbles } = await fetchMumbles({ token: decodedToken?.accessToken as string });
 
     return {
