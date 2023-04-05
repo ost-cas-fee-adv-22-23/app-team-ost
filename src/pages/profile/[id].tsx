@@ -35,7 +35,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useFetchMumbles, useSearchMumbles } from '../../hooks/api/qwacker-api';
 import Head from 'next/head';
-import { MumbleList } from '../../components/mumble-list/mumble-list';
+import { MumbleList } from '../../components/lists/mumble-list';
+import { LikesList } from '../../components/lists/likes-list';
 
 type ProfilePageProps = {
   likedMumbles: Mumble[];
@@ -146,12 +147,11 @@ export default function ProfilePage(props: ProfilePageProps): InferGetServerSide
               creator={props.user.id}
             />
           ) : (
-            <MumbleList
+            <LikesList
               count={props.likedCount}
               mumbles={props.likedMumbles}
               variant={MumbleCardVariant.response}
               creator={props.user.id}
-              likesFilter={true}
             />
           )}
         </Stack>

@@ -1,6 +1,6 @@
 import { Mumble } from '../../types/mumble';
 
-export type MumbleListState = {
+export type ListState = {
   hasMore: boolean;
   loading: boolean;
   mumblesCount: number;
@@ -8,13 +8,13 @@ export type MumbleListState = {
   error: string;
 };
 
-type MumbleListAction =
+type ListAction =
   | { type: 'fetch_mumbles' }
   | { type: 'fetch_mumbles_error'; payload: string }
   | { type: 'fetch_mumbles_success'; payload: Mumble[] }
   | { type: 'reinitialize'; payload: { mumbles: Mumble[]; count: number } };
 
-export const mumbleListReducer = (state: MumbleListState, action: MumbleListAction): MumbleListState => {
+export const listReducer = (state: ListState, action: ListAction): ListState => {
   switch (action.type) {
     case 'fetch_mumbles':
       return { ...state, loading: true };

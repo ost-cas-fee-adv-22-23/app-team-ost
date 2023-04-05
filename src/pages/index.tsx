@@ -16,7 +16,7 @@ import { getToken, JWT } from 'next-auth/jwt';
 import { ChangeEvent, FormEvent, useReducer } from 'react';
 import { validateFileinput } from '../helpers/validate-fileinput';
 import { useFetchMumbles } from '../hooks/api/qwacker-api';
-import { MumbleList } from '../components/mumble-list/mumble-list';
+import { MumbleList } from '../components/lists/mumble-list';
 
 type TimelinePageProps = {
   count: number;

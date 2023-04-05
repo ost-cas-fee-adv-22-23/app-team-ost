@@ -10,7 +10,7 @@ import { ChangeEvent, FormEvent, useEffect, useReducer } from 'react';
 import { validateFileinput } from '../../helpers/validate-fileinput';
 import { useSession } from 'next-auth/react';
 import Head from 'next/head';
-import { MumbleList } from '../../components/mumble-list/mumble-list';
+import { MumbleList } from '../../components/lists/mumble-list';
 
 type MumblePageProps = {
   mumble: Mumble;

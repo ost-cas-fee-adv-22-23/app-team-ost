@@ -13,7 +13,7 @@ import { FC, useEffect, useReducer } from 'react';
 import { useFetchMumbles, useSearchMumbles } from '../../hooks/api/qwacker-api';
 import { Mumble } from '../../types/mumble';
 import { MumbleCard, MumbleCardVariant } from '../cards/mumble-card';
-import { MumbleListState, mumbleListReducer } from './mumble-list-reducer';
+import { ListState, listReducer } from './lists-reducer';
 
 type MumbleListProps = {
   mumbles: Mumble[];
@@ -24,7 +24,7 @@ type MumbleListProps = {
 };
 
 export const MumbleList: FC<MumbleListProps> = (props: MumbleListProps) => {
-  const initialState: MumbleListState = {
+  const initialState: ListState = {
     hasMore: props.mumbles.length < props.count,
     loading: false,
     mumbles: props.mumbles,
@@ -32,7 +32,7 @@ export const MumbleList: FC<MumbleListProps> = (props: MumbleListProps) => {
     error: '',
   };
 
-  const [stateList, dispatchList] = useReducer(mumbleListReducer, initialState);
+  const [listState, dispatchList] = useReducer(listReducer, initialState);
 
   useEffect(() => {
     dispatchList({ type: 'reinitialize', payload: props });
@@ -45,14 +45,14 @@ export const MumbleList: FC<MumbleListProps> = (props: MumbleListProps) => {
   } = useFetchMumbles(
     props.creator,
     undefined,
-    stateList.mumbles.length > 0 ? stateList.mumbles[stateList.mumbles.length - 1].id : undefined
+    listState.mumbles.length > 0 ? listState.mumbles[listState.mumbles.length - 1].id : undefined
   );
 
   const {
     isLoading: likedLoading,
     error: likedError,
     data: moreLikedMumbles,
-  } = useSearchMumbles(undefined, stateList.mumbles.length.toString(), undefined, undefined, props.creator);
+  } = useSearchMumbles(undefined, listState.mumbles.length.toString(), undefined, undefined, props.creator);
 
   const onLikeClick = async (mumble: Mumble) => {
     // useSWR Hook?
@@ -84,10 +84,10 @@ export const MumbleList: FC<MumbleListProps> = (props: MumbleListProps) => {
 
   return (
     <>
-      {stateList.mumbles.map((mumble) => (
+      {listState.mumbles.map((mumble) => (
         <MumbleCard key={mumble.id} variant={props.variant} mumble={mumble} onLikeClick={onLikeClick} />
       ))}
-      {stateList.hasMore && (
+      {listState.hasMore && (
         <Stack alignItems={StackAlignItems.center} justifyContent={StackJustifyContent.center} spacing={StackSpacing.xl}>
           <TextButton
             ariaLabel="Weitere Mumbles laden"
@@ -97,7 +97,7 @@ export const MumbleList: FC<MumbleListProps> = (props: MumbleListProps) => {
             onClick={() => loadMore()}
             size={TextButtonSize.l}
           >
-            {stateList.loading ? '...' : 'Weitere Mumbles laden'}
+            {listState.loading ? '...' : 'Weitere Mumbles laden'}
           </TextButton>
         </Stack>
       )}
