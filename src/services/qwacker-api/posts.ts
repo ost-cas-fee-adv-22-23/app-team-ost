@@ -43,7 +43,7 @@ export const fetchMumbles = async (params?: {
 }): Promise<{ count: number; mumbles: Mumble[] }> => {
   const { token, limit, offset, newerThanMumbleId, olderThanMumbleId, creator } = params || {};
   const searchParams = new URLSearchParams({
-    limit: limit?.toString() || '5',
+    limit: limit?.toString() || '2',
     offset: offset?.toString() || '0',
     newerThan: newerThanMumbleId || '',
     olderThan: olderThanMumbleId || '',
@@ -151,7 +151,6 @@ export const fetchMumblesSearch = async (params: {
     offset: offset || 0,
   };
 
-  // todo: gibt es einen besseren Weg nur Variablen die nicht null sind zuzufügen
   if (isReply != null) {
     body.isReply = isReply;
   }

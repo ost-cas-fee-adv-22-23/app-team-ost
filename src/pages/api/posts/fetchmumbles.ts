@@ -6,19 +6,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const { creator, newerThan, olderThan } = req.query;
   const decodedToken = await getToken({ req });
 
-  if (!decodedToken || !decodedToken.accessToken) {
-    return res.status(401).json({
-      status: false,
-      error: `No session.`,
-    });
-  }
-
   fetchMumbles({
     limit: 5,
     creator: creator as string | undefined,
     newerThanMumbleId: newerThan as string | undefined,
     olderThanMumbleId: olderThan as string | undefined,
-    token: decodedToken.accessToken,
+    token: decodedToken?.accessToken,
   })
     .then((result) => {
       res.status(200).json(result);

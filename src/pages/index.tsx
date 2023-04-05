@@ -3,19 +3,12 @@ import MainLayout from '../components/layouts/main-layout';
 import {
   Heading,
   HeadingSize,
-  IconMumble,
   Stack,
-  StackAlignItems,
   StackDirection,
-  StackJustifyContent,
   StackSpacing,
-  TextButton,
-  TextButtonColor,
-  TextButtonDisplayMode,
-  TextButtonSize,
 } from '@smartive-education/design-system-component-library-team-ost';
 import Head from 'next/head';
-import { MumbleCard, MumbleCardVariant } from '../components/cards/mumble-card';
+import { MumbleCardVariant } from '../components/cards/mumble-card';
 import { Mumble } from '../types/mumble';
 import { WriteCard, WriteCardVariant } from '../components/cards/write-card';
 import { fetchMumbles, postMumble } from '../services/qwacker-api/posts';
@@ -23,6 +16,7 @@ import { getToken, JWT } from 'next-auth/jwt';
 import { ChangeEvent, FormEvent, useReducer } from 'react';
 import { validateFileinput } from '../helpers/validate-fileinput';
 import { useFetchMumbles } from '../hooks/api/qwacker-api';
+import { MumbleList } from '../components/mumble-list/mumble-list';
 
 type TimelinePageProps = {
   count: number;
@@ -46,9 +40,6 @@ type TimelinePageState = {
 };
 
 type TimelinePageAction =
-  | { type: 'fetch_mumbles' }
-  | { type: 'fetch_mumbles_error'; payload: string }
-  | { type: 'fetch_mumbles_success'; payload: Mumble[] }
   | { type: 'file_change_valid'; payload: File }
   | { type: 'file_change_invalid'; payload: string }
   | { type: 'file_change_reset' }
@@ -61,21 +52,6 @@ type TimelinePageAction =
 // todo: sollen die reducer ausgelagert werden?
 const timelinePageReducer = (state: TimelinePageState, action: TimelinePageAction): TimelinePageState => {
   switch (action.type) {
-    case 'fetch_mumbles':
-      return { ...state, loading: true };
-    case 'fetch_mumbles_error':
-      return {
-        ...state,
-        forminputError: action.payload,
-        loading: false,
-      };
-    case 'fetch_mumbles_success':
-      return {
-        ...state,
-        hasMore: state.mumbles.length + action.payload.length < state.mumblesCount,
-        loading: false,
-        mumbles: [...state.mumbles, ...action.payload],
-      };
     case 'file_change_valid':
       return {
         ...state,
@@ -140,16 +116,12 @@ const timelinePageReducer = (state: TimelinePageState, action: TimelinePageActio
   }
 };
 
-export default function TimelinePage({
-  count: initialCount,
-  mumbles: initialMumbles,
-  decodedToken,
-}: TimelinePageProps): InferGetStaticPropsType<typeof getServerSideProps> {
+export default function TimelinePage(props: TimelinePageProps): InferGetStaticPropsType<typeof getServerSideProps> {
   const initialState: TimelinePageState = {
-    hasMore: initialMumbles.length < initialCount,
+    hasMore: props.mumbles.length < props.count,
     loading: false,
-    mumbles: initialMumbles,
-    mumblesCount: initialCount,
+    mumbles: props.mumbles,
+    mumblesCount: props.count,
     fileinputError: '',
     forminputError: '',
     form: {
@@ -192,32 +164,10 @@ export default function TimelinePage({
     dispatch({ type: 'submit_form' });
     //todo: postMumble über next page/api aufrufen
     try {
-      const newMumble = await postMumble(state.form.textinput, state.form.file, decodedToken?.accessToken as string);
+      const newMumble = await postMumble(state.form.textinput, state.form.file, props.decodedToken?.accessToken as string);
       dispatch({ type: 'submit_form_success', payload: newMumble });
     } catch (error) {
       dispatch({ type: 'submit_form_error', payload: `Ein Fehler ist aufgetreten: ${error}` });
-    }
-  };
-
-  const onLikeClick = async (mumble: Mumble) => {
-    // useSWR Hook?
-    // optimistic update
-    // errorhandling?
-    const res = await fetch(`/api/posts/${mumble.id}/like`, { method: mumble.likedByUser ? 'DELETE' : 'PUT' });
-    if (res.status === 204) {
-      console.warn('work');
-    } else {
-      console.warn('error');
-    }
-  };
-
-  const loadMore = async () => {
-    dispatch({ type: 'fetch_mumbles' });
-    try {
-      moreMumbles && dispatch({ type: 'fetch_mumbles_success', payload: moreMumbles.mumbles });
-    } catch (error) {
-      dispatch({ type: 'fetch_mumbles_error', payload: error as string });
-      throw new Error(`Error: ${error}`);
     }
   };
 
@@ -238,7 +188,7 @@ export default function TimelinePage({
         <Stack direction={StackDirection.col} spacing={StackSpacing.s} withDivider={true}>
           <>
             {/* TODO PROXY API CALL*/}
-            {decodedToken && (
+            {props.decodedToken && (
               <WriteCard
                 form={state.form}
                 handleChange={handleChange}
@@ -250,27 +200,7 @@ export default function TimelinePage({
                 variant={WriteCardVariant.main}
               />
             )}
-            {state.mumbles.map((mumble) => (
-              <MumbleCard key={mumble.id} variant={MumbleCardVariant.timeline} mumble={mumble} onLikeClick={onLikeClick} />
-            ))}
-            {state.hasMore && (
-              <Stack
-                alignItems={StackAlignItems.center}
-                justifyContent={StackJustifyContent.center}
-                spacing={StackSpacing.xl}
-              >
-                <TextButton
-                  ariaLabel="Start mumble"
-                  color={TextButtonColor.gradient}
-                  displayMode={TextButtonDisplayMode.inline}
-                  icon={<IconMumble />}
-                  onClick={() => loadMore()}
-                  size={TextButtonSize.l}
-                >
-                  {state.loading ? '...' : 'Weitere Mumbles laden'}
-                </TextButton>
-              </Stack>
-            )}
+            <MumbleList mumbles={props.mumbles} count={props.count} variant={MumbleCardVariant.timeline} />
           </>
         </Stack>
       </>

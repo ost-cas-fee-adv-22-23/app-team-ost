@@ -10,6 +10,7 @@ import { ChangeEvent, FormEvent, useEffect, useReducer } from 'react';
 import { validateFileinput } from '../../helpers/validate-fileinput';
 import { useSession } from 'next-auth/react';
 import Head from 'next/head';
+import { MumbleList } from '../../components/mumble-list/mumble-list';
 
 type MumblePageProps = {
   mumble: Mumble;
@@ -120,7 +121,6 @@ const mumblePageReducer = (state: MumblePageState, action: MumblePageAction): Mu
   }
 };
 
-//Todo: Reset reducer on navigation to a detailpage of a 'submumble'/reply
 export default function MumblePage(props: MumblePageProps): InferGetServerSidePropsType<typeof getServerSideProps> {
   const initialState: MumblePageState = {
     mumble: props.mumble,
@@ -196,25 +196,18 @@ export default function MumblePage(props: MumblePageProps): InferGetServerSidePr
         <div className="bg-white">
           <MumbleCard variant={MumbleCardVariant.detailpage} mumble={props.mumble} onLikeClick={onLikeClick} />
           {/* eslint-disable-next-line @typescript-eslint/no-empty-function */}
-          <WriteCard
-            form={state.reply}
-            handleChange={handleChange}
-            handleFileChange={handleFileChange}
-            resetFileinputError={resetFileinputError}
-            fileinputError={state.fileinputError}
-            handleSubmit={handleSubmit}
-            isSubmitting={state.replyIsSubmitting}
-            variant={WriteCardVariant.main}
-          />
           <Stack direction={StackDirection.col} spacing={StackSpacing.s} withDivider={true}>
-            {state.replies.map((response) => (
-              <MumbleCard
-                key={response.id}
-                variant={MumbleCardVariant.response}
-                mumble={response}
-                onLikeClick={onLikeClick}
-              />
-            ))}
+            <WriteCard
+              form={state.reply}
+              handleChange={handleChange}
+              handleFileChange={handleFileChange}
+              resetFileinputError={resetFileinputError}
+              fileinputError={state.fileinputError}
+              handleSubmit={handleSubmit}
+              isSubmitting={state.replyIsSubmitting}
+              variant={WriteCardVariant.main}
+            />
+            <MumbleList count={props.replies.length} mumbles={props.replies} variant={MumbleCardVariant.response} />
           </Stack>
         </div>
       </>

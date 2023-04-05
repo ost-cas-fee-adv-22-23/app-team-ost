@@ -31,9 +31,6 @@ export const useFetchMumbles = (creator?: string, newerThanMumbleId?: string, ol
 };
 
 export const useSearchMumbles = (mentions?: string, offset?: string, tags?: string, text?: string, userid?: string) => {
-  console.log('offset');
-  console.log(offset, userid);
-
   const urlParams = new URLSearchParams();
   if (mentions) {
     urlParams.set('mentions', mentions);
