@@ -1,6 +1,6 @@
 import { Mumble } from '../../types/mumble';
 
-export type MumbleWriteState = {
+export type WriteState = {
   fileinputError: string;
   forminputError: string;
   form: {
@@ -11,7 +11,7 @@ export type MumbleWriteState = {
   formIsSubmitting: boolean;
 };
 
-type MumbleWriteAction =
+type WriteAction =
   | { type: 'file_change_valid'; payload: File }
   | { type: 'file_change_invalid'; payload: string }
   | { type: 'file_change_reset' }
@@ -21,7 +21,7 @@ type MumbleWriteAction =
   | { type: 'submit_form_success'; payload: Mumble }
   | { type: 'submit_form_error'; payload: string };
 
-export const mumbleWriteReducer = (state: MumbleWriteState, action: MumbleWriteAction): MumbleWriteState => {
+export const writeReducer = (state: WriteState, action: WriteAction): WriteState => {
   switch (action.type) {
     case 'file_change_valid':
       return {

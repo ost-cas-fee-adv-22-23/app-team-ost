@@ -9,11 +9,12 @@ import {
   IconMumble,
   TextButtonSize,
 } from '@smartive-education/design-system-component-library-team-ost';
-import { FC, useEffect, useReducer } from 'react';
-import { useFetchMumbles, useSearchMumbles } from '../../hooks/api/qwacker-api';
+import { FC, useReducer } from 'react';
+import { useSearchMumbles } from '../../hooks/api/qwacker-api';
 import { Mumble } from '../../types/mumble';
 import { MumbleCard, MumbleCardVariant } from '../cards/mumble-card';
-import { ListState, listReducer } from './lists-reducer';
+import { ListState, listReducer } from '../../helpers/reducers/lists-reducer';
+import { onLikeClick } from '../../helpers/like-mumble';
 
 type LikesListProps = {
   mumbles: Mumble[];
@@ -33,27 +34,11 @@ export const LikesList: FC<LikesListProps> = (props: LikesListProps) => {
 
   const [listState, dispatchList] = useReducer(listReducer, initialState);
 
-  useEffect(() => {
-    dispatchList({ type: 'reinitialize', payload: props });
-  }, [props]);
-
   const {
     isLoading: likedLoading,
     error: likedError,
     data: moreMumbles,
   } = useSearchMumbles(undefined, listState.mumbles.length.toString(), undefined, undefined, props.creator);
-
-  const onLikeClick = async (mumble: Mumble) => {
-    // useSWR Hook?
-    // optimistic update
-    // errorhandling?
-    const res = await fetch(`/api/posts/${mumble.id}/like`, { method: mumble.likedByUser ? 'DELETE' : 'PUT' });
-    if (res.status === 204) {
-      console.warn('work');
-    } else {
-      console.warn('error');
-    }
-  };
 
   const loadMore = async () => {
     dispatchList({ type: 'fetch_mumbles' });
@@ -65,7 +50,7 @@ export const LikesList: FC<LikesListProps> = (props: LikesListProps) => {
     }
   };
 
-  if (!props.mumbles) {
+  if (!listState.mumbles) {
     return <p>Uups. Wir finden keine Mumbles für dich.</p>;
   }
 

@@ -24,8 +24,8 @@ import {
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import { getToken } from 'next-auth/jwt';
 import { useSession } from 'next-auth/react';
-import { useEffect, useReducer, useState } from 'react';
-import { MumbleCard, MumbleCardVariant } from '../../components/cards/mumble-card';
+import { useState } from 'react';
+import { MumbleCardVariant } from '../../components/cards/mumble-card';
 import MainLayout from '../../components/layouts/main-layout';
 import { fetchMumbles, fetchMumblesSearch } from '../../services/qwacker-api/posts';
 import { fetchUserById } from '../../services/qwacker-api/users';
@@ -33,7 +33,6 @@ import { Mumble } from '../../types/mumble';
 import { User } from '../../types/user';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useFetchMumbles, useSearchMumbles } from '../../hooks/api/qwacker-api';
 import Head from 'next/head';
 import { MumbleList } from '../../components/lists/mumble-list';
 import { LikesList } from '../../components/lists/likes-list';
