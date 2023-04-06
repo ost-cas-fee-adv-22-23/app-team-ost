@@ -8,9 +8,11 @@ import {
   TextButtonDisplayMode,
   IconMumble,
   TextButtonSize,
+  Paragraph,
+  ParagraphSize,
 } from '@smartive-education/design-system-component-library-team-ost';
 import { FC, useReducer } from 'react';
-import { useSearchMumbles } from '../../hooks/api/qwacker-api';
+import { useSearchMumbles } from '../../hooks/api/useSearchMumbles';
 import { Mumble } from '../../types/mumble';
 import { MumbleCard, MumbleCardVariant } from '../cards/mumble-card';
 import { ListState, listReducer } from '../../helpers/reducers/lists-reducer';
@@ -26,7 +28,7 @@ type LikesListProps = {
 export const LikesList: FC<LikesListProps> = (props: LikesListProps) => {
   const initialState: ListState = {
     hasMore: props.mumbles.length < props.count,
-    loading: false,
+    isLoading: false,
     mumbles: props.mumbles,
     mumblesCount: props.count,
     error: '',
@@ -35,8 +37,8 @@ export const LikesList: FC<LikesListProps> = (props: LikesListProps) => {
   const [listState, dispatchList] = useReducer(listReducer, initialState);
 
   const {
-    isLoading: likedLoading,
-    error: likedError,
+    isLoading: isLoadingMoreMumbles,
+    error: errorMoreMumbles,
     data: moreMumbles,
   } = useSearchMumbles(undefined, listState.mumbles.length.toString(), undefined, undefined, props.creator);
 
@@ -51,7 +53,7 @@ export const LikesList: FC<LikesListProps> = (props: LikesListProps) => {
   };
 
   if (!listState.mumbles) {
-    return <p>Uups. Wir finden keine Mumbles für dich.</p>;
+    return <Paragraph size={ParagraphSize.l}>Uups. Wir finden keine Mumbles für dich.</Paragraph>;
   }
 
   return (
@@ -69,7 +71,7 @@ export const LikesList: FC<LikesListProps> = (props: LikesListProps) => {
             onClick={() => loadMore()}
             size={TextButtonSize.l}
           >
-            {listState.loading ? '...' : 'Weitere Mumbles laden'}
+            {listState.isLoading ? '...' : 'Weitere Mumbles laden'}
           </TextButton>
         </Stack>
       )}

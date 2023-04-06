@@ -18,7 +18,7 @@ type WriteAction =
   | { type: 'file_inputerror_reset' }
   | { type: 'form_change'; payload: string }
   | { type: 'submit_form' }
-  | { type: 'submit_form_success'; payload: Mumble }
+  | { type: 'submit_form_success' }
   | { type: 'submit_form_error'; payload: string };
 
 export const writeReducer = (state: WriteState, action: WriteAction): WriteState => {
@@ -70,7 +70,6 @@ export const writeReducer = (state: WriteState, action: WriteAction): WriteState
     case 'submit_form_success':
       return {
         ...state,
-        // mumbles: [action.payload, ...state.mumbles],
         formIsSubmitting: false,
         form: {
           file: null,

@@ -8,17 +8,20 @@ import {
   TextButtonDisplayMode,
   IconMumble,
   TextButtonSize,
+  Paragraph,
+  ParagraphSize,
 } from '@smartive-education/design-system-component-library-team-ost';
 import { ChangeEvent, FC, FormEvent, useReducer } from 'react';
-import { useFetchMumbles } from '../../hooks/api/qwacker-api';
+import { useFetchMumbles } from '../../hooks/api/useFetchMumbles';
 import { Mumble } from '../../types/mumble';
 import { MumbleCard, MumbleCardVariant } from '../cards/mumble-card';
 import { ListState, listReducer } from '../../helpers/reducers/lists-reducer';
 import { WriteCard, WriteCardVariant } from '../cards/write-card';
 import { validateFileinput } from '../../helpers/validate-fileinput';
-import { postMumble } from '../../services/qwacker-api/posts';
+import { postMumble, postReply } from '../../services/qwacker-api/posts';
 import { writeReducer, WriteState } from '../../helpers/reducers/write-reducer';
 import { onLikeClick } from '../../helpers/like-mumble';
+import { isReadable } from 'stream';
 
 type MumbleListProps = {
   mumbles: Mumble[];
@@ -27,12 +30,13 @@ type MumbleListProps = {
   creator?: string;
   likesFilter?: boolean;
   accessToken?: string;
+  replyToPostId?: string;
 };
 
 export const MumbleList: FC<MumbleListProps> = (props: MumbleListProps) => {
   const initialState: ListState = {
     hasMore: props.mumbles.length < props.count,
-    loading: false,
+    isLoading: false,
     mumbles: props.mumbles,
     mumblesCount: props.count,
     error: '',
@@ -52,8 +56,8 @@ export const MumbleList: FC<MumbleListProps> = (props: MumbleListProps) => {
   const [writeState, dispatchWrite] = useReducer(writeReducer, initialWriteState);
 
   const {
-    isLoading: mumbleLoading,
-    error: mumbleError,
+    isLoading: isLoadingMoreMumbles,
+    error: errorMoreMumbles,
     data: moreMumbles,
   } = useFetchMumbles(
     props.creator,
@@ -71,7 +75,7 @@ export const MumbleList: FC<MumbleListProps> = (props: MumbleListProps) => {
     }
   };
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleWriteCardFormChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     //todo validate textinput
     dispatchWrite({ type: 'form_change', payload: e.target.value });
   };
@@ -93,18 +97,28 @@ export const MumbleList: FC<MumbleListProps> = (props: MumbleListProps) => {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const isReply = false;
     dispatchWrite({ type: 'submit_form' });
     //todo: postMumble über next page/api aufrufen
     try {
-      const newMumble = await postMumble(writeState.form.textinput, writeState.form.file, props.accessToken as string);
-      dispatchWrite({ type: 'submit_form_success', payload: newMumble });
+      let newMumble: Mumble;
+      props.replyToPostId
+        ? (newMumble = await postReply(
+            props.replyToPostId,
+            writeState.form.textinput,
+            writeState.form.file,
+            props.accessToken as string
+          ))
+        : (newMumble = await postMumble(writeState.form.textinput, writeState.form.file, props.accessToken as string));
+      dispatchList({ type: 'add_new_post_to_list', payload: newMumble });
+      dispatchWrite({ type: 'submit_form_success' });
     } catch (error) {
       dispatchWrite({ type: 'submit_form_error', payload: `Ein Fehler ist aufgetreten: ${error}` });
     }
   };
 
   if (!props.mumbles) {
-    return <p>Uups. Wir finden keine Mumbles für dich.</p>;
+    return <Paragraph size={ParagraphSize.l}>Uups. Wir finden keine Mumbles für dich.</Paragraph>;
   }
 
   return (
@@ -112,7 +126,7 @@ export const MumbleList: FC<MumbleListProps> = (props: MumbleListProps) => {
       {props.accessToken && (
         <WriteCard
           form={writeState.form}
-          handleChange={handleChange}
+          handleChange={handleWriteCardFormChange}
           handleFileChange={handleFileChange}
           resetFileinputError={resetFileinputError}
           fileinputError={writeState.fileinputError}
@@ -134,7 +148,7 @@ export const MumbleList: FC<MumbleListProps> = (props: MumbleListProps) => {
             onClick={() => loadMore()}
             size={TextButtonSize.l}
           >
-            {listState.loading ? '...' : 'Weitere Mumbles laden'}
+            {listState.isLoading ? '...' : 'Weitere Mumbles laden'}
           </TextButton>
         </Stack>
       )}

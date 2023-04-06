@@ -32,6 +32,7 @@ export default function MumblePage(props: MumblePageProps): InferGetServerSidePr
               mumbles={props.replies}
               variant={MumbleCardVariant.response}
               accessToken={session?.accessToken}
+              replyToPostId={props.mumble.id}
             />
           </Stack>
         </div>
