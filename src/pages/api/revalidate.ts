@@ -10,7 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (typeof pathToRevalidate === 'string') {
     try {
       // this should be the actual path not a rewritten path
-      // e.g. for "/mumble/[slug]" this should be "/mumble/post-1"
+      // e.g. for "/mumble/[slug]" this should be "/mumble/01GWVG8KYB45EEPVN4G14E0V2P"
       await res.revalidate(pathToRevalidate);
       return res.json({ revalidated: true });
     } catch (err) {

@@ -46,10 +46,12 @@ export default function MumblePublicPage(props: MumblePublicPageProps): InferGet
 }
 
 export const getStaticPaths = async (): Promise<{ paths: { params: { id: string } }[]; fallback: string }> => {
-  // todo: welche paths sollen initial gerendert werden? Am meisten Likes? Am meisten Comments? Am meisten besucht
+  // Initially we would render all mumbles which are most visited. Another option is to render mumbles which
+  // have the most likes or comments. These functionalities are missing in the current version of the api. So we
+  // decided to prerender nothing and use the fallback blocking option with SSR.
   const mumbles: Mumble[] = [];
 
-  // Get the paths we want to pre-render based on mumbles
+  // Get the paths we want to pre-render based on mumbles (just prepared for the future and api version 2 ;))
   const paths = mumbles.map((m) => ({
     params: { id: m.id },
   }));
