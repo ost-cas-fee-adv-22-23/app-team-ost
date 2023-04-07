@@ -24,8 +24,8 @@ import {
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import { getToken } from 'next-auth/jwt';
 import { useSession } from 'next-auth/react';
-import { useEffect, useReducer } from 'react';
-import { MumbleCard, MumbleCardVariant } from '../../components/cards/mumble-card';
+import { useState } from 'react';
+import { MumbleCardVariant } from '../../components/cards/mumble-card';
 import MainLayout from '../../components/layouts/main-layout';
 import { fetchMumbles, fetchMumblesSearch } from '../../services/qwacker-api/posts';
 import { fetchUserById } from '../../services/qwacker-api/users';
@@ -33,8 +33,9 @@ import { Mumble } from '../../types/mumble';
 import { User } from '../../types/user';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useFetchMumbles, useSearchMumbles } from '../../hooks/api/qwacker-api';
 import Head from 'next/head';
+import { MumbleList } from '../../components/lists/mumble-list';
+import { LikesList } from '../../components/lists/likes-list';
 
 type ProfilePageProps = {
   likedMumbles: Mumble[];
@@ -44,136 +45,14 @@ type ProfilePageProps = {
   user: User;
 };
 
-type ProfilePageState = {
-  errorMessage: string;
-  likedMumbles: Mumble[];
-  likedCount: number;
-  likedhasMore: boolean;
-  loading: boolean;
-  mumblesCount: number;
-  mumblesHasMore: boolean;
-  mumbles: Mumble[];
-  postType: 'mumbles' | 'likedMumbles';
-};
-
-type ProfilePageAction =
-  | {
-      type: 'reinitialize';
-      payload: { likedMumbles: Mumble[]; likedCount: number; count: number; mumbles: Mumble[]; user: User };
-    }
-  | { type: 'fetch_mumbles' }
-  | { type: 'fetch_mumbles_success'; payload: Mumble[] }
-  | { type: 'fetch_likes_success'; payload: Mumble[] }
-  | { type: 'fetch_mumbles_error'; payload: string }
-  | { type: 'switch_post_type' };
-
-const profilePageReducer = (state: ProfilePageState, action: ProfilePageAction): ProfilePageState => {
-  switch (action.type) {
-    case 'reinitialize': {
-      return {
-        errorMessage: '',
-        likedMumbles: action.payload.likedMumbles,
-        likedCount: action.payload.likedCount,
-        likedhasMore: action.payload.likedMumbles.length < action.payload.likedCount,
-        loading: false,
-        mumbles: action.payload.mumbles,
-        mumblesCount: action.payload.count,
-        mumblesHasMore: action.payload.mumbles.length < action.payload.count,
-        postType: 'mumbles',
-      };
-    }
-    case 'fetch_mumbles':
-      return { ...state, loading: true };
-    case 'fetch_mumbles_success':
-      return {
-        ...state,
-        mumblesHasMore: state.mumbles.length + action.payload.length < state.mumblesCount,
-        loading: false,
-        mumbles: [...state.mumbles, ...action.payload],
-      };
-    case 'fetch_mumbles_error':
-      return {
-        ...state,
-        errorMessage: action.payload,
-        loading: false,
-      };
-    case 'fetch_likes_success':
-      return {
-        ...state,
-        likedhasMore: state.likedMumbles.length + action.payload.length < state.likedCount,
-        loading: false,
-        likedMumbles: [...state.likedMumbles, ...action.payload],
-      };
-    case 'switch_post_type':
-      return {
-        ...state,
-        postType: state.postType === 'mumbles' ? 'likedMumbles' : 'mumbles',
-      };
-    default:
-      throw new Error(`Unknown action type`);
-  }
-};
-
+enum ProfilePageStateTypes {
+  mumbles = 'mumbles',
+  likedMumbles = 'likedMumbles',
+}
 export default function ProfilePage(props: ProfilePageProps): InferGetServerSidePropsType<typeof getServerSideProps> {
-  const initialState: ProfilePageState = {
-    errorMessage: '',
-    likedMumbles: props.likedMumbles,
-    likedCount: props.likedCount,
-    likedhasMore: props.likedMumbles.length < props.likedCount,
-    loading: false,
-    mumbles: props.mumbles,
-    mumblesCount: props.count,
-    mumblesHasMore: props.mumbles.length < props.count,
-    postType: 'mumbles',
-  };
-  const [state, dispatch] = useReducer(profilePageReducer, initialState);
-
-  const {
-    isLoading: mumbleLoading,
-    error: mumbleError,
-    data: moreMumbles,
-  } = useFetchMumbles(props.user.id, undefined, state.mumbles[state.mumbles.length - 1].id);
-
-  const {
-    isLoading: likedLoading,
-    error: likedError,
-    data: moreLikedMumbles,
-  } = useSearchMumbles(undefined, state.likedMumbles.length.toString(), undefined, undefined, props.user.id);
-
-  //todo: Evtl. durch Page-Transitions lösen mit key=router.path
-  useEffect(() => {
-    dispatch({ type: 'reinitialize', payload: props });
-  }, [props]);
-
+  const [postType, setPostType] = useState<ProfilePageStateTypes>(ProfilePageStateTypes.mumbles);
   const { data: session } = useSession();
   const isCurrentUser = props.user.id === session?.user.id;
-
-  const onLikeClick = async (mumble: Mumble) => {
-    // useSWR Hook?
-    // optimistic update
-    // errorhandling?
-    const res = await fetch(`/api/posts/${mumble.id}/like`, { method: mumble.likedByUser ? 'DELETE' : 'PUT' });
-  };
-
-  const loadMore = async () => {
-    dispatch({ type: 'fetch_mumbles' });
-    try {
-      if (state.postType === 'mumbles') {
-        moreMumbles && dispatch({ type: 'fetch_mumbles_success', payload: moreMumbles.mumbles });
-      }
-      if (state.postType === 'likedMumbles') {
-        moreLikedMumbles && dispatch({ type: 'fetch_likes_success', payload: moreLikedMumbles.mumbles });
-      }
-    } catch (error) {
-      dispatch({ type: 'fetch_mumbles_error', payload: error as string });
-      throw new Error(`Error: ${error}`);
-    }
-  };
-
-  const mumblesToRender: Record<string, Mumble[]> = {
-    likedMumbles: state.likedMumbles,
-    mumbles: state.mumbles,
-  };
 
   return (
     <MainLayout>
@@ -227,7 +106,13 @@ export default function ProfilePage(props: ProfilePageProps): InferGetServerSide
           {isCurrentUser ? (
             <div className="w-fit my-m">
               <TabNav
-                onTabChange={() => dispatch({ type: 'switch_post_type' })}
+                onTabChange={() =>
+                  setPostType(
+                    postType === ProfilePageStateTypes.mumbles
+                      ? ProfilePageStateTypes.likedMumbles
+                      : ProfilePageStateTypes.mumbles
+                  )
+                }
                 tabNames={['Deine Mumbles', 'Deine Likes']}
               />
             </div>
@@ -253,27 +138,20 @@ export default function ProfilePage(props: ProfilePageProps): InferGetServerSide
               </Stack>
             </div>
           )}
-          {mumblesToRender[state.postType].length > 0 ? (
-            mumblesToRender[state.postType].map((mumble) => (
-              <MumbleCard key={mumble.id} variant={MumbleCardVariant.timeline} mumble={mumble} onLikeClick={onLikeClick} />
-            ))
+          {postType === ProfilePageStateTypes.mumbles ? (
+            <MumbleList
+              count={props.count}
+              mumbles={props.mumbles}
+              variant={MumbleCardVariant.timeline}
+              creator={props.user.id}
+            />
           ) : (
-            <Label size={LabelSize.l}>Ziemlich leer hier</Label>
-          )}
-          {((state.mumblesHasMore && state.postType === 'mumbles') ||
-            (state.likedhasMore && state.postType === 'likedMumbles')) && (
-            <Stack alignItems={StackAlignItems.center} justifyContent={StackJustifyContent.center} spacing={StackSpacing.xl}>
-              <TextButton
-                ariaLabel="Load more mumbles"
-                color={TextButtonColor.gradient}
-                displayMode={TextButtonDisplayMode.inline}
-                icon={<IconMumble />}
-                onClick={() => loadMore()}
-                size={TextButtonSize.l}
-              >
-                {state.loading ? '...' : 'Weitere Mumbles laden'}
-              </TextButton>
-            </Stack>
+            <LikesList
+              count={props.likedCount}
+              mumbles={props.likedMumbles}
+              variant={MumbleCardVariant.response}
+              creator={props.user.id}
+            />
           )}
         </Stack>
       </>
