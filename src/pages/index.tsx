@@ -40,7 +40,9 @@ export default function TimelinePage(props: TimelinePageProps): InferGetStaticPr
             mumbles={props.mumbles}
             count={props.count}
             variant={MumbleCardVariant.timeline}
-            accessToken={props.decodedToken?.accessToken}
+            isWriteCardVisible={!!props.decodedToken?.accessToken}
+            isReplyActionVisible={true}
+            isLikeActionVisible={!!props.decodedToken?.accessToken}
           />
         </Stack>
       </>
