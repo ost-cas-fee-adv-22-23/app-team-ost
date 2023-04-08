@@ -40,9 +40,9 @@ export default function TimelinePage(props: TimelinePageProps): InferGetStaticPr
             mumbles={props.mumbles}
             count={props.count}
             variant={MumbleCardVariant.timeline}
-            isWriteCardVisible={!!props.decodedToken?.accessToken}
+            isWriteCardVisible={!!props.decodedToken}
             isReplyActionVisible={true}
-            isLikeActionVisible={!!props.decodedToken?.accessToken}
+            isLikeActionVisible={!!props.decodedToken}
           />
         </Stack>
       </>
@@ -53,7 +53,7 @@ export default function TimelinePage(props: TimelinePageProps): InferGetStaticPr
 export const getServerSideProps: GetServerSideProps = async ({ req, res }: GetServerSidePropsContext) => {
   try {
     const decodedToken = await getToken({ req });
-    const { count, mumbles } = await fetchMumbles({ token: decodedToken?.accessToken as string });
+    const { count, mumbles } = await fetchMumbles({ token: decodedToken?.accessToken });
 
     return {
       props: {
