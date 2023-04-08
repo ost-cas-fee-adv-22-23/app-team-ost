@@ -11,7 +11,7 @@ import {
   Paragraph,
   ParagraphSize,
 } from '@smartive-education/design-system-component-library-team-ost';
-import { FC, useReducer } from 'react';
+import { FC, useEffect, useReducer } from 'react';
 import { useSearchMumbles } from '../../hooks/api/useSearchMumbles';
 import { Mumble } from '../../types/mumble';
 import { MumbleCard, MumbleCardVariant } from '../cards/mumble-card';
@@ -38,13 +38,36 @@ export const LikesList: FC<LikesListProps> = (props: LikesListProps) => {
 
   const [listState, dispatchList] = useReducer(listReducer, initialState);
 
+  const fetchInitialUserLikes = async (userid: string) => {
+    dispatchList({ type: 'fetch_mumbles' });
+    const urlParams = new URLSearchParams();
+    urlParams.set('userid', userid);
+    try {
+      const res = await fetch(`/api/posts/searchmumbles?${urlParams}`);
+      if (res.status === 200) {
+        // Todo: Vielleich verstehst du, warum ich als Response keine Mumbles erhalte...
+        // console.log(res);
+        // dispatchList({ type: 'fetch_mumbles_success', payload: res.mumbles });
+      } else {
+        console.warn('error');
+      }
+    } catch (error) {
+      dispatchList({ type: 'fetch_mumbles_error', payload: error as string });
+      throw new Error(`Error: ${error}`);
+    }
+  };
+
   const {
     isLoading: isLoadingMoreMumbles,
     error: errorMoreMumbles,
     data: moreMumbles,
   } = useSearchMumbles(undefined, listState.mumbles.length.toString(), undefined, undefined, props.creator);
 
-  const loadMore = async () => {
+  useEffect(() => {
+    props.creator && fetchInitialUserLikes(props.creator);
+  }, []);
+
+  const loadMore = () => {
     dispatchList({ type: 'fetch_mumbles' });
     try {
       moreMumbles && dispatchList({ type: 'fetch_mumbles_success', payload: moreMumbles.mumbles });
@@ -53,6 +76,10 @@ export const LikesList: FC<LikesListProps> = (props: LikesListProps) => {
       throw new Error(`Error: ${error}`);
     }
   };
+
+  if (listState.isLoading) {
+    return <Paragraph size={ParagraphSize.l}>Deine Likes werden gerade gesammelt.</Paragraph>;
+  }
 
   if (!listState.mumbles || listState.mumbles.length <= 0) {
     return <Paragraph size={ParagraphSize.l}>Uups. Da sind noch keine Likes von dir.</Paragraph>;

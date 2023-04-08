@@ -155,7 +155,7 @@ export const fetchMumblesSearch = async (params: {
   tags?: string;
   text?: string;
   userid?: string;
-}) => {
+}): Promise<{ count: number; mumbles: Mumble[] }> => {
   const { accessToken, isReply, limit, mentions, offset, tags, text, userid } = params || {};
 
   const body: SearchPostsBody = {

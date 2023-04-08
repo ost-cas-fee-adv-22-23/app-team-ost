@@ -47,6 +47,7 @@ enum ProfilePageStateTypes {
   mumbles = 'mumbles',
   likedMumbles = 'likedMumbles',
 }
+
 export default function ProfilePage(props: ProfilePageProps): InferGetServerSidePropsType<typeof getServerSideProps> {
   const [postType, setPostType] = useState<ProfilePageStateTypes>(ProfilePageStateTypes.mumbles);
   const { data: session } = useSession();
@@ -174,11 +175,6 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query: { id 
 
     const user = await fetchUserById({ id: id as string, accessToken: decodedToken.accessToken });
     const { count, mumbles } = await fetchMumbles({ creator: id as string, token: decodedToken.accessToken });
-
-    // const { count: likedCount, mumbles: likedMumbles } = await fetchMumblesSearch({
-    //   accessToken: decodedToken.accessToken,
-    //   userid: id as string,
-    // });
 
     return {
       props: {
