@@ -1,5 +1,3 @@
-import { Mumble } from '../../types/mumble';
-
 export type WriteState = {
   fileinputError: string;
   forminputError: string;

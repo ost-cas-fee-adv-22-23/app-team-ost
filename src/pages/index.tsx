@@ -1,5 +1,8 @@
-import { GetServerSideProps, GetServerSidePropsContext, InferGetStaticPropsType } from 'next';
-import MainLayout from '../components/layouts/main-layout';
+import { MumbleCardVariant } from '@/components/cards/mumble-card';
+import MainLayout from '@/components/layouts/main-layout';
+import { MumbleList } from '@/components/lists/mumble-list';
+import { fetchMumbles } from '@/services/qwacker-api/posts';
+import { Mumble } from '@/types/mumble';
 import {
   Heading,
   HeadingSize,
@@ -7,12 +10,9 @@ import {
   StackDirection,
   StackSpacing,
 } from '@smartive-education/design-system-component-library-team-ost';
-import Head from 'next/head';
-import { MumbleCardVariant } from '../components/cards/mumble-card';
-import { Mumble } from '../types/mumble';
-import { fetchMumbles } from '../services/qwacker-api/posts';
+import { GetServerSideProps, GetServerSidePropsContext, InferGetStaticPropsType } from 'next';
 import { getToken, JWT } from 'next-auth/jwt';
-import { MumbleList } from '../components/lists/mumble-list';
+import Head from 'next/head';
 
 type TimelinePageProps = {
   count: number;

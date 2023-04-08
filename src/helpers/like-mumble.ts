@@ -1,5 +1,4 @@
-import { Mumble } from '../types/mumble';
-import { FILEINPUT_ALLOWEDFILES, FILEINPUT_ALLOWEDTYPES, FILEINPUT_MAXSIZE } from './constants';
+import { Mumble } from '@/types/mumble';
 
 /**
  * Handle a like or dislike on a mumble

@@ -1,6 +1,6 @@
+import { fetchMumbles } from '@/services/qwacker-api/posts';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { getToken } from 'next-auth/jwt';
-import { fetchMumbles } from '../../../services/qwacker-api/posts';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { creator, newerThan, olderThan } = req.query;

@@ -1,7 +1,7 @@
+import { qwackerApi } from '@/services/qwacker-api/api';
+import { fetchUserById } from '@/services/qwacker-api/users';
+import { Mumble } from '@/types/mumble';
 import { decodeTime } from 'ulid';
-import { Mumble } from '../../types/mumble';
-import { fetchUserById } from './users';
-import { qwackerApi } from './api';
 
 type BasePost = {
   id: string;

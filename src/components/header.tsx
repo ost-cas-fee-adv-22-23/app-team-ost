@@ -1,19 +1,19 @@
+import { SettingsModal } from '@/components/modals/settings-modal';
 import {
-  PageHeader,
-  MumbleWhiteHorizontal,
-  Navigation,
-  ProfilePictureButton,
-  SettingsButton,
-  LogoutButton,
   Label,
   LabelSize,
+  LogoutButton,
+  MumbleWhiteHorizontal,
+  Navigation,
+  PageHeader,
+  ProfilePictureButton,
+  SettingsButton,
 } from '@smartive-education/design-system-component-library-team-ost';
-import { SettingsModal } from './modals/settings-modal';
-import { ChangeEvent, FC, FormEvent, ReactElement, useState } from 'react';
 import { useSession } from 'next-auth/react';
-import Link from 'next/link';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { ChangeEvent, FC, FormEvent, ReactElement, useState } from 'react';
 
 type HeaderProps = {
   children?: ReactElement;
