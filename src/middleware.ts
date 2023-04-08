@@ -33,7 +33,8 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
+     * - manifest.json, icon-, sw.js, workbox- (pwa files)
      */
-    '/((?!api|_next/static|_next/image|favicon.ico|auth).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|manifest.json|icon-|sw.js|workbox-|auth).*)',
   ],
 };
