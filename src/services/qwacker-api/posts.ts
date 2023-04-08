@@ -110,14 +110,26 @@ export const postReply = async (postid: string, text: string, file: UploadImage 
   }
 };
 
-export const fetchMumbleById = async (id: string, accessToken: string) => {
-  const apiPostResult = await qwackerApi.get<Post>(`posts/${id}`, accessToken);
+export const fetchMumbleById = async (id: string, accessToken?: string) => {
+  let apiPostResult;
+  if (accessToken) {
+    apiPostResult = await qwackerApi.get<ApiPostResult>(`posts/${id}`, accessToken);
+  } else {
+    apiPostResult = await qwackerApi.getWithoutAuth<ApiPostResult>(`posts/${id}`);
+  }
+
   const mumble = await transformApiPostResultToMumble(apiPostResult, accessToken);
   return mumble;
 };
 
-export const fetchRepliesByMumbleId = async (id: string, accessToken: string) => {
-  const apiPostResult = await qwackerApi.get<Reply[]>(`posts/${id}/replies`, accessToken);
+export const fetchRepliesByMumbleId = async (id: string, accessToken?: string) => {
+  let apiPostResult;
+  if (accessToken) {
+    apiPostResult = await qwackerApi.get<Reply[]>(`posts/${id}/replies`, accessToken);
+  } else {
+    apiPostResult = await qwackerApi.getWithoutAuth<Reply[]>(`posts/${id}/replies`);
+  }
+
   const replies = await Promise.all(
     apiPostResult.map(async (reply) => await transformApiPostResultToMumble(reply, accessToken))
   );

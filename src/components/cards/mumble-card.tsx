@@ -35,6 +35,8 @@ type MumbleCardProps = {
   variant: MumbleCardVariant;
   mumble: Mumble;
   onLikeClick: (mumble: Mumble) => void;
+  isReplyActionVisible?: boolean;
+  isLikeActionVisible?: boolean;
 };
 
 type MumbleCardVariantMap = {
@@ -73,7 +75,13 @@ const mumbleCardVariantMap: Record<MumbleCardVariant, MumbleCardVariantMap> = {
   },
 };
 
-export const MumbleCard: FC<MumbleCardProps> = ({ variant, mumble, onLikeClick }) => {
+export const MumbleCard: FC<MumbleCardProps> = ({
+  isReplyActionVisible = false,
+  isLikeActionVisible = false,
+  variant,
+  mumble,
+  onLikeClick,
+}) => {
   const settings = mumbleCardVariantMap[variant] || mumbleCardVariantMap.detailpage;
 
   return (
@@ -141,13 +149,17 @@ export const MumbleCard: FC<MumbleCardProps> = ({ variant, mumble, onLikeClick }
           }}
           spacing={StackSpacing.m}
         >
-          <Reply
-            href={`/mumble/${mumble.id}`}
-            linkComponent={Link}
-            repliesCount={mumble.replyCount ?? 0}
-            withReaction={(mumble.replyCount ?? 0) > 0}
-          />
-          <Like likesCount={mumble.likeCount} onClick={() => onLikeClick(mumble)} withReaction={mumble.likedByUser} />
+          {isReplyActionVisible && (
+            <Reply
+              href={`/mumble/${mumble.id}`}
+              linkComponent={Link}
+              repliesCount={mumble.replyCount ?? 0}
+              withReaction={(mumble.replyCount ?? 0) > 0}
+            />
+          )}
+          {isLikeActionVisible && (
+            <Like likesCount={mumble.likeCount} onClick={() => onLikeClick(mumble)} withReaction={mumble.likedByUser} />
+          )}
           <Share linkToCopy={`${BASE_URL}mumble/${mumble.id}`} />
         </Stack>
       </Stack>

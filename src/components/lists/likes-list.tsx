@@ -23,6 +23,8 @@ type LikesListProps = {
   count: number;
   variant: MumbleCardVariant;
   creator?: string;
+  isReplyActionVisible?: boolean;
+  isLikeActionVisible?: boolean;
 };
 
 export const LikesList: FC<LikesListProps> = (props: LikesListProps) => {
@@ -59,7 +61,14 @@ export const LikesList: FC<LikesListProps> = (props: LikesListProps) => {
   return (
     <>
       {listState.mumbles.map((mumble) => (
-        <MumbleCard key={mumble.id} variant={props.variant} mumble={mumble} onLikeClick={onLikeClick} />
+        <MumbleCard
+          key={mumble.id}
+          variant={props.variant}
+          mumble={mumble}
+          onLikeClick={onLikeClick}
+          isReplyActionVisible={props.isReplyActionVisible}
+          isLikeActionVisible={props.isLikeActionVisible}
+        />
       ))}
       {listState.hasMore && (
         <Stack alignItems={StackAlignItems.center} justifyContent={StackJustifyContent.center} spacing={StackSpacing.xl}>

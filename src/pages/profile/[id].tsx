@@ -144,6 +144,9 @@ export default function ProfilePage(props: ProfilePageProps): InferGetServerSide
               mumbles={props.mumbles}
               variant={MumbleCardVariant.timeline}
               creator={props.user.id}
+              isWriteCardVisible={false}
+              isReplyActionVisible={!!session?.accessToken}
+              isLikeActionVisible={!!session?.accessToken}
             />
           ) : (
             <LikesList
@@ -151,6 +154,8 @@ export default function ProfilePage(props: ProfilePageProps): InferGetServerSide
               mumbles={props.likedMumbles}
               variant={MumbleCardVariant.response}
               creator={props.user.id}
+              isReplyActionVisible={!!session?.accessToken}
+              isLikeActionVisible={!!session?.accessToken}
             />
           )}
         </Stack>
