@@ -1,6 +1,4 @@
-import { signOut, useSession } from 'next-auth/react';
-import SplitScreenLayout from '../../components/layouts/split-screen-layout';
-import Head from 'next/head';
+import SplitScreenLayout from '@/components/layouts/split-screen-layout';
 import {
   Heading,
   HeadingSize,
@@ -15,9 +13,11 @@ import {
   TextButtonSize,
   TextLink,
 } from '@smartive-education/design-system-component-library-team-ost';
-import React from 'react';
+import { signOut, useSession } from 'next-auth/react';
+import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import React from 'react';
 
 export default function Logout() {
   const { data: session } = useSession();

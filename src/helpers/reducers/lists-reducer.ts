@@ -1,4 +1,4 @@
-import { Mumble } from '../../types/mumble';
+import { Mumble } from '@/types/mumble';
 
 export type ListState = {
   hasMore: boolean;

@@ -1,5 +1,8 @@
-import { GetServerSideProps, GetServerSidePropsContext, InferGetStaticPropsType } from 'next';
-import MainLayout from '../components/layouts/main-layout';
+import { MumbleCardVariant } from '@/components/cards/mumble-card';
+import MainLayout from '@/components/layouts/main-layout';
+import { MumbleList } from '@/components/lists/mumble-list';
+import { fetchMumbles } from '@/services/qwacker-api/posts';
+import { Mumble } from '@/types/mumble';
 import {
   Heading,
   HeadingSize,
@@ -7,12 +10,9 @@ import {
   StackDirection,
   StackSpacing,
 } from '@smartive-education/design-system-component-library-team-ost';
-import Head from 'next/head';
-import { MumbleCardVariant } from '../components/cards/mumble-card';
-import { Mumble } from '../types/mumble';
-import { fetchMumbles } from '../services/qwacker-api/posts';
+import { GetServerSideProps, GetServerSidePropsContext, InferGetStaticPropsType } from 'next';
 import { getToken, JWT } from 'next-auth/jwt';
-import { MumbleList } from '../components/lists/mumble-list';
+import Head from 'next/head';
 
 type TimelinePageProps = {
   count: number;
@@ -40,9 +40,9 @@ export default function TimelinePage(props: TimelinePageProps): InferGetStaticPr
             mumbles={props.mumbles}
             count={props.count}
             variant={MumbleCardVariant.timeline}
-            isWriteCardVisible={!!props.decodedToken?.accessToken}
+            isWriteCardVisible={!!props.decodedToken}
             isReplyActionVisible={true}
-            isLikeActionVisible={!!props.decodedToken?.accessToken}
+            isLikeActionVisible={!!props.decodedToken}
           />
         </Stack>
       </>
@@ -53,7 +53,7 @@ export default function TimelinePage(props: TimelinePageProps): InferGetStaticPr
 export const getServerSideProps: GetServerSideProps = async ({ req, res }: GetServerSidePropsContext) => {
   try {
     const decodedToken = await getToken({ req });
-    const { count, mumbles } = await fetchMumbles({ token: decodedToken?.accessToken as string });
+    const { count, mumbles } = await fetchMumbles({ token: decodedToken?.accessToken });
 
     return {
       props: {

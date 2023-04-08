@@ -1,6 +1,6 @@
+import { fetchMumblesSearch } from '@/services/qwacker-api/posts';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { getToken } from 'next-auth/jwt';
-import { fetchMumblesSearch } from '../../../services/qwacker-api/posts';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { mentions, offset, tags, text, userid } = req.query;

@@ -1,6 +1,6 @@
-import Head from 'next/head';
-import { LayoutProps } from './types/page-with-layout';
+import { LayoutProps } from '@/components/layouts/types/page-with-layout';
 import { Heading, HeadingSize, MumbleWhite } from '@smartive-education/design-system-component-library-team-ost';
+import Head from 'next/head';
 
 const SplitScreenLayout: LayoutProps = ({ children }) => {
   return (

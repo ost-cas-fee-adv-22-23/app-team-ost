@@ -1,14 +1,14 @@
-import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
-import MainLayout from '../../components/layouts/main-layout';
-import { MumbleCard, MumbleCardVariant } from '../../components/cards/mumble-card';
+import { MumbleCard, MumbleCardVariant } from '@/components/cards/mumble-card';
+import MainLayout from '@/components/layouts/main-layout';
+import { MumbleList } from '@/components/lists/mumble-list';
+import { onLikeClick } from '@/helpers/like-mumble';
+import { fetchMumbleById, fetchRepliesByMumbleId } from '@/services/qwacker-api/posts';
+import { Mumble } from '@/types/mumble';
 import { Stack, StackDirection, StackSpacing } from '@smartive-education/design-system-component-library-team-ost';
-import { fetchMumbleById, fetchRepliesByMumbleId } from '../../services/qwacker-api/posts';
-import { Mumble } from '../../types/mumble';
+import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import { getToken } from 'next-auth/jwt';
 import { useSession } from 'next-auth/react';
 import Head from 'next/head';
-import { MumbleList } from '../../components/lists/mumble-list';
-import { onLikeClick } from '../../helpers/like-mumble';
 
 type MumblePageProps = {
   mumble: Mumble;

@@ -1,5 +1,5 @@
+import { Mumble } from '@/types/mumble';
 import useSWR from 'swr';
-import { Mumble } from '../../types/mumble';
 import fetcher from './fetcher';
 
 type FetchMumbles = {
@@ -20,7 +20,7 @@ export const useFetchMumbles = (creator?: string, newerThanMumbleId?: string, ol
     urlParams.set('olderThan', olderThanMumbleId);
   }
 
-  const { data, error, isLoading } = useSWR<FetchMumbles, Error>(`/api/posts/fetchmumbles?${urlParams}`, fetcher);
+  const { data, error, isLoading } = useSWR<FetchMumbles, Error>(`/api/posts/fetch-mumbles?${urlParams}`, fetcher);
 
   return {
     data,

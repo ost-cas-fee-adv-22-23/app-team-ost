@@ -1,5 +1,5 @@
-import { User } from '../../types/user';
-import { qwackerApi } from './api';
+import { qwackerApi } from '@/services/qwacker-api/api';
+import { User } from '@/types/user';
 
 type ApiUserResult = {
   id: string;

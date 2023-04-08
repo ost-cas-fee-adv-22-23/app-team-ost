@@ -1,6 +1,6 @@
+import { Header } from '@/components/header';
+import { LayoutProps } from '@/components/layouts/types/page-with-layout';
 import Head from 'next/head';
-import { Header } from '../header';
-import { LayoutProps } from './types/page-with-layout';
 
 const MainLayout: LayoutProps = ({ children }) => {
   return (
