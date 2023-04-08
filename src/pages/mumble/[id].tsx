@@ -30,16 +30,16 @@ export default function MumblePage(props: MumblePageProps): InferGetServerSidePr
             mumble={props.mumble}
             onLikeClick={onLikeClick}
             isReplyActionVisible={false}
-            isLikeActionVisible={!!session?.accessToken}
+            isLikeActionVisible={!!session}
           />
           <Stack direction={StackDirection.col} spacing={StackSpacing.s} withDivider={true}>
             <MumbleList
               count={props.replies.length}
               mumbles={props.replies}
               variant={MumbleCardVariant.response}
-              isWriteCardVisible={!!session?.accessToken}
-              isReplyActionVisible={!!session?.accessToken}
-              isLikeActionVisible={!!session?.accessToken}
+              isWriteCardVisible={!!session}
+              isReplyActionVisible={!!session}
+              isLikeActionVisible={!!session}
               replyToPostId={props.mumble.id}
               accessToken={session?.accessToken}
             />
