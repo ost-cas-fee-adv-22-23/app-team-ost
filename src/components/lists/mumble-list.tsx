@@ -21,7 +21,6 @@ import { validateFileinput } from '../../helpers/validate-fileinput';
 import { postMumble, postReply } from '../../services/qwacker-api/posts';
 import { writeReducer, WriteState } from '../../helpers/reducers/write-reducer';
 import { onLikeClick } from '../../helpers/like-mumble';
-import { isReadable } from 'stream';
 
 type MumbleListProps = {
   mumbles: Mumble[];
@@ -29,6 +28,9 @@ type MumbleListProps = {
   variant: MumbleCardVariant;
   creator?: string;
   likesFilter?: boolean;
+  isWriteCardVisible?: boolean;
+  isReplyActionVisible?: boolean;
+  isLikeActionVisible?: boolean;
   accessToken?: string;
   replyToPostId?: string;
 };
@@ -65,7 +67,7 @@ export const MumbleList: FC<MumbleListProps> = (props: MumbleListProps) => {
     listState.mumbles.length > 0 ? listState.mumbles[listState.mumbles.length - 1].id : undefined
   );
 
-  const loadMore = async () => {
+  const loadMore = async (): Promise<void> => {
     dispatchList({ type: 'fetch_mumbles' });
     try {
       moreMumbles && dispatchList({ type: 'fetch_mumbles_success', payload: moreMumbles.mumbles });
@@ -75,7 +77,7 @@ export const MumbleList: FC<MumbleListProps> = (props: MumbleListProps) => {
     }
   };
 
-  const handleWriteCardFormChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleWriteCardFormChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
     //todo validate textinput
     dispatchWrite({ type: 'form_change', payload: e.target.value });
   };
@@ -91,11 +93,11 @@ export const MumbleList: FC<MumbleListProps> = (props: MumbleListProps) => {
     return validationResult.valid;
   };
 
-  const resetFileinputError = () => {
+  const resetFileinputError = (): void => {
     dispatchWrite({ type: 'file_inputerror_reset' });
   };
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     const isReply = false;
     dispatchWrite({ type: 'submit_form' });
@@ -123,7 +125,7 @@ export const MumbleList: FC<MumbleListProps> = (props: MumbleListProps) => {
 
   return (
     <>
-      {props.accessToken && (
+      {props.isWriteCardVisible && (
         <WriteCard
           form={writeState.form}
           handleChange={handleWriteCardFormChange}
@@ -136,7 +138,14 @@ export const MumbleList: FC<MumbleListProps> = (props: MumbleListProps) => {
         />
       )}
       {listState.mumbles.map((mumble) => (
-        <MumbleCard key={mumble.id} variant={props.variant} mumble={mumble} onLikeClick={onLikeClick} />
+        <MumbleCard
+          key={mumble.id}
+          variant={props.variant}
+          mumble={mumble}
+          onLikeClick={onLikeClick}
+          isLikeActionVisible={props.isLikeActionVisible}
+          isReplyActionVisible={props.isReplyActionVisible}
+        />
       ))}
       {listState.hasMore && (
         <Stack alignItems={StackAlignItems.center} justifyContent={StackJustifyContent.center} spacing={StackSpacing.xl}>

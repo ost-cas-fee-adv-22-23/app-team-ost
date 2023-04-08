@@ -1,5 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  async redirects() {
+    return [
+      {
+        source: '/mumble-public/:id',
+        destination: '/mumble/:id',
+        permanent: true,
+      },
+    ];
+  },
   images: {
     remotePatterns: [
       {
