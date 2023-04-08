@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@smartive-education/design-system-component-library-team-ost": "^1.50.0",
+    "framer-motion": "^10.11.2",
     "next": "^13.3.0",
     "next-auth": "^4.21.1",
     "next-pwa": "^5.6.0",
