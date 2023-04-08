@@ -54,8 +54,8 @@ export const LikesList: FC<LikesListProps> = (props: LikesListProps) => {
     }
   };
 
-  if (!listState.mumbles) {
-    return <Paragraph size={ParagraphSize.l}>Uups. Wir finden keine Mumbles für dich.</Paragraph>;
+  if (!listState.mumbles || listState.mumbles.length <= 0) {
+    return <Paragraph size={ParagraphSize.l}>Uups. Da sind noch keine Likes von dir.</Paragraph>;
   }
 
   return (

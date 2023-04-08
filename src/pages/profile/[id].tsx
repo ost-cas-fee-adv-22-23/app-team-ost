@@ -38,8 +38,6 @@ import { MumbleList } from '../../components/lists/mumble-list';
 import { LikesList } from '../../components/lists/likes-list';
 
 type ProfilePageProps = {
-  likedMumbles: Mumble[];
-  likedCount: number;
   count: number;
   mumbles: Mumble[];
   user: User;
@@ -150,8 +148,8 @@ export default function ProfilePage(props: ProfilePageProps): InferGetServerSide
             />
           ) : (
             <LikesList
-              count={props.likedCount}
-              mumbles={props.likedMumbles}
+              count={0}
+              mumbles={[]}
               variant={MumbleCardVariant.response}
               creator={props.user.id}
               isReplyActionVisible={!!session?.accessToken}
@@ -177,27 +175,16 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query: { id 
     const user = await fetchUserById({ id: id as string, accessToken: decodedToken.accessToken });
     const { count, mumbles } = await fetchMumbles({ creator: id as string, token: decodedToken.accessToken });
 
-    const { count: likedCount, mumbles: likedMumbles } = await fetchMumblesSearch({
-      accessToken: decodedToken.accessToken,
-      userid: id as string,
-    });
-
-    if (mumbles.length === 0 && likedMumbles.length === 0) {
-      return {
-        redirect: {
-          destination: `/newuser/${id}`,
-          permanent: false,
-        },
-      };
-    }
+    // const { count: likedCount, mumbles: likedMumbles } = await fetchMumblesSearch({
+    //   accessToken: decodedToken.accessToken,
+    //   userid: id as string,
+    // });
 
     return {
       props: {
         user,
         count,
         mumbles,
-        likedMumbles,
-        likedCount,
       },
     };
   } catch (error) {
