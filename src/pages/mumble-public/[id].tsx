@@ -20,7 +20,6 @@ export default function MumblePublicPage(props: MumblePublicPageProps): InferGet
         <Head>
           <title>Mumble - {props.mumble.id}</title>
         </Head>
-        Ready to go Viral
         <div className="bg-white">
           <MumbleCard
             variant={MumbleCardVariant.detailpage}
