@@ -27,6 +27,10 @@ type LikesListProps = {
   isLikeActionVisible?: boolean;
 };
 
+// We decided to make to different lists for mumbles and likes
+// as the behavior of the two is different in initializing
+// and they use different hooks for loading more mumbles.
+// But they use the same reducer for state handling.
 export const LikesList: FC<LikesListProps> = (props: LikesListProps) => {
   const initialState: ListState = {
     hasMore: props.mumbles.length < props.count,

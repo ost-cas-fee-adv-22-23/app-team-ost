@@ -16,6 +16,7 @@ export default function App({ Component, router, pageProps: { session, ...pagePr
     <SessionProvider session={session}>
       <main className={`${poppins.variable} font-poppins`}>
         <AnimatePresence mode="wait" initial={false}>
+          {/* We use the router as the key for a correct state handling while navigating between dynamic pages. Ex. profilepages or mumble detailpages. */}
           <Component {...pageProps} key={router.asPath} />
         </AnimatePresence>
       </main>
