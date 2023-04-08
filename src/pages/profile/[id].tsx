@@ -151,7 +151,7 @@ export default function ProfilePage(props: ProfilePageProps): InferGetServerSide
             <LikesList
               count={props.likedCount}
               mumbles={props.likedMumbles}
-              variant={MumbleCardVariant.response}
+              variant={MumbleCardVariant.timeline}
               creator={props.user.id}
               isReplyActionVisible={!!session}
               isLikeActionVisible={!!session}
