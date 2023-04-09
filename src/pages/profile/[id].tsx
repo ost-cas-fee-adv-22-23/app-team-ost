@@ -2,7 +2,7 @@ import { MumbleCardVariant } from '@/components/cards/mumble-card';
 import MainLayout from '@/components/layouts/main-layout';
 import { LikesList } from '@/components/lists/likes-list';
 import { MumbleList } from '@/components/lists/mumble-list';
-import { fetchMumbles, fetchMumblesSearch } from '@/services/qwacker-api/posts';
+import { fetchMumbles, searchMumbles } from '@/services/qwacker-api/posts';
 import { fetchUserById } from '@/services/qwacker-api/users';
 import { Mumble } from '@/types/mumble';
 import { User } from '@/types/user';
@@ -165,20 +165,20 @@ export default function ProfilePage(props: ProfilePageProps): InferGetServerSide
 
 export const getServerSideProps: GetServerSideProps = async ({ req, query: { id } }) => {
   try {
-    const decodedToken = await getToken({ req });
-    if (!decodedToken || !decodedToken.accessToken) {
-      throw new Error('No decodedToken found');
+    const jwtPayload = await getToken({ req });
+    if (!jwtPayload || !jwtPayload.accessToken) {
+      throw new Error('No jwtPayload found');
     }
     if (!id) {
       throw new Error('No id found');
     }
 
-    const user = await fetchUserById({ id: id as string, accessToken: decodedToken.accessToken });
-    const { count, mumbles } = await fetchMumbles({ creator: id as string, token: decodedToken.accessToken });
+    const user = await fetchUserById(id as string, jwtPayload.accessToken);
+    const { count, mumbles } = await fetchMumbles({ creator: id as string, accessToken: jwtPayload.accessToken });
 
-    const { count: likedCount, mumbles: likedMumbles } = await fetchMumblesSearch({
-      accessToken: decodedToken.accessToken,
-      userid: id as string,
+    const { count: likedCount, mumbles: likedMumbles } = await searchMumbles({
+      accessToken: jwtPayload.accessToken,
+      likedBy: id as string,
     });
 
     if (mumbles.length === 0 && likedMumbles.length === 0) {
