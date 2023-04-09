@@ -29,43 +29,48 @@ type LikesListProps = {
 
 export const LikesList: FC<LikesListProps> = (props: LikesListProps) => {
   const initialState: ListState = {
-    hasMore: props.mumbles.length < props.count,
+    hasMore: false,
     isLoading: false,
-    mumbles: props.mumbles,
-    mumblesCount: props.count,
+    mumbles: [],
+    mumblesCount: 0,
     error: '',
   };
 
   const [listState, dispatchList] = useReducer(listReducer, initialState);
 
-  const fetchInitialUserLikes = async (userid: string) => {
+  useEffect(() => {
+    // We us this ignore to workaround the twice fired effects in react development mode
+    // https://react.dev/learn/synchronizing-with-effects#how-to-handle-the-effect-firing-twice-in-development
+    let ignore = false;
+
     dispatchList({ type: 'fetch_mumbles' });
-    const urlParams = new URLSearchParams();
-    urlParams.set('userid', userid);
-    try {
-      const res = await fetch(`/api/posts/searchmumbles?${urlParams}`);
-      if (res.status === 200) {
-        // Todo: Vielleich verstehst du, warum ich als Response keine Mumbles erhalte...
-        // console.log(res);
-        // dispatchList({ type: 'fetch_mumbles_success', payload: res.mumbles });
-      } else {
-        console.warn('error');
+    async function startFetching() {
+      const urlParams = new URLSearchParams();
+      props.creator && urlParams.set('userid', props.creator);
+      try {
+        fetch(`/api/posts/searchmumbles?${urlParams}`)
+          .then((res) => res.json())
+          .then((data) => {
+            if (!ignore) {
+              dispatchList({ type: 'fetch_initialmumbles_success', payload: { mumbles: data.mumbles, count: data.count } });
+            }
+          });
+      } catch (error) {
+        throw new Error(`Error: ${error}`);
       }
-    } catch (error) {
-      dispatchList({ type: 'fetch_mumbles_error', payload: error as string });
-      throw new Error(`Error: ${error}`);
     }
-  };
+    startFetching();
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   const {
     isLoading: isLoadingMoreMumbles,
     error: errorMoreMumbles,
     data: moreMumbles,
   } = useSearchMumbles(undefined, listState.mumbles.length.toString(), undefined, undefined, props.creator);
-
-  useEffect(() => {
-    props.creator && fetchInitialUserLikes(props.creator);
-  }, []);
 
   const loadMore = () => {
     dispatchList({ type: 'fetch_mumbles' });

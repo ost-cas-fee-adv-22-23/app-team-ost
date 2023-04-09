@@ -119,7 +119,7 @@ export const MumbleList: FC<MumbleListProps> = (props: MumbleListProps) => {
     }
   };
 
-  if (!props.mumbles || props.mumbles.length <= 0) {
+  if (!props.mumbles || (props.mumbles.length <= 0 && props.creator)) {
     return <Paragraph size={ParagraphSize.l}>Uups. Wir finden keine Mumbles für dich.</Paragraph>;
   }
 
