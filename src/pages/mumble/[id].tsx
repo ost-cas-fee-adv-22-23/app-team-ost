@@ -51,18 +51,18 @@ export default function MumblePage(props: MumblePageProps): InferGetServerSidePr
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ req, query: { id } }) => {
-  const decodedToken = await getToken({ req });
+  const jwtPayload = await getToken({ req });
 
-  if (!decodedToken || !decodedToken.accessToken) {
-    throw new Error('No decodedToken found');
+  if (!jwtPayload || !jwtPayload.accessToken) {
+    throw new Error('No jwtPayload found');
   }
   if (!id) {
     throw new Error('No id found');
   }
 
   const [mumble, replies] = await Promise.all([
-    fetchMumbleById(id as string, decodedToken.accessToken),
-    fetchRepliesByMumbleId(id as string, decodedToken.accessToken),
+    fetchMumbleById(id as string, jwtPayload.accessToken),
+    fetchRepliesByMumbleId(id as string, jwtPayload.accessToken),
   ]);
 
   return {

@@ -105,13 +105,17 @@ export const MumbleList: FC<MumbleListProps> = (props: MumbleListProps) => {
     try {
       let newMumble: Mumble;
       props.replyToPostId
-        ? (newMumble = await postReply(
-            props.replyToPostId,
-            writeState.form.textinput,
-            writeState.form.file,
-            props.accessToken as string
-          ))
-        : (newMumble = await postMumble(writeState.form.textinput, writeState.form.file, props.accessToken as string));
+        ? (newMumble = await postReply({
+            accessToken: props.accessToken as string,
+            mumbleId: props.replyToPostId,
+            text: writeState.form.textinput,
+            file: writeState.form.file,
+          }))
+        : (newMumble = await postMumble({
+            accessToken: props.accessToken as string,
+            text: writeState.form.textinput,
+            file: writeState.form.file,
+          }));
       dispatchList({ type: 'add_new_post_to_list', payload: newMumble });
       dispatchWrite({ type: 'submit_form_success' });
     } catch (error) {
