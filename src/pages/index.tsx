@@ -17,7 +17,7 @@ import Head from 'next/head';
 type TimelinePageProps = {
   count: number;
   mumbles: Mumble[];
-  decodedToken: JWT | null;
+  jwtPayload: JWT | null;
 };
 
 export default function TimelinePage(props: TimelinePageProps): InferGetStaticPropsType<typeof getServerSideProps> {
@@ -37,12 +37,13 @@ export default function TimelinePage(props: TimelinePageProps): InferGetStaticPr
         </div>
         <Stack direction={StackDirection.col} spacing={StackSpacing.s} withDivider={true}>
           <MumbleList
+            accessToken={props.jwtPayload?.accessToken}
             mumbles={props.mumbles}
             count={props.count}
             variant={MumbleCardVariant.timeline}
-            isWriteCardVisible={!!props.decodedToken}
+            isWriteCardVisible={!!props.jwtPayload}
             isReplyActionVisible={true}
-            isLikeActionVisible={!!props.decodedToken}
+            isLikeActionVisible={!!props.jwtPayload}
           />
         </Stack>
       </>
@@ -50,16 +51,17 @@ export default function TimelinePage(props: TimelinePageProps): InferGetStaticPr
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async ({ req, res }: GetServerSidePropsContext) => {
+export const getServerSideProps: GetServerSideProps = async ({ req }: GetServerSidePropsContext) => {
+  const jwtPayload = await getToken({ req });
+
   try {
-    const decodedToken = await getToken({ req });
-    const { count, mumbles } = await fetchMumbles({ token: decodedToken?.accessToken });
+    const { count, mumbles } = await fetchMumbles({ accessToken: jwtPayload?.accessToken });
 
     return {
       props: {
         count,
         mumbles,
-        decodedToken,
+        jwtPayload,
       },
     };
   } catch (error) {
