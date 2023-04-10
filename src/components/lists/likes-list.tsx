@@ -44,15 +44,14 @@ export const LikesList: FC<LikesListProps> = (props: LikesListProps) => {
     dispatchList({ type: 'fetch_mumbles' });
     async function startFetching() {
       const urlParams = new URLSearchParams();
-      props.creator && urlParams.set('userid', props.creator);
+      props.creator && urlParams.set('likedBy', props.creator);
       try {
-        fetch(`/api/posts/search-mumbles?${urlParams}`)
-          .then((res) => res.json())
-          .then((data) => {
-            if (!ignore) {
-              dispatchList({ type: 'fetch_initialmumbles_success', payload: { mumbles: data.mumbles, count: data.count } });
-            }
-          });
+        const res = await fetch(`/api/posts/search-mumbles?${urlParams}`);
+        const data = await res.json();
+        console.log(data);
+
+        !ignore &&
+          dispatchList({ type: 'fetch_initialmumbles_success', payload: { mumbles: data.mumbles, count: data.count } });
       } catch (error) {
         throw new Error(`Error: ${error}`);
       }
