@@ -6,8 +6,8 @@ type ApiMethodHandlers = {
   [key in Uppercase<HttpMethod>]?: NextApiHandler;
 };
 
-export function apiHandler(handler: ApiMethodHandlers) {
-  return async (req: NextApiRequest, res: NextApiResponse) => {
+export const apiHandler = (handler: ApiMethodHandlers) => {
+  return async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
     try {
       const method = req.method ? (req.method.toUpperCase() as keyof ApiMethodHandlers) : undefined;
 
@@ -35,4 +35,4 @@ export function apiHandler(handler: ApiMethodHandlers) {
       }
     }
   };
-}
+};

@@ -1,4 +1,4 @@
-import { apiHandler } from '@/pages/api/api-handler';
+import { apiHandler } from '@/helpers/api/api-handler';
 import { fetchMumbles } from '@/services/qwacker-api/posts';
 import { HttpStatusCodes } from '@/types/http';
 import { NextApiRequest, NextApiResponse } from 'next';

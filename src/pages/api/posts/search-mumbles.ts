@@ -1,5 +1,5 @@
-import { apiHandler } from '@/pages/api/api-handler';
-import { isAuthorized } from '@/pages/api/is-authorized';
+import { apiHandler } from '@/helpers/api/api-handler';
+import { isAuthorized } from '@/helpers/api/is-authorized';
 import { searchMumbles } from '@/services/qwacker-api/posts';
 import { HttpStatusCodes } from '@/types/http';
 import { SearchMumblesParams } from '@/types/mumble';
