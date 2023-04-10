@@ -1,3 +1,4 @@
+import { HttpStatusCodes } from '@/types/http';
 import { Mumble } from '@/types/mumble';
 
 /**
@@ -7,7 +8,7 @@ import { Mumble } from '@/types/mumble';
 export const onLikeClick = async (mumble: Mumble) => {
   // errorhandling?
   const res = await fetch(`/api/posts/${mumble.id}/like`, { method: mumble.likedByUser ? 'DELETE' : 'PUT' });
-  if (res.status === 204) {
+  if (res.status === HttpStatusCodes.NO_CONTENT) {
     console.warn('work');
   } else {
     console.warn('error');

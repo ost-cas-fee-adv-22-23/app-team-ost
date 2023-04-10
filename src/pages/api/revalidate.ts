@@ -1,9 +1,10 @@
+import { HttpStatusCodes } from '@/types/http';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   // Check for secret to confirm this is a valid request
   if (req.query.secret !== process.env.REVALIDATE_SECRET_TOKEN) {
-    return res.status(401).json({ message: 'Invalid token' });
+    return res.status(HttpStatusCodes.UNAUTHORIZED).json({ message: 'Invalid token' });
   }
 
   const pathToRevalidate = req.query.pathToRevalidate;
@@ -16,9 +17,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     } catch (err) {
       // If there was an error, Next.js will continue
       // to show the last successfully generated page
-      return res.status(500).send('Error revalidating');
+      return res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).send('Error revalidating');
     }
   } else {
-    return res.status(403).send('Forbidden');
+    return res.status(HttpStatusCodes.FORBIDDEN).send('Forbidden');
   }
 }

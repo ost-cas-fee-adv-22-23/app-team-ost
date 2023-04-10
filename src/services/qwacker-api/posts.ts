@@ -173,7 +173,7 @@ export const unlikeMumbleById = async (id: string, accessToken: string): Promise
 
 const transformApiPostResultToMumble = async (apiPostResult: ApiPostResult, accessToken?: string): Promise<Mumble> => {
   const creator = await fetchUserById(apiPostResult.creator, accessToken);
-  // todo: TransformError
+  // todo: TransformError?
   return {
     ...apiPostResult,
     creator,
