@@ -1,6 +1,7 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
+
 export { default } from 'next-auth/middleware';
 
 export async function middleware(req: NextRequest) {
@@ -33,7 +34,8 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
+     * - manifest.json, icon-, sw.js, workbox- (pwa files)
      */
-    '/((?!api|_next/static|_next/image|favicon.ico|auth).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|manifest.json|icon-|sw.js|workbox-|auth).*)',
   ],
 };

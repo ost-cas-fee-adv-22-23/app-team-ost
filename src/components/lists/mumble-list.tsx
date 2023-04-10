@@ -1,4 +1,16 @@
+import { MumbleCard, MumbleCardVariant } from '@/components/cards/mumble-card';
+import { WriteCard, WriteCardVariant } from '@/components/cards/write-card';
+import { onLikeClick } from '@/helpers/like-mumble';
+import { listReducer, ListState } from '@/helpers/reducers/lists-reducer';
+import { writeReducer, WriteState } from '@/helpers/reducers/write-reducer';
+import { validateFileinput } from '@/helpers/validate-fileinput';
+import { useFetchMumbles } from '@/hooks/api/use-fetch-mumbles';
+import { postMumble, postReply } from '@/services/qwacker-api/posts';
+import { Mumble } from '@/types/mumble';
 import {
+  IconMumble,
+  Paragraph,
+  ParagraphSize,
   Stack,
   StackAlignItems,
   StackJustifyContent,
@@ -6,21 +18,9 @@ import {
   TextButton,
   TextButtonColor,
   TextButtonDisplayMode,
-  IconMumble,
   TextButtonSize,
-  Paragraph,
-  ParagraphSize,
 } from '@smartive-education/design-system-component-library-team-ost';
 import { ChangeEvent, FC, FormEvent, useReducer } from 'react';
-import { useFetchMumbles } from '../../hooks/api/useFetchMumbles';
-import { Mumble } from '../../types/mumble';
-import { MumbleCard, MumbleCardVariant } from '../cards/mumble-card';
-import { ListState, listReducer } from '../../helpers/reducers/lists-reducer';
-import { WriteCard, WriteCardVariant } from '../cards/write-card';
-import { validateFileinput } from '../../helpers/validate-fileinput';
-import { postMumble, postReply } from '../../services/qwacker-api/posts';
-import { writeReducer, WriteState } from '../../helpers/reducers/write-reducer';
-import { onLikeClick } from '../../helpers/like-mumble';
 
 type MumbleListProps = {
   mumbles: Mumble[];
@@ -105,13 +105,17 @@ export const MumbleList: FC<MumbleListProps> = (props: MumbleListProps) => {
     try {
       let newMumble: Mumble;
       props.replyToPostId
-        ? (newMumble = await postReply(
-            props.replyToPostId,
-            writeState.form.textinput,
-            writeState.form.file,
-            props.accessToken as string
-          ))
-        : (newMumble = await postMumble(writeState.form.textinput, writeState.form.file, props.accessToken as string));
+        ? (newMumble = await postReply({
+            accessToken: props.accessToken as string,
+            mumbleId: props.replyToPostId,
+            text: writeState.form.textinput,
+            file: writeState.form.file,
+          }))
+        : (newMumble = await postMumble({
+            accessToken: props.accessToken as string,
+            text: writeState.form.textinput,
+            file: writeState.form.file,
+          }));
       dispatchList({ type: 'add_new_post_to_list', payload: newMumble });
       dispatchWrite({ type: 'submit_form_success' });
     } catch (error) {

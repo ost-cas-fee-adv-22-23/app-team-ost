@@ -1,6 +1,13 @@
+import { MumbleCardVariant } from '@/components/cards/mumble-card';
+import MainLayout from '@/components/layouts/main-layout';
+import { LikesList } from '@/components/lists/likes-list';
+import { MumbleList } from '@/components/lists/mumble-list';
+import { fetchMumbles, searchMumbles } from '@/services/qwacker-api/posts';
+import { fetchUserById } from '@/services/qwacker-api/users';
+import { Mumble } from '@/types/mumble';
+import { User } from '@/types/user';
 import {
   IconCheckmark,
-  IconMumble,
   Label,
   LabelSize,
   Paragraph,
@@ -24,18 +31,10 @@ import {
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import { getToken } from 'next-auth/jwt';
 import { useSession } from 'next-auth/react';
-import { useState } from 'react';
-import { MumbleCardVariant } from '../../components/cards/mumble-card';
-import MainLayout from '../../components/layouts/main-layout';
-import { fetchMumbles, fetchMumblesSearch } from '../../services/qwacker-api/posts';
-import { fetchUserById } from '../../services/qwacker-api/users';
-import { Mumble } from '../../types/mumble';
-import { User } from '../../types/user';
-import Link from 'next/link';
-import Image from 'next/image';
 import Head from 'next/head';
-import { MumbleList } from '../../components/lists/mumble-list';
-import { LikesList } from '../../components/lists/likes-list';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useState } from 'react';
 
 type ProfilePageProps = {
   count: number;
@@ -144,17 +143,15 @@ export default function ProfilePage(props: ProfilePageProps): InferGetServerSide
               variant={MumbleCardVariant.timeline}
               creator={props.user.id}
               isWriteCardVisible={false}
-              isReplyActionVisible={!!session?.accessToken}
-              isLikeActionVisible={!!session?.accessToken}
+              isReplyActionVisible={!!session}
+              isLikeActionVisible={!!session}
             />
           ) : (
             <LikesList
-              count={0}
-              mumbles={[]}
-              variant={MumbleCardVariant.response}
+              variant={MumbleCardVariant.timeline}
               creator={props.user.id}
-              isReplyActionVisible={!!session?.accessToken}
-              isLikeActionVisible={!!session?.accessToken}
+              isReplyActionVisible={!!session}
+              isLikeActionVisible={!!session}
             />
           )}
         </Stack>
@@ -165,16 +162,16 @@ export default function ProfilePage(props: ProfilePageProps): InferGetServerSide
 
 export const getServerSideProps: GetServerSideProps = async ({ req, query: { id } }) => {
   try {
-    const decodedToken = await getToken({ req });
-    if (!decodedToken || !decodedToken.accessToken) {
-      throw new Error('No decodedToken found');
+    const jwtPayload = await getToken({ req });
+    if (!jwtPayload || !jwtPayload.accessToken) {
+      throw new Error('No jwtPayload found');
     }
     if (!id) {
       throw new Error('No id found');
     }
 
-    const user = await fetchUserById({ id: id as string, accessToken: decodedToken.accessToken });
-    const { count, mumbles } = await fetchMumbles({ creator: id as string, token: decodedToken.accessToken });
+    const user = await fetchUserById(id as string, jwtPayload.accessToken);
+    const { count, mumbles } = await fetchMumbles({ creator: id as string, accessToken: jwtPayload.accessToken });
 
     return {
       props: {

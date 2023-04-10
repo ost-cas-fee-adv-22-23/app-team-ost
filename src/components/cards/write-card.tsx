@@ -1,3 +1,4 @@
+import { FileuploadModal } from '@/components/modals/fileupload-modal';
 import {
   BorderRadiusType,
   Card,
@@ -20,10 +21,9 @@ import {
   UserShortRepresentationProfilePictureSize,
 } from '@smartive-education/design-system-component-library-team-ost';
 import { useSession } from 'next-auth/react';
-import { ChangeEvent, FC, FormEvent, useState } from 'react';
-import Link from 'next/link';
 import Image from 'next/image';
-import { FileuploadModal } from '../modals/fileupload-modal';
+import Link from 'next/link';
+import { ChangeEvent, FC, FormEvent, useState } from 'react';
 
 export enum WriteCardVariant {
   inline = 'inline',

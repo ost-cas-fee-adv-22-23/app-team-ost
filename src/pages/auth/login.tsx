@@ -1,6 +1,4 @@
-import { signIn, useSession } from 'next-auth/react';
-import SplitScreenLayout from '../../components/layouts/split-screen-layout';
-import Head from 'next/head';
+import SplitScreenLayout from '@/components/layouts/split-screen-layout';
 import {
   Form,
   Heading,
@@ -23,9 +21,11 @@ import {
   TextButtonSize,
   TextLink,
 } from '@smartive-education/design-system-component-library-team-ost';
-import React, { ChangeEvent, FormEvent, useState } from 'react';
+import { signIn, useSession } from 'next-auth/react';
+import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import React, { ChangeEvent, FormEvent, useState } from 'react';
 
 export default function Login() {
   const { data: session } = useSession();

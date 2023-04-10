@@ -1,5 +1,5 @@
+import { Mumble } from '@/types/mumble';
 import useSWR from 'swr';
-import { Mumble } from '../../types/mumble';
 import fetcher from './fetcher';
 
 type FetchMumbles = {
@@ -8,7 +8,7 @@ type FetchMumbles = {
   error: string | any;
 };
 
-export const useSearchMumbles = (mentions?: string, offset?: string, tags?: string, text?: string, userid?: string) => {
+export const useSearchMumbles = (mentions?: string, offset?: string, tags?: string, text?: string, likedBy?: string) => {
   const urlParams = new URLSearchParams();
   if (mentions) {
     urlParams.set('mentions', mentions);
@@ -22,11 +22,11 @@ export const useSearchMumbles = (mentions?: string, offset?: string, tags?: stri
   if (text) {
     urlParams.set('tags', text);
   }
-  if (userid) {
-    urlParams.set('userid', userid);
+  if (likedBy) {
+    urlParams.set('likedBy', likedBy);
   }
 
-  const { data, error, isLoading } = useSWR<FetchMumbles, Error>(`/api/posts/searchmumbles?${urlParams}`, fetcher);
+  const { data, error, isLoading } = useSWR<FetchMumbles, Error>(`/api/posts/search-mumbles?${urlParams}`, fetcher);
 
   return {
     data,

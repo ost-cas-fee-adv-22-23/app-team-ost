@@ -1,13 +1,13 @@
+import { likeMumbleById, unlikeMumbleById } from '@/services/qwacker-api/posts';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { getToken } from 'next-auth/jwt';
-import { likeMumbleById, unlikeMumbleById } from '../../../../services/qwacker-api/posts';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { id } = req.query;
   const method = req.method as 'PUT' | 'DELETE';
-  const decodedToken = await getToken({ req });
+  const jwtPayload = await getToken({ req });
 
-  if (!decodedToken || !decodedToken.accessToken) {
+  if (!jwtPayload || !jwtPayload.accessToken) {
     return res.status(401).json({
       status: false,
       error: `No session.`,
@@ -20,7 +20,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       // todo; id prüfen ob string; sonst bad request
       // status Codes als return?
       try {
-        const responseFromAPI = await likeMumbleById(id as string, decodedToken.accessToken);
+        const responseFromAPI = await likeMumbleById(id as string, jwtPayload.accessToken);
         if (responseFromAPI) {
           return res.status(204);
         }
@@ -35,7 +35,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
     case 'DELETE': {
       try {
-        const responseFromAPI = await unlikeMumbleById(id as string, decodedToken.accessToken);
+        const responseFromAPI = await unlikeMumbleById(id as string, jwtPayload.accessToken);
         if (responseFromAPI) {
           return res.status(204);
         }

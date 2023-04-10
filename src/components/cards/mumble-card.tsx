@@ -1,3 +1,5 @@
+import { timeAgo } from '@/helpers/time-ago';
+import { Mumble } from '@/types/mumble';
 import {
   BorderRadiusType,
   Card,
@@ -16,11 +18,9 @@ import {
   UserShortRepresentationLabelType,
   UserShortRepresentationProfilePictureSize,
 } from '@smartive-education/design-system-component-library-team-ost';
-import { FC } from 'react';
-import { Mumble } from '../../types/mumble';
-import Link from 'next/link';
 import Image from 'next/image';
-import { timeAgo } from '../../helpers/time-ago';
+import Link from 'next/link';
+import { FC } from 'react';
 
 const BASE_URL = process.env.NEXT_PUBLIC_URL;
 

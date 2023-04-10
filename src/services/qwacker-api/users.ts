@@ -1,6 +1,7 @@
-import { User } from '../../types/user';
-import { qwackerApi } from './api';
+import { qwackerApi } from '@/services/qwacker-api/api';
+import { User } from '@/types/user';
 
+// Qwacker API-Types. Same types / names as implemented in the cas-fee-adv-qwacker-api. Only used in this File.
 type ApiUserResult = {
   id: string;
   userName: string;
@@ -9,25 +10,11 @@ type ApiUserResult = {
   avatarUrl: string;
 };
 
-// todo: kann gelöscht werden? Wird nur für fetchAllUsers benötigt.
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-type QwackerUserResponse = {
-  count: number;
-  users: ApiUserResult[];
-};
-
-export const fetchUserById = async (params: { id: string; accessToken?: string }): Promise<User> => {
-  // todo: Naming accessToken und token konsolidieren
-  const { id, accessToken } = params || {};
+export const fetchUserById = async (id: string, accessToken?: string): Promise<User> => {
   let userResult: ApiUserResult;
 
   if (accessToken) {
-    try {
-      userResult = await qwackerApi.get<ApiUserResult>(`users/${id}`, accessToken);
-    } catch (error) {
-      // todo: Handle any error happened.
-      throw new Error('Something was not okay');
-    }
+    userResult = await qwackerApi.get<ApiUserResult>(`users/${id}`, accessToken);
   } else {
     userResult = {
       id: id,
@@ -41,8 +28,8 @@ export const fetchUserById = async (params: { id: string; accessToken?: string }
   return transformApiUserResultToUser(userResult);
 };
 
-const transformApiUserResultToUser = (user: ApiUserResult): User => ({
-  ...user,
-  displayName: user.userName === 'anonymous' ? '' : `${user.firstName} ${user.lastName}`,
-  profileUrl: user.userName === 'anonymous' ? `/auth/login` : `/profile/${user.id}`,
+const transformApiUserResultToUser = (apiUserResult: ApiUserResult): User => ({
+  ...apiUserResult,
+  displayName: apiUserResult.userName === 'anonymous' ? '' : `${apiUserResult.firstName} ${apiUserResult.lastName}`,
+  profileUrl: apiUserResult.userName === 'anonymous' ? `/auth/login` : `/profile/${apiUserResult.id}`,
 });

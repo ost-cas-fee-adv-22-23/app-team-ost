@@ -1,5 +1,8 @@
-import { GetServerSideProps, GetServerSidePropsContext, InferGetStaticPropsType } from 'next';
-import MainLayout from '../components/layouts/main-layout';
+import { MumbleCardVariant } from '@/components/cards/mumble-card';
+import MainLayout from '@/components/layouts/main-layout';
+import { MumbleList } from '@/components/lists/mumble-list';
+import { fetchMumbles } from '@/services/qwacker-api/posts';
+import { Mumble } from '@/types/mumble';
 import {
   Heading,
   HeadingSize,
@@ -7,17 +10,14 @@ import {
   StackDirection,
   StackSpacing,
 } from '@smartive-education/design-system-component-library-team-ost';
-import Head from 'next/head';
-import { MumbleCardVariant } from '../components/cards/mumble-card';
-import { Mumble } from '../types/mumble';
-import { fetchMumbles } from '../services/qwacker-api/posts';
+import { GetServerSideProps, GetServerSidePropsContext, InferGetStaticPropsType } from 'next';
 import { getToken, JWT } from 'next-auth/jwt';
-import { MumbleList } from '../components/lists/mumble-list';
+import Head from 'next/head';
 
 type TimelinePageProps = {
   count: number;
   mumbles: Mumble[];
-  decodedToken: JWT | null;
+  jwtPayload: JWT | null;
 };
 
 export default function TimelinePage(props: TimelinePageProps): InferGetStaticPropsType<typeof getServerSideProps> {
@@ -37,12 +37,13 @@ export default function TimelinePage(props: TimelinePageProps): InferGetStaticPr
         </div>
         <Stack direction={StackDirection.col} spacing={StackSpacing.s} withDivider={true}>
           <MumbleList
+            accessToken={props.jwtPayload?.accessToken}
             mumbles={props.mumbles}
             count={props.count}
             variant={MumbleCardVariant.timeline}
-            isWriteCardVisible={!!props.decodedToken?.accessToken}
+            isWriteCardVisible={!!props.jwtPayload}
             isReplyActionVisible={true}
-            isLikeActionVisible={!!props.decodedToken?.accessToken}
+            isLikeActionVisible={!!props.jwtPayload}
           />
         </Stack>
       </>
@@ -50,16 +51,17 @@ export default function TimelinePage(props: TimelinePageProps): InferGetStaticPr
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async ({ req, res }: GetServerSidePropsContext) => {
+export const getServerSideProps: GetServerSideProps = async ({ req }: GetServerSidePropsContext) => {
+  const jwtPayload = await getToken({ req });
+
   try {
-    const decodedToken = await getToken({ req });
-    const { count, mumbles } = await fetchMumbles({ token: decodedToken?.accessToken as string });
+    const { count, mumbles } = await fetchMumbles({ accessToken: jwtPayload?.accessToken });
 
     return {
       props: {
         count,
         mumbles,
-        decodedToken,
+        jwtPayload,
       },
     };
   } catch (error) {

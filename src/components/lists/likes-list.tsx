@@ -1,4 +1,12 @@
+import { MumbleCard, MumbleCardVariant } from '@/components/cards/mumble-card';
+import { onLikeClick } from '@/helpers/like-mumble';
+import { listReducer, ListState } from '@/helpers/reducers/lists-reducer';
+import { useSearchMumbles } from '@/hooks/api/use-search-mumbles';
+import { Mumble } from '@/types/mumble';
 import {
+  IconMumble,
+  Paragraph,
+  ParagraphSize,
   Stack,
   StackAlignItems,
   StackJustifyContent,
@@ -6,21 +14,11 @@ import {
   TextButton,
   TextButtonColor,
   TextButtonDisplayMode,
-  IconMumble,
   TextButtonSize,
-  Paragraph,
-  ParagraphSize,
 } from '@smartive-education/design-system-component-library-team-ost';
 import { FC, useEffect, useReducer } from 'react';
-import { useSearchMumbles } from '../../hooks/api/useSearchMumbles';
-import { Mumble } from '../../types/mumble';
-import { MumbleCard, MumbleCardVariant } from '../cards/mumble-card';
-import { ListState, listReducer } from '../../helpers/reducers/lists-reducer';
-import { onLikeClick } from '../../helpers/like-mumble';
 
 type LikesListProps = {
-  mumbles: Mumble[];
-  count: number;
   variant: MumbleCardVariant;
   creator?: string;
   isReplyActionVisible?: boolean;
@@ -48,7 +46,7 @@ export const LikesList: FC<LikesListProps> = (props: LikesListProps) => {
       const urlParams = new URLSearchParams();
       props.creator && urlParams.set('userid', props.creator);
       try {
-        fetch(`/api/posts/searchmumbles?${urlParams}`)
+        fetch(`/api/posts/search-mumbles?${urlParams}`)
           .then((res) => res.json())
           .then((data) => {
             if (!ignore) {
