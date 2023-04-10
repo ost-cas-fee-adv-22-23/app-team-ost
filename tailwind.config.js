@@ -16,6 +16,28 @@ module.exports = {
       minHeight: {
         'main-layout-content': 'calc(100vh - 88px)',
       },
+      keyframes: {
+        pageEnter: {
+          '0%': {
+            opacity: 0,
+          },
+          '100%': {
+            opacity: 100,
+          },
+        },
+        pageLeave: {
+          '0%': {
+            opacity: 100,
+          },
+          '100%': {
+            opacity: 0,
+          },
+        },
+      },
+      animation: {
+        pageEnter: 'pageEnter .4s ease-in-out',
+        pageLeave: 'pageLeave .8s ease-in-out',
+      },
     },
   },
   plugins: [],

@@ -1,5 +1,4 @@
 import '@/styles/globals.css';
-import { AnimatePresence } from 'framer-motion';
 import { SessionProvider } from 'next-auth/react';
 import type { AppProps } from 'next/app';
 import { Poppins } from 'next/font/google';
@@ -15,10 +14,8 @@ export default function App({ Component, router, pageProps: { session, ...pagePr
   return (
     <SessionProvider session={session}>
       <main className={`${poppins.variable} font-poppins`}>
-        <AnimatePresence mode="wait" initial={false}>
-          {/* We use the router as the key for a correct state handling while navigating between dynamic pages. Ex. profilepages or mumble detailpages. */}
-          <Component {...pageProps} key={router.asPath} />
-        </AnimatePresence>
+        {/* We use the router as the key for a correct state handling while navigating between dynamic pages. Ex. profilepages or mumble detailpages. */}
+        <Component {...pageProps} key={router.asPath} />
       </main>
     </SessionProvider>
   );
