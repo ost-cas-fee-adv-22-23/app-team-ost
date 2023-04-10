@@ -16,6 +16,9 @@ module.exports = {
       minHeight: {
         'main-layout-content': 'calc(100vh - 88px)',
       },
+      zIndex: {
+        60: '60',
+      },
     },
   },
   plugins: [],
