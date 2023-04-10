@@ -37,8 +37,6 @@ import Link from 'next/link';
 import { useState } from 'react';
 
 type ProfilePageProps = {
-  likedMumbles: Mumble[];
-  likedCount: number;
   count: number;
   mumbles: Mumble[];
   user: User;
@@ -48,6 +46,7 @@ enum ProfilePageStateTypes {
   mumbles = 'mumbles',
   likedMumbles = 'likedMumbles',
 }
+
 export default function ProfilePage(props: ProfilePageProps): InferGetServerSidePropsType<typeof getServerSideProps> {
   const [postType, setPostType] = useState<ProfilePageStateTypes>(ProfilePageStateTypes.mumbles);
   const { data: session } = useSession();
@@ -149,8 +148,6 @@ export default function ProfilePage(props: ProfilePageProps): InferGetServerSide
             />
           ) : (
             <LikesList
-              count={props.likedCount}
-              mumbles={props.likedMumbles}
               variant={MumbleCardVariant.timeline}
               creator={props.user.id}
               isReplyActionVisible={!!session}
@@ -176,27 +173,11 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query: { id 
     const user = await fetchUserById(id as string, jwtPayload.accessToken);
     const { count, mumbles } = await fetchMumbles({ creator: id as string, accessToken: jwtPayload.accessToken });
 
-    const { count: likedCount, mumbles: likedMumbles } = await searchMumbles({
-      accessToken: jwtPayload.accessToken,
-      likedBy: id as string,
-    });
-
-    if (mumbles.length === 0 && likedMumbles.length === 0) {
-      return {
-        redirect: {
-          destination: `/newuser/${id}`,
-          permanent: false,
-        },
-      };
-    }
-
     return {
       props: {
         user,
         count,
         mumbles,
-        likedMumbles,
-        likedCount,
       },
     };
   } catch (error) {
