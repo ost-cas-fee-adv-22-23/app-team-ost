@@ -19,6 +19,7 @@
       "@/components/*": ["components/*"],
       "@/helpers/*": ["helpers/*"],
       "@/hooks/*": ["hooks/*"],
+      "@/pages/*": ["pages/*"],
       "@/services/*": ["services/*"],
       "@/styles/*": ["styles/*"],
       "@/types/*": ["types/*"]
