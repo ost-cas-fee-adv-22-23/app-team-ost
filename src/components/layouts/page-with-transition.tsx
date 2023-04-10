@@ -10,7 +10,6 @@ import {
   Stack,
   StackAlignItems,
   StackDirection,
-  StackJustifyContent,
   StackSpacing,
 } from '@smartive-education/design-system-component-library-team-ost';
 
@@ -26,7 +25,7 @@ export const PageWithTransition: LayoutProps = ({ children }) => {
   useEffect(() => {
     const handler = () => {
       setIsTransitioning(true);
-      // Waiting the page-animation before showing the loading spinner
+      // Waiting the page-leave-animation before showing the loading screen
       setTimeout(() => {
         setIsLoading(true);
       }, 780);
