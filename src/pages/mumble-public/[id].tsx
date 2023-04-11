@@ -32,6 +32,7 @@ export default function MumblePublicPage(props: MumblePublicPageProps): InferGet
               count={props.replies.length}
               mumbles={props.replies}
               variant={MumbleCardVariant.response}
+              canUpdate={false}
               replyToPostId={props.mumble.id}
               isWriteCardVisible={false}
               isReplyActionVisible={true}

@@ -142,6 +142,7 @@ export default function ProfilePage(props: ProfilePageProps): InferGetServerSide
               mumbles={props.mumbles}
               variant={MumbleCardVariant.timeline}
               creator={props.user.id}
+              canUpdate={false}
               isWriteCardVisible={false}
               isReplyActionVisible={!!session}
               isLikeActionVisible={!!session}

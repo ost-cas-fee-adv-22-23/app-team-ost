@@ -37,6 +37,7 @@ export default function MumblePage(props: MumblePageProps): InferGetServerSidePr
               count={props.replies.length}
               mumbles={props.replies}
               variant={MumbleCardVariant.response}
+              canUpdate={false}
               isWriteCardVisible={!!session}
               isReplyActionVisible={!!session}
               isLikeActionVisible={!!session}

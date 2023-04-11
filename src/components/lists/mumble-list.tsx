@@ -28,6 +28,7 @@ type MumbleListProps = {
   mumbles: Mumble[];
   count: number;
   variant: MumbleCardVariant;
+  canUpdate?: boolean;
   creator?: string;
   likesFilter?: boolean;
   isWriteCardVisible?: boolean;
@@ -141,7 +142,7 @@ export const MumbleList: FC<MumbleListProps> = (props: MumbleListProps) => {
 
   return (
     <>
-      {listState.hasUpdate && (
+      {listState.hasUpdate && props.canUpdate && (
         <div className="fixed z-60 top-32 left-1/2 -translate-x-1/2 drop-shadow-lg">
           <TextButton
             ariaLabel="Neue Mumbles sind verfügbar. Jetzt laden."

@@ -41,6 +41,7 @@ export default function TimelinePage(props: TimelinePageProps): InferGetStaticPr
             mumbles={props.mumbles}
             count={props.count}
             variant={MumbleCardVariant.timeline}
+            canUpdate={true}
             isWriteCardVisible={!!props.jwtPayload}
             isReplyActionVisible={true}
             isLikeActionVisible={!!props.jwtPayload}
