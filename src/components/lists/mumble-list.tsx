@@ -67,7 +67,11 @@ export const MumbleList: FC<MumbleListProps> = (props: MumbleListProps) => {
     listState.mumbles.length > 0 ? listState.mumbles[listState.mumbles.length - 1].id : undefined
   );
 
-  const { data: newMumbles } = useFetchMumblesRefresh(props.creator, listState.mumbles[0].id, undefined);
+  const { data: newMumbles } = useFetchMumblesRefresh(
+    props.creator,
+    listState.mumbles.length > 0 ? listState.mumbles[0].id : undefined,
+    undefined
+  );
 
   useEffect(() => {
     newMumbles && newMumbles?.mumbles.length > 0 && dispatchList({ type: 'new_mumbles_available' });

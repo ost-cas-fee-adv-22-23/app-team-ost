@@ -9,7 +9,11 @@ type FetchMumbles = {
   error: string | any;
 };
 
-export const useFetchMumblesRefresh = (creator?: string, newerThanMumbleId?: string, olderThanMumbleId?: string) => {
+export const useFetchMumblesRefresh = (
+  creator?: string | undefined,
+  newerThanMumbleId?: string | undefined,
+  olderThanMumbleId?: string | undefined
+) => {
   const urlParams = new URLSearchParams();
   if (creator) {
     urlParams.set('creator', creator);
