@@ -38,6 +38,9 @@ module.exports = {
         pageEnter: 'pageEnter .4s ease-in-out',
         pageLeave: 'pageLeave .8s ease-in-out',
       },
+      zIndex: {
+        60: '60',
+      },
     },
   },
   plugins: [],

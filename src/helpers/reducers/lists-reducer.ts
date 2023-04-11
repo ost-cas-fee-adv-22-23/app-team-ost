@@ -2,6 +2,7 @@ import { Mumble } from '@/types/mumble';
 
 export type ListState = {
   hasMore: boolean;
+  hasUpdate: boolean;
   isLoading: boolean;
   mumblesCount: number;
   mumbles: Mumble[];
@@ -12,6 +13,9 @@ type ListAction =
   | { type: 'fetch_mumbles' }
   | { type: 'fetch_mumbles_error'; payload: string }
   | { type: 'fetch_mumbles_success'; payload: Mumble[] }
+  | { type: 'fetch_initialmumbles_success'; payload: { mumbles: Mumble[]; count: number } }
+  | { type: 'new_mumbles_available' }
+  | { type: 'new_mumbles_add_to_list'; payload: Mumble[] }
   | { type: 'add_new_post_to_list'; payload: Mumble };
 
 export const listReducer = (state: ListState, action: ListAction): ListState => {
@@ -30,6 +34,25 @@ export const listReducer = (state: ListState, action: ListAction): ListState => 
         hasMore: state.mumbles.length + action.payload.length < state.mumblesCount,
         isLoading: false,
         mumbles: [...state.mumbles, ...action.payload],
+      };
+    case 'fetch_initialmumbles_success':
+      return {
+        ...state,
+        isLoading: false,
+        mumbles: action.payload.mumbles,
+        hasMore: action.payload.mumbles.length < action.payload.count,
+      };
+    case 'new_mumbles_available':
+      return {
+        ...state,
+        hasUpdate: true,
+      };
+    case 'new_mumbles_add_to_list':
+      return {
+        ...state,
+        hasUpdate: false,
+        mumbles: [...action.payload, ...state.mumbles],
+        mumblesCount: state.mumblesCount + action.payload.length,
       };
     case 'add_new_post_to_list':
       return {

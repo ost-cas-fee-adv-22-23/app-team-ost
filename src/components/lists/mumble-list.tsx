@@ -5,9 +5,11 @@ import { listReducer, ListState } from '@/helpers/reducers/lists-reducer';
 import { writeReducer, WriteState } from '@/helpers/reducers/write-reducer';
 import { validateFileinput } from '@/helpers/validate-fileinput';
 import { useFetchMumbles } from '@/hooks/api/use-fetch-mumbles';
+import { useFetchMumblesRefresh } from '@/hooks/api/use-fetch-mumbles-refresh';
 import { postMumble, postReply } from '@/services/qwacker-api/posts';
 import { Mumble } from '@/types/mumble';
 import {
+  IconArrowUp,
   IconMumble,
   Paragraph,
   ParagraphSize,
@@ -20,7 +22,7 @@ import {
   TextButtonDisplayMode,
   TextButtonSize,
 } from '@smartive-education/design-system-component-library-team-ost';
-import { ChangeEvent, FC, FormEvent, useReducer } from 'react';
+import { ChangeEvent, FC, FormEvent, useEffect, useReducer } from 'react';
 
 type MumbleListProps = {
   mumbles: Mumble[];
@@ -38,6 +40,7 @@ type MumbleListProps = {
 export const MumbleList: FC<MumbleListProps> = (props: MumbleListProps) => {
   const initialState: ListState = {
     hasMore: props.mumbles.length < props.count,
+    hasUpdate: false,
     isLoading: false,
     mumbles: props.mumbles,
     mumblesCount: props.count,
@@ -57,15 +60,25 @@ export const MumbleList: FC<MumbleListProps> = (props: MumbleListProps) => {
   const [listState, dispatchList] = useReducer(listReducer, initialState);
   const [writeState, dispatchWrite] = useReducer(writeReducer, initialWriteState);
 
-  const {
-    isLoading: isLoadingMoreMumbles,
-    error: errorMoreMumbles,
-    data: moreMumbles,
-  } = useFetchMumbles(
+  const { data: moreMumbles } = useFetchMumbles(
     props.creator,
     undefined,
     listState.mumbles.length > 0 ? listState.mumbles[listState.mumbles.length - 1].id : undefined
   );
+
+  const { data: newMumbles } = useFetchMumblesRefresh(props.creator, listState.mumbles[0].id, undefined);
+
+  useEffect(() => {
+    newMumbles && newMumbles?.mumbles.length > 0 && dispatchList({ type: 'new_mumbles_available' });
+  }, [newMumbles]);
+
+  const handleLoadNewMumbles = (): void => {
+    newMumbles && dispatchList({ type: 'new_mumbles_add_to_list', payload: newMumbles.mumbles });
+    window.scrollTo({
+      top: 180,
+      behavior: 'smooth',
+    });
+  };
 
   const loadMore = async (): Promise<void> => {
     dispatchList({ type: 'fetch_mumbles' });
@@ -99,7 +112,6 @@ export const MumbleList: FC<MumbleListProps> = (props: MumbleListProps) => {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
-    const isReply = false;
     dispatchWrite({ type: 'submit_form' });
     //todo: postMumble über next page/api aufrufen
     try {
@@ -123,12 +135,26 @@ export const MumbleList: FC<MumbleListProps> = (props: MumbleListProps) => {
     }
   };
 
-  if (!props.mumbles) {
+  if (!props.mumbles || (props.mumbles.length <= 0 && props.creator)) {
     return <Paragraph size={ParagraphSize.l}>Uups. Wir finden keine Mumbles für dich.</Paragraph>;
   }
 
   return (
     <>
+      {listState.hasUpdate && (
+        <div className="fixed z-60 top-32 left-1/2 -translate-x-1/2 drop-shadow-lg">
+          <TextButton
+            ariaLabel="Neue Mumbles sind verfügbar. Jetzt laden."
+            color={TextButtonColor.gradient}
+            displayMode={TextButtonDisplayMode.inline}
+            icon={<IconArrowUp />}
+            onClick={() => handleLoadNewMumbles()}
+            size={TextButtonSize.l}
+          >
+            Neue Mumbles sind verfügbar. Jetzt laden.
+          </TextButton>
+        </div>
+      )}
       {props.isWriteCardVisible && (
         <WriteCard
           form={writeState.form}

@@ -1,7 +1,8 @@
-type HttpMethods = 'GET' | 'POST' | 'PUT' | 'DELETE';
+import { QwackerError } from '@/types/error';
+import { HttpMethod, HttpStatusCodes } from '@/types/http';
 
 const buildRequestConfig = (
-  method: HttpMethods,
+  method: HttpMethod,
   accessToken?: string,
   body?: BodyInit | Record<string, unknown>
 ): RequestInit => {
@@ -37,20 +38,23 @@ async function request<TResponse>(urlPart: string, config: RequestInit, searchPa
 
   try {
     const response = await fetch(url, config);
-
     if (!response.ok) {
-      throw new Error('Something was not okay');
+      throw new QwackerError(
+        `Something went wrong with the communication with the qwacker-api at ${url} with status ${response.status}`
+      );
     }
 
-    if (response.status === 204) {
+    if (response.status === HttpStatusCodes.NO_CONTENT) {
       return true as TResponse;
     }
 
     return (await response.json()) as TResponse;
   } catch (error) {
-    console.warn('error', error);
-    // todo: Handle the error. eg. unresolved promises and basic network errors (Page Not Found, Bad Request, etc.)
-    throw new Error('Something was not okay');
+    throw new QwackerError(
+      (error as QwackerError).name === 'QwackerError'
+        ? (error as QwackerError).message
+        : `Something went wrong with the communication with the qwacker-api at ${url}`
+    );
   }
 }
 
