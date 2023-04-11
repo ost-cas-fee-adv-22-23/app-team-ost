@@ -9,7 +9,7 @@ type FetchMumbles = {
   error: string | any;
 };
 
-export const useFetchMumbles = (creator?: string, newerThanMumbleId?: string, olderThanMumbleId?: string) => {
+export const useFetchMumblesRefresh = (creator?: string, newerThanMumbleId?: string, olderThanMumbleId?: string) => {
   const urlParams = new URLSearchParams();
   if (creator) {
     urlParams.set('creator', creator);
@@ -21,7 +21,9 @@ export const useFetchMumbles = (creator?: string, newerThanMumbleId?: string, ol
     urlParams.set('olderThan', olderThanMumbleId);
   }
 
-  const { data, error, isLoading } = useSWR<FetchMumbles, Error>(`/api/posts/fetch-mumbles?${urlParams}`, fetcher);
+  const { data, error, isLoading } = useSWR<FetchMumbles, Error>(`/api/posts/fetch-mumbles?${urlParams}`, fetcher, {
+    refreshInterval: 5000,
+  });
   return {
     data,
     isLoading,

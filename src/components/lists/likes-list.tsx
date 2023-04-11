@@ -2,7 +2,6 @@ import { MumbleCard, MumbleCardVariant } from '@/components/cards/mumble-card';
 import { onLikeClick } from '@/helpers/like-mumble';
 import { listReducer, ListState } from '@/helpers/reducers/lists-reducer';
 import { useSearchMumbles } from '@/hooks/api/use-search-mumbles';
-import { Mumble } from '@/types/mumble';
 import {
   IconMumble,
   Paragraph,
@@ -28,6 +27,7 @@ type LikesListProps = {
 export const LikesList: FC<LikesListProps> = (props: LikesListProps) => {
   const initialState: ListState = {
     hasMore: false,
+    hasUpdate: false,
     isLoading: false,
     mumbles: [],
     mumblesCount: 0,
@@ -44,11 +44,11 @@ export const LikesList: FC<LikesListProps> = (props: LikesListProps) => {
     dispatchList({ type: 'fetch_mumbles' });
     async function startFetching() {
       const urlParams = new URLSearchParams();
+
       props.creator && urlParams.set('likedBy', props.creator);
       try {
         const res = await fetch(`/api/posts/search-mumbles?${urlParams}`);
         const data = await res.json();
-        console.log(data);
 
         !ignore &&
           dispatchList({ type: 'fetch_initialmumbles_success', payload: { mumbles: data.mumbles, count: data.count } });
@@ -63,11 +63,13 @@ export const LikesList: FC<LikesListProps> = (props: LikesListProps) => {
     };
   }, []);
 
-  const {
-    isLoading: isLoadingMoreMumbles,
-    error: errorMoreMumbles,
-    data: moreMumbles,
-  } = useSearchMumbles(undefined, listState.mumbles.length.toString(), undefined, undefined, props.creator);
+  const { data: moreMumbles } = useSearchMumbles(
+    undefined,
+    listState.mumbles.length.toString(),
+    undefined,
+    undefined,
+    props.creator
+  );
 
   const loadMore = () => {
     dispatchList({ type: 'fetch_mumbles' });
