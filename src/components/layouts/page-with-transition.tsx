@@ -22,12 +22,14 @@ export const PageWithTransition: LayoutProps = ({ children }) => {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
-    const handler = () => {
-      setIsTransitioning(true);
-      // Waiting the page-leave-animation before showing the loading screen
-      setTimeout(() => {
-        setIsLoading(true);
-      }, 780);
+    const handler = (url: string) => {
+      if (window.location.pathname !== url) {
+        setIsTransitioning(true);
+        // Waiting the page-leave-animation before showing the loading screen
+        setTimeout(() => {
+          setIsLoading(true);
+        }, 780);
+      }
     };
     router.events.on('routeChangeStart', handler);
     return () => {
