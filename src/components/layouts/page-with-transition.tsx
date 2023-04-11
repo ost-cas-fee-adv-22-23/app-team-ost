@@ -1,4 +1,3 @@
-// components/PageWithTransition.tsx
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { LayoutProps } from './types/page-with-layout';
