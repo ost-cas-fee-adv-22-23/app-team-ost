@@ -10,11 +10,12 @@ const poppins = Poppins({
   variable: '--font-poppins',
 });
 
-export default function App({ Component, pageProps: { session, ...pageProps } }: AppProps) {
+export default function App({ Component, router, pageProps: { session, ...pageProps } }: AppProps) {
   return (
     <SessionProvider session={session}>
       <main className={`${poppins.variable} font-poppins`}>
-        <Component {...pageProps} />
+        {/* We use the router as the key for a correct state handling while navigating between dynamic pages. Ex. profilepages or mumble detailpages. */}
+        <Component {...pageProps} key={router.asPath} />
       </main>
     </SessionProvider>
   );
