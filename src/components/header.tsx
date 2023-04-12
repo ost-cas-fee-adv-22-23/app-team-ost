@@ -55,7 +55,7 @@ export const Header: FC<HeaderProps> = () => {
         imageComponent={Image}
         imageComponentArgs={{ width: 50, height: 50 }}
         linkComponent={Link}
-        linkComponentArgs={{ href: `/profile/${session?.user.id}` }}
+        linkComponentArgs={{ href: `/profile/${session.user.id}` }}
         renderAsLink={true}
         src={session.user.avatarUrl as string}
       />
