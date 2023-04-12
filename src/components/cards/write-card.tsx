@@ -20,7 +20,7 @@ import {
   UserShortRepresentationLabelType,
   UserShortRepresentationProfilePictureSize,
 } from '@smartive-education/design-system-component-library-team-ost';
-import { useSession } from 'next-auth/react';
+import { JWT } from 'next-auth/jwt';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ChangeEvent, FC, FormEvent, useState } from 'react';
@@ -44,6 +44,7 @@ type WriteCardProps = {
   fileinputError: string;
   handleSubmit: (e: FormEvent<HTMLFormElement>) => void;
   isSubmitting: boolean;
+  jwtPayload: JWT;
 };
 
 type WriteCardVariantMap = {
@@ -62,6 +63,7 @@ const writeCardVariantMap: Record<WriteCardVariant, WriteCardVariantMap> = {
   },
 };
 
+// todo: eigener Typ
 export const WriteCard: FC<WriteCardProps> = ({
   form,
   variant,
@@ -71,9 +73,9 @@ export const WriteCard: FC<WriteCardProps> = ({
   fileinputError,
   handleSubmit,
   isSubmitting,
+  jwtPayload,
 }) => {
   const settings = writeCardVariantMap[variant] || writeCardVariantMap.inline;
-  const { data: session } = useSession();
   const [isOpenFileUpload, setIsOpenFileUpload] = useState(false);
 
   const submitClick = (e: FormEvent<HTMLFormElement>) => {
@@ -87,17 +89,17 @@ export const WriteCard: FC<WriteCardProps> = ({
   };
 
   return (
-    session && (
+    jwtPayload && (
       <Card borderRadiusType={settings.borderRadiusType} isInteractive={settings.isInteractive}>
         {variant === WriteCardVariant.main && (
           <div className="absolute -left-l top-m">
             <ProfilePicture
-              alt={session.user.username}
+              alt={jwtPayload.user.username}
               imageComponent={Image}
               width={80}
               height={80}
               size={ProfilePictureSize.m}
-              src={session.user.avatarUrl}
+              src={jwtPayload.user.avatarUrl}
             />
           </div>
         )}
@@ -106,16 +108,16 @@ export const WriteCard: FC<WriteCardProps> = ({
 
           {variant === WriteCardVariant.inline && (
             <UserShortRepresentation
-              alt={session.user.username}
-              displayName={`${session.user.firstname} ${session?.user.lastname}`}
-              hrefProfile={`../profile/${session.user.id}`}
+              alt={jwtPayload.user.username}
+              displayName={`${jwtPayload.user.firstname} ${jwtPayload?.user.lastname}`}
+              hrefProfile={`../profile/${jwtPayload.user.id}`}
               imageComponent={Image}
               imageComponentArgs={{ width: 50, height: 50 }}
               labelType={UserShortRepresentationLabelType.m}
               linkComponent={Link}
               profilePictureSize={UserShortRepresentationProfilePictureSize.s}
-              src={session.user.avatarUrl ?? ''}
-              username={session.user.username}
+              src={jwtPayload.user.avatarUrl ?? ''}
+              username={jwtPayload.user.username}
             />
             /* todo: Typ des src Props prüfen. avatarUrl ist aktuell nullable. Es muss jedoch zwingend eine src angegeben werden */
             /* todo: Muss der Displayname hier nochmals zusammengesetzt werden? */

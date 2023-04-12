@@ -10,18 +10,16 @@ import {
   StackDirection,
   StackSpacing,
 } from '@smartive-education/design-system-component-library-team-ost';
-import { GetServerSideProps, GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
-import { getToken, JWT } from 'next-auth/jwt';
+import { GetStaticProps, InferGetStaticPropsType } from 'next';
 import Head from 'next/head';
 
-type TimelinePageProps = {
-  jwtPayload: JWT;
+type TimelinePublicPage = {
   mumbleList: TMumbleList;
 };
 
-export default function TimelinePage(props: TimelinePageProps): InferGetServerSidePropsType<typeof getServerSideProps> {
+export default function TimelinePublicPage(props: TimelinePublicPage): InferGetStaticPropsType<typeof getStaticProps> {
   return (
-    <MainLayout jwtPayload={props.jwtPayload}>
+    <MainLayout>
       <>
         <Head>
           <title>Timeline</title>
@@ -38,10 +36,9 @@ export default function TimelinePage(props: TimelinePageProps): InferGetServerSi
           <MumbleList
             canUpdate={true}
             count={props.mumbleList.count}
-            isLikeActionVisible={true}
+            isLikeActionVisible={false}
             isReplyActionVisible={true}
-            isWriteCardVisible={true}
-            jwtPayload={props.jwtPayload}
+            isWriteCardVisible={false}
             mumbles={props.mumbleList.mumbles}
             variant={MumbleCardVariant.timeline}
           />
@@ -51,14 +48,13 @@ export default function TimelinePage(props: TimelinePageProps): InferGetServerSi
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async ({ req }: GetServerSidePropsContext) => {
-  const jwtPayload = (await getToken({ req })) as JWT;
-
-  const mumbleList = await fetchMumbles({ accessToken: jwtPayload.accessToken });
+export const getStaticProps: GetStaticProps = async () => {
+  const mumbleList = await fetchMumbles();
 
   return {
+    // value could change after some experience with numbers of users, available server power / capacity, etc.
+    revalidate: 5,
     props: {
-      jwtPayload,
       mumbleList,
     },
   };

@@ -1,16 +1,19 @@
 import { Header } from '@/components/header';
-import { LayoutProps } from '@/components/layouts/types/page-with-layout';
 import { PageWithTransition } from '@/components/layouts/page-with-transition';
+import { JWT } from 'next-auth/jwt';
 import Head from 'next/head';
+import { ReactElement } from 'react';
 
-const MainLayout: LayoutProps = ({ children }) => {
+export type MainLayoutProps = ({ children }: { children: ReactElement; jwtPayload?: JWT | null }) => ReactElement;
+
+const MainLayout: MainLayoutProps = ({ children, jwtPayload }) => {
   return (
     <>
       <Head>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="bg-slate-100 h-full w-full">
-        <Header />
+        <Header jwtPayload={jwtPayload} />
         <PageWithTransition>
           {/*
             Es wurde bewusst entschieden, auf allen Seiten ein p-xl zu verwenden, um ein konsistentes UI zu haben.

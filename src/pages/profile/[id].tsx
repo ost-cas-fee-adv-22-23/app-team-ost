@@ -2,9 +2,9 @@ import { MumbleCardVariant } from '@/components/cards/mumble-card';
 import MainLayout from '@/components/layouts/main-layout';
 import { LikesList } from '@/components/lists/likes-list';
 import { MumbleList } from '@/components/lists/mumble-list';
-import { fetchMumbles, searchMumbles } from '@/services/qwacker-api/posts';
+import { fetchMumbles } from '@/services/qwacker-api/posts';
 import { fetchUserById } from '@/services/qwacker-api/users';
-import { Mumble } from '@/types/mumble';
+import { MumbleList as TMumbleList } from '@/types/mumble';
 import { User } from '@/types/user';
 import {
   IconCheckmark,
@@ -29,16 +29,15 @@ import {
   UserShortRepresentationLabelType,
 } from '@smartive-education/design-system-component-library-team-ost';
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
-import { getToken } from 'next-auth/jwt';
-import { useSession } from 'next-auth/react';
+import { getToken, JWT } from 'next-auth/jwt';
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 
 type ProfilePageProps = {
-  count: number;
-  mumbles: Mumble[];
+  jwtPayload: JWT;
+  mumbleList: TMumbleList;
   user: User;
 };
 
@@ -49,14 +48,13 @@ enum ProfilePageStateTypes {
 
 export default function ProfilePage(props: ProfilePageProps): InferGetServerSidePropsType<typeof getServerSideProps> {
   const [postType, setPostType] = useState<ProfilePageStateTypes>(ProfilePageStateTypes.mumbles);
-  const { data: session } = useSession();
-  const isCurrentUser = props.user.id === session?.user.id;
+  const isCurrentUser = props.user.id === props.jwtPayload.user.id;
 
   return (
-    <MainLayout>
+    <MainLayout jwtPayload={props.jwtPayload}>
       <>
         <Head>
-          <title>Mumble - {props.user.displayName}</title>
+          <title>Profile</title>
         </Head>
         <Stack direction={StackDirection.col} spacing={StackSpacing.s}>
           <div className="relative">
@@ -138,21 +136,22 @@ export default function ProfilePage(props: ProfilePageProps): InferGetServerSide
           )}
           {postType === ProfilePageStateTypes.mumbles ? (
             <MumbleList
-              count={props.count}
-              mumbles={props.mumbles}
-              variant={MumbleCardVariant.timeline}
-              creator={props.user.id}
               canUpdate={false}
+              count={props.mumbleList.count}
+              creator={props.user.id}
+              isLikeActionVisible={true}
+              isReplyActionVisible={true}
               isWriteCardVisible={false}
-              isReplyActionVisible={!!session}
-              isLikeActionVisible={!!session}
+              mumbles={props.mumbleList.mumbles}
+              variant={MumbleCardVariant.timeline}
             />
           ) : (
+            /* todo: Falscher Anwendungsfall der MumbleCardVariant */
             <LikesList
-              variant={MumbleCardVariant.timeline}
               creator={props.user.id}
-              isReplyActionVisible={!!session}
-              isLikeActionVisible={!!session}
+              isLikeActionVisible={true}
+              isReplyActionVisible={true}
+              variant={MumbleCardVariant.timeline}
             />
           )}
         </Stack>
@@ -162,33 +161,18 @@ export default function ProfilePage(props: ProfilePageProps): InferGetServerSide
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ req, query: { id } }) => {
-  try {
-    const jwtPayload = await getToken({ req });
-    if (!jwtPayload || !jwtPayload.accessToken) {
-      throw new Error('No jwtPayload found');
-    }
-    if (!id) {
-      throw new Error('No id found');
-    }
+  const jwtPayload = (await getToken({ req })) as JWT;
 
-    const user = await fetchUserById(id as string, jwtPayload.accessToken);
-    const { count, mumbles } = await fetchMumbles({ creator: id as string, accessToken: jwtPayload.accessToken });
+  const [user, mumbleList] = await Promise.all([
+    fetchUserById(id as string, jwtPayload.accessToken),
+    fetchMumbles({ creator: id as string, accessToken: jwtPayload.accessToken }),
+  ]);
 
-    return {
-      props: {
-        user,
-        count,
-        mumbles,
-      },
-    };
-  } catch (error) {
-    let message;
-    if (error instanceof Error) {
-      message = error.message;
-    } else {
-      message = String(error);
-    }
-
-    return { props: { error: message, user: '' } };
-  }
+  return {
+    props: {
+      jwtPayload,
+      mumbleList,
+      user,
+    },
+  };
 };

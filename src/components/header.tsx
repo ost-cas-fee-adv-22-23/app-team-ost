@@ -9,7 +9,7 @@ import {
   ProfilePictureButton,
   SettingsButton,
 } from '@smartive-education/design-system-component-library-team-ost';
-import { useSession } from 'next-auth/react';
+import { JWT } from 'next-auth/jwt';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -17,10 +17,10 @@ import { ChangeEvent, FC, FormEvent, ReactElement, useState } from 'react';
 
 type HeaderProps = {
   children?: ReactElement;
+  jwtPayload?: JWT | null;
 };
 
-export const Header: FC<HeaderProps> = () => {
-  const { data: session } = useSession();
+export const Header: FC<HeaderProps> = (props) => {
   const [isOpenSettings, setIsOpenSettings] = useState(false);
   const router = useRouter();
 
@@ -46,18 +46,18 @@ export const Header: FC<HeaderProps> = () => {
     setIsOpenSettings(false);
   };
 
-  const navigation = session ? (
+  const navigation = props.jwtPayload ? (
     <Navigation>
       {/* We decided to navigate on the profile picture to the profile page */}
       <ProfilePictureButton
-        alt={session.user.username}
+        alt={props.jwtPayload.user.username}
         aria-label="go to profile page"
         imageComponent={Image}
         imageComponentArgs={{ width: 50, height: 50 }}
         linkComponent={Link}
-        linkComponentArgs={{ href: `/profile/${session?.user.id}` }}
+        linkComponentArgs={{ href: `/profile/${props.jwtPayload.user.id}` }}
         renderAsLink={true}
-        src={session.user.avatarUrl as string}
+        src={props.jwtPayload.user.avatarUrl as string}
       />
       <SettingsButton onClick={() => setIsOpenSettings(true)} />
       <LogoutButton

@@ -3,6 +3,11 @@ const nextConfig = {
   async redirects() {
     return [
       {
+        source: '/index-public',
+        destination: '/',
+        permanent: true,
+      },
+      {
         source: '/mumble-public/:id',
         destination: '/mumble/:id',
         permanent: true,
