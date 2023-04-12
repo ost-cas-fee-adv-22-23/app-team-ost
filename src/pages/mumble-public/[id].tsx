@@ -18,25 +18,25 @@ export default function MumblePublicPage(props: MumblePublicPageProps): InferGet
     <MainLayout>
       <>
         <Head>
-          <title>Mumble - {props.mumble.id}</title>
+          <title>Mumble</title>
         </Head>
         <div className="bg-white">
           <MumbleCard
-            variant={MumbleCardVariant.detailpage}
+            isReplyActionVisible={false}
             mumble={props.mumble}
             onLikeClick={onLikeClick}
-            isReplyActionVisible={false}
+            variant={MumbleCardVariant.detailpage}
           />
           <Stack direction={StackDirection.col} spacing={StackSpacing.s} withDivider={true}>
             <MumbleList
-              count={props.replies.length}
-              mumbles={props.replies}
-              variant={MumbleCardVariant.response}
               canUpdate={false}
-              replyToPostId={props.mumble.id}
-              isWriteCardVisible={false}
-              isReplyActionVisible={true}
+              count={props.replies.length}
               isLikeActionVisible={false}
+              isReplyActionVisible={true}
+              isWriteCardVisible={false}
+              mumbles={props.replies}
+              replyToMumbleId={props.mumble.id}
+              variant={MumbleCardVariant.response}
             />
           </Stack>
         </div>
@@ -67,10 +67,6 @@ export const getStaticPaths = async (): Promise<{ paths: { params: { id: string 
 
 export const getStaticProps: GetStaticProps = async (context) => {
   const id = context.params?.id as string;
-
-  if (!id) {
-    throw new Error('No id found');
-  }
 
   const [mumble, replies] = await Promise.all([fetchMumbleById(id), fetchRepliesByMumbleId(id)]);
 

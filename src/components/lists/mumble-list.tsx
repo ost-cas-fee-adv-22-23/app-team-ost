@@ -22,20 +22,21 @@ import {
   TextButtonDisplayMode,
   TextButtonSize,
 } from '@smartive-education/design-system-component-library-team-ost';
+import { JWT } from 'next-auth/jwt';
 import { ChangeEvent, FC, FormEvent, useEffect, useReducer } from 'react';
 
 type MumbleListProps = {
-  mumbles: Mumble[];
-  count: number;
-  variant: MumbleCardVariant;
   canUpdate?: boolean;
+  count: number;
   creator?: string;
-  likesFilter?: boolean;
-  isWriteCardVisible?: boolean;
-  isReplyActionVisible?: boolean;
   isLikeActionVisible?: boolean;
-  accessToken?: string;
-  replyToPostId?: string;
+  isReplyActionVisible?: boolean;
+  isWriteCardVisible?: boolean;
+  jwtPayload?: JWT | null;
+  likesFilter?: boolean;
+  mumbles: Mumble[];
+  replyToMumbleId?: string;
+  variant: MumbleCardVariant;
 };
 
 export const MumbleList: FC<MumbleListProps> = (props: MumbleListProps) => {
@@ -121,15 +122,15 @@ export const MumbleList: FC<MumbleListProps> = (props: MumbleListProps) => {
     //todo: postMumble über next page/api aufrufen
     try {
       let newMumble: Mumble;
-      props.replyToPostId
+      props.replyToMumbleId
         ? (newMumble = await postReply({
-            accessToken: props.accessToken as string,
-            mumbleId: props.replyToPostId,
+            accessToken: props.jwtPayload?.accessToken as string,
+            mumbleId: props.replyToMumbleId,
             text: writeState.form.textinput,
             file: writeState.form.file,
           }))
         : (newMumble = await postMumble({
-            accessToken: props.accessToken as string,
+            accessToken: props.jwtPayload?.accessToken as string,
             text: writeState.form.textinput,
             file: writeState.form.file,
           }));
@@ -160,15 +161,16 @@ export const MumbleList: FC<MumbleListProps> = (props: MumbleListProps) => {
           </TextButton>
         </div>
       )}
-      {props.isWriteCardVisible && (
+      {props.isWriteCardVisible && props.jwtPayload && (
         <WriteCard
+          fileinputError={writeState.fileinputError}
           form={writeState.form}
           handleChange={handleWriteCardFormChange}
           handleFileChange={handleFileChange}
-          resetFileinputError={resetFileinputError}
-          fileinputError={writeState.fileinputError}
           handleSubmit={handleSubmit}
           isSubmitting={writeState.formIsSubmitting}
+          jwtPayload={props.jwtPayload}
+          resetFileinputError={resetFileinputError}
           variant={WriteCardVariant.main}
         />
       )}

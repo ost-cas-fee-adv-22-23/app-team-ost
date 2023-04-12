@@ -6,43 +6,41 @@ import { fetchMumbleById, fetchRepliesByMumbleId } from '@/services/qwacker-api/
 import { Mumble } from '@/types/mumble';
 import { Stack, StackDirection, StackSpacing } from '@smartive-education/design-system-component-library-team-ost';
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
-import { getToken } from 'next-auth/jwt';
-import { useSession } from 'next-auth/react';
+import { getToken, JWT } from 'next-auth/jwt';
 import Head from 'next/head';
 
 type MumblePageProps = {
+  jwtPayload: JWT;
   mumble: Mumble;
   replies: Mumble[];
 };
 
 export default function MumblePage(props: MumblePageProps): InferGetServerSidePropsType<typeof getServerSideProps> {
-  const { data: session } = useSession();
-
   return (
     <MainLayout>
       <>
         <Head>
-          <title>Mumble - {props.mumble.id}</title>
+          <title>Mumble</title>
         </Head>
         <div className="bg-white">
           <MumbleCard
-            variant={MumbleCardVariant.detailpage}
+            isLikeActionVisible={true}
+            isReplyActionVisible={false}
             mumble={props.mumble}
             onLikeClick={onLikeClick}
-            isReplyActionVisible={false}
-            isLikeActionVisible={!!session}
+            variant={MumbleCardVariant.detailpage}
           />
           <Stack direction={StackDirection.col} spacing={StackSpacing.s} withDivider={true}>
             <MumbleList
-              count={props.replies.length}
-              mumbles={props.replies}
-              variant={MumbleCardVariant.response}
               canUpdate={false}
-              isWriteCardVisible={!!session}
-              isReplyActionVisible={!!session}
-              isLikeActionVisible={!!session}
-              replyToPostId={props.mumble.id}
-              accessToken={session?.accessToken}
+              count={props.replies.length}
+              isLikeActionVisible={true}
+              isReplyActionVisible={true}
+              isWriteCardVisible={true}
+              jwtPayload={props.jwtPayload}
+              mumbles={props.replies}
+              replyToMumbleId={props.mumble.id}
+              variant={MumbleCardVariant.response}
             />
           </Stack>
         </div>
@@ -52,14 +50,7 @@ export default function MumblePage(props: MumblePageProps): InferGetServerSidePr
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ req, query: { id } }) => {
-  const jwtPayload = await getToken({ req });
-
-  if (!jwtPayload || !jwtPayload.accessToken) {
-    throw new Error('No jwtPayload found');
-  }
-  if (!id) {
-    throw new Error('No id found');
-  }
+  const jwtPayload = (await getToken({ req })) as JWT;
 
   const [mumble, replies] = await Promise.all([
     fetchMumbleById(id as string, jwtPayload.accessToken),
@@ -68,6 +59,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query: { id 
 
   return {
     props: {
+      jwtPayload,
       mumble,
       replies,
     },

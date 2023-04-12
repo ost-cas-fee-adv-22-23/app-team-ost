@@ -25,7 +25,7 @@ export default function TimelinePage(props: TimelinePageProps): InferGetStaticPr
     <MainLayout>
       <>
         <Head>
-          <title>Mumble - Timeline</title>
+          <title>Timeline</title>
         </Head>
         <div className="text-violet-600">
           <Heading headingLevel={HeadingSize.h1}>Willkommen auf Mumble</Heading>
@@ -37,14 +37,14 @@ export default function TimelinePage(props: TimelinePageProps): InferGetStaticPr
         </div>
         <Stack direction={StackDirection.col} spacing={StackSpacing.s} withDivider={true}>
           <MumbleList
-            accessToken={props.jwtPayload?.accessToken}
-            mumbles={props.mumbles}
-            count={props.count}
-            variant={MumbleCardVariant.timeline}
             canUpdate={true}
-            isWriteCardVisible={!!props.jwtPayload}
-            isReplyActionVisible={true}
+            count={props.count}
             isLikeActionVisible={!!props.jwtPayload}
+            isReplyActionVisible={true}
+            isWriteCardVisible={!!props.jwtPayload}
+            jwtPayload={props.jwtPayload}
+            mumbles={props.mumbles}
+            variant={MumbleCardVariant.timeline}
           />
         </Stack>
       </>
