@@ -51,7 +51,7 @@ export default function ProfilePage(props: ProfilePageProps): InferGetServerSide
   const isCurrentUser = props.user.id === props.jwtPayload.user.id;
 
   return (
-    <MainLayout>
+    <MainLayout jwtPayload={props.jwtPayload}>
       <>
         <Head>
           <title>Profile</title>

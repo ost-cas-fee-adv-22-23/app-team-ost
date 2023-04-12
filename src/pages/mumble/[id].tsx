@@ -17,7 +17,7 @@ type MumblePageProps = {
 
 export default function MumblePage(props: MumblePageProps): InferGetServerSidePropsType<typeof getServerSideProps> {
   return (
-    <MainLayout>
+    <MainLayout jwtPayload={props.jwtPayload}>
       <>
         <Head>
           <title>Mumble</title>

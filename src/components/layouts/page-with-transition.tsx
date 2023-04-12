@@ -1,6 +1,4 @@
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import { LayoutProps } from './types/page-with-layout';
+import { LayoutProps } from '@/components/layouts/types/page-with-layout';
 import {
   IconMumble,
   IconSize,
@@ -11,6 +9,8 @@ import {
   StackDirection,
   StackSpacing,
 } from '@smartive-education/design-system-component-library-team-ost';
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
 
 const classMap: Record<string, string> = {
   leave: 'animate-pageLeave',

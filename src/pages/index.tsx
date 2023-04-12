@@ -21,7 +21,7 @@ type TimelinePageProps = {
 
 export default function TimelinePage(props: TimelinePageProps): InferGetServerSidePropsType<typeof getServerSideProps> {
   return (
-    <MainLayout>
+    <MainLayout jwtPayload={props.jwtPayload}>
       <>
         <Head>
           <title>Timeline</title>
