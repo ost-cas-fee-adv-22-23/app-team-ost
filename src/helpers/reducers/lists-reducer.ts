@@ -13,7 +13,6 @@ type ListAction =
   | { type: 'fetch_mumbles' }
   | { type: 'fetch_mumbles_error'; payload: string }
   | { type: 'fetch_mumbles_success'; payload: Mumble[] }
-  | { type: 'fetch_initialmumbles_success'; payload: { mumbles: Mumble[]; count: number } }
   | { type: 'new_mumbles_available' }
   | { type: 'new_mumbles_add_to_list'; payload: Mumble[] }
   | { type: 'add_new_post_to_list'; payload: Mumble };
@@ -34,13 +33,6 @@ export const listReducer = (state: ListState, action: ListAction): ListState => 
         hasMore: state.mumbles.length + action.payload.length < state.mumblesCount,
         isLoading: false,
         mumbles: [...state.mumbles, ...action.payload],
-      };
-    case 'fetch_initialmumbles_success':
-      return {
-        ...state,
-        isLoading: false,
-        mumbles: action.payload.mumbles,
-        hasMore: action.payload.mumbles.length < action.payload.count,
       };
     case 'new_mumbles_available':
       return {
