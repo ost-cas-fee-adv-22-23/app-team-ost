@@ -1,4 +1,5 @@
 import { timeAgo } from '@/helpers/time-ago';
+import { LikeError } from '@/types/error';
 import { Mumble } from '@/types/mumble';
 import {
   BorderRadiusType,
@@ -34,7 +35,7 @@ export enum MumbleCardVariant {
 type MumbleCardProps = {
   variant: MumbleCardVariant;
   mumble: Mumble;
-  onLikeClick: (mumble: Mumble) => void;
+  onLikeClick: (mumble: Mumble) => Promise<void>;
   isReplyActionVisible?: boolean;
   isLikeActionVisible?: boolean;
 };
@@ -83,6 +84,18 @@ export const MumbleCard: FC<MumbleCardProps> = ({
   onLikeClick,
 }) => {
   const settings = mumbleCardVariantMap[variant] || mumbleCardVariantMap.detailpage;
+
+  const handleOnLikeClick = async (): Promise<void> => {
+    try {
+      await onLikeClick(mumble);
+    } catch (error) {
+      if (error instanceof LikeError) {
+        setTimeout(() => {
+          // todo: Hier könnte der ursprüngliche Zustand nach dem optimistic update wiederhergestellt werden.
+        }, 5000);
+      }
+    }
+  };
 
   return (
     <Card borderRadiusType={settings.borderRadiusType} isInteractive={settings.isInteractive}>
@@ -158,7 +171,7 @@ export const MumbleCard: FC<MumbleCardProps> = ({
             />
           )}
           {isLikeActionVisible && (
-            <Like likesCount={mumble.likeCount} onClick={() => onLikeClick(mumble)} withReaction={mumble.likedByUser} />
+            <Like likesCount={mumble.likeCount} onClick={handleOnLikeClick} withReaction={mumble.likedByUser} />
           )}
           <Share linkToCopy={`${BASE_URL}mumble/${mumble.id}`} />
         </Stack>

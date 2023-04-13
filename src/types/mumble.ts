@@ -7,8 +7,6 @@ export type Mumble = {
   creator: User;
   text: string;
   mediaUrl?: string;
-  // Todo: Typ prüfen
-  // mediaType?: 'image/jpeg' | 'image/png' | 'image/gif';
   mediaType?: string;
   likeCount: number;
   likedByUser: boolean;

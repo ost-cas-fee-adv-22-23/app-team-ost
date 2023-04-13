@@ -116,11 +116,9 @@ export const WriteCard: FC<WriteCardProps> = ({
               labelType={UserShortRepresentationLabelType.m}
               linkComponent={Link}
               profilePictureSize={UserShortRepresentationProfilePictureSize.s}
-              src={jwtPayload.user.avatarUrl ?? ''}
+              src={jwtPayload.user.avatarUrl}
               username={jwtPayload.user.username}
             />
-            /* todo: Typ des src Props prüfen. avatarUrl ist aktuell nullable. Es muss jedoch zwingend eine src angegeben werden */
-            /* todo: Muss der Displayname hier nochmals zusammengesetzt werden? */
           )}
 
           <Form handleSubmit={handleSubmit}>

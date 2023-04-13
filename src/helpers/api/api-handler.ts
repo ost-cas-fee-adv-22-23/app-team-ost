@@ -1,4 +1,4 @@
-import { ApiError, createErrorResponse, createApiError } from '@/types/error';
+import { PagesApiError, createErrorResponse, createPagesApiError } from '@/types/error';
 import { HttpMethod, HttpStatusCodes } from '@/types/http';
 import { NextApiHandler, NextApiRequest, NextApiResponse } from 'next';
 
@@ -13,19 +13,19 @@ export const apiHandler = (handler: ApiMethodHandlers) => {
 
       // check if handler supports current HTTP method
       if (!method) {
-        return createApiError(`No method specified on path ${req.url}!`, HttpStatusCodes.METHOD_NOT_ALLOWED);
+        return createPagesApiError(`No method specified on path ${req.url}!`, HttpStatusCodes.METHOD_NOT_ALLOWED);
       }
 
       const methodHandler = handler[method];
       if (!methodHandler) {
-        return createApiError(`No method specified on path ${req.url}!`, HttpStatusCodes.METHOD_NOT_ALLOWED);
+        return createPagesApiError(`No method specified on path ${req.url}!`, HttpStatusCodes.METHOD_NOT_ALLOWED);
       }
 
       // call method handler
       await methodHandler(req, res);
     } catch (error) {
       // global error handler
-      if (error instanceof ApiError) {
+      if (error instanceof PagesApiError) {
         res.status(error.statusCode).json(createErrorResponse(error.message, error.statusCode));
       } else {
         // Errors with statusCode >= 500 should not be exposed in detail
