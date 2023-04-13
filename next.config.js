@@ -34,8 +34,12 @@ const nextConfig = {
         port: '',
         pathname: '/wp-content/uploads/**',
       },
-      // todo: caching
     ],
+    /*
+     * There is no mechanism to invalidate the cache at this time, so it's best to keep minimumCacheTTL low.:
+     * https://nextjs.org/docs/api-reference/next/image#minimum-cache-ttl
+     */
+    minimumCacheTTL: 60,
   },
   reactStrictMode: true,
   swcMinify: true,
