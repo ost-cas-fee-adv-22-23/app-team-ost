@@ -1,4 +1,3 @@
-import { sanitizeData } from '@/helpers/sanitize-data';
 import { timeAgo } from '@/helpers/time-ago';
 import { LikeError } from '@/types/error';
 import { Mumble } from '@/types/mumble';
@@ -140,9 +139,7 @@ export const MumbleCard: FC<MumbleCardProps> = ({
           />
         )}
         <div className="text-slate-900">
-          <Paragraph size={settings.textSize} dangerouslySetInnerHTML={sanitizeData(replaceHashtagsWithLinks(mumble.text))}>
-            {}
-          </Paragraph>
+          <Paragraph size={settings.textSize}>{replaceHashtagsWithLinks(mumble.text)}</Paragraph>
         </div>
         {mumble.mediaUrl !== null && (
           <ImageContainer
