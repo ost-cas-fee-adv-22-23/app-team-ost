@@ -15,7 +15,7 @@ const getSearchMumbles = async (nextReq: NextApiRequest, nextRes: NextApiRespons
     const searchParams: SearchMumblesParams = {
       accessToken: jwtPayload.accessToken as string,
       offset: Number(offset) | 0,
-      limit: 5, // limit wird bewusst fix gesetzt.
+      limit: 5,
       text: text as string | undefined,
       tags: tags as string[] | undefined,
       mentions: mentions as string[] | undefined,

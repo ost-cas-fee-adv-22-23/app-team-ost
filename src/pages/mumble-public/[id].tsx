@@ -70,6 +70,11 @@ export const getStaticProps: GetStaticProps = async (context) => {
 
   const [mumble, replies] = await Promise.all([fetchMumbleById(id), fetchRepliesByMumbleId(id)]);
 
+  /*
+   * "Not found" status code is not supported by qwacker-api for route GET /posts/:id. Hence the custom error page will
+   * be displayed.
+   */
+
   return {
     // value could change after some experience with numbers of users, available server power / capacity, etc.
     revalidate: 20,

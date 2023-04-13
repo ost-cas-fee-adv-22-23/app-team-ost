@@ -1,3 +1,4 @@
+import { UnknownReducerActionError } from '@/types/error';
 import { Mumble } from '@/types/mumble';
 
 export type ListState = {
@@ -59,7 +60,8 @@ export const listReducer = (state: ListState, action: ListAction): ListState => 
         ...state,
         mumbles: [action.payload, ...state.mumbles],
       };
-    default:
-      throw new Error(`Unknown action type`);
+    default: {
+      throw new UnknownReducerActionError((action as ListAction).type);
+    }
   }
 };

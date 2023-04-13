@@ -1,3 +1,5 @@
+import { UnknownReducerActionError } from '@/types/error';
+
 export type WriteState = {
   fileinputError: string;
   forminputError: string;
@@ -79,7 +81,8 @@ export const writeReducer = (state: WriteState, action: WriteAction): WriteState
       return {
         ...state,
       };
-    default:
-      throw new Error(`Unknown action type`);
+    default: {
+      throw new UnknownReducerActionError((action as WriteAction).type);
+    }
   }
 };

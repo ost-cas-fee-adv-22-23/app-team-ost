@@ -55,7 +55,7 @@ export const fetchMumbles = async (params?: FetchMumblesParams): Promise<MumbleL
   const { accessToken, limit, offset, newerThanMumbleId, olderThanMumbleId, creator } = params || {};
 
   const searchParams = new URLSearchParams({
-    limit: limit?.toString() || '2',
+    limit: limit?.toString() || '5',
     offset: offset?.toString() || '0',
     newerThan: newerThanMumbleId || '',
     olderThan: olderThanMumbleId || '',
@@ -135,7 +135,7 @@ export const searchMumbles = async (params: SearchMumblesParams): Promise<Mumble
   const { accessToken, limit, offset, text, tags, mentions, isReply, likedBy } = params || {};
 
   const body: PostSearchParams = {
-    limit: limit || 2,
+    limit: limit || 5,
     offset: offset || 0,
   };
 

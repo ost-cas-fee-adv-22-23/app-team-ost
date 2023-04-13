@@ -57,6 +57,11 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query: { id 
     fetchRepliesByMumbleId(id as string, jwtPayload.accessToken),
   ]);
 
+  /*
+   * "Not found" status code is not supported by qwacker-api for route GET /posts/:id. Hence the custom error page will
+   * be displayed.
+   */
+
   return {
     props: {
       jwtPayload,

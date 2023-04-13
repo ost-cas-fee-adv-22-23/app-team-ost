@@ -1,19 +1,14 @@
-import { Mumble } from '@/types/mumble';
+import { FetchPagesApiError } from '@/types/error';
+import { FetchData } from '@/types/http';
+import { MumbleList } from '@/types/mumble';
 import useSWR from 'swr';
 import fetcher from './fetcher';
-
-type FetchMumbles = {
-  mumbles: Mumble[];
-  isLoading: boolean;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  error: string | any;
-};
 
 export const useFetchMumblesRefresh = (
   creator?: string | undefined,
   newerThanMumbleId?: string | undefined,
   olderThanMumbleId?: string | undefined
-) => {
+): FetchData<MumbleList> => {
   const urlParams = new URLSearchParams();
   if (creator) {
     urlParams.set('creator', creator);
@@ -25,9 +20,13 @@ export const useFetchMumblesRefresh = (
     urlParams.set('olderThan', olderThanMumbleId);
   }
 
-  const { data, error, isLoading } = useSWR<FetchMumbles, Error>(`/api/posts/fetch-mumbles?${urlParams}`, fetcher, {
-    refreshInterval: 5000,
-  });
+  const { data, error, isLoading } = useSWR<MumbleList, FetchPagesApiError>(
+    `/api/posts/fetch-mumbles?${urlParams}`,
+    fetcher,
+    {
+      refreshInterval: 5000,
+    }
+  );
   return {
     data,
     isLoading,
