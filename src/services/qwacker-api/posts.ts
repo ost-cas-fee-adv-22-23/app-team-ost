@@ -1,8 +1,16 @@
+import { qwackerApi } from '@/services/qwacker-api/api';
+import { fetchUserById } from '@/services/qwacker-api/users';
+import {
+  FetchMumblesParams,
+  Mumble,
+  MumbleList,
+  PostMumbleParams,
+  PostReplyParams,
+  SearchMumblesParams,
+} from '@/types/mumble';
 import { decodeTime } from 'ulid';
-import { Mumble } from '../../types/mumble';
-import { fetchUserById } from './users';
-import { qwackerApi } from './api';
 
+// Qwacker API-Types. Same types / names as implemented in the cas-fee-adv-qwacker-api. Only used in this File.
 type BasePost = {
   id: string;
   creator: string;
@@ -30,76 +38,145 @@ type QwackerMumbleResponse = {
   data: ApiPostResult[];
 };
 
-// todo: Braucht es diesen noch? Type verschieben? Muss er exportiert werden?
-export type UploadImage = File & { preview: string };
+type SearchParams = {
+  text?: string;
+  tags?: string[];
+  mentions?: string[];
+  isReply?: boolean;
+  likedBy?: string[];
+};
 
-// todo: Eigener Typ für QueryParams
-// todo: Neuer Type erstellen für ReturnType (count: number, mumbles: Mumble[]), da count benötigt wird
-export const fetchMumbles = async (params?: {
-  token?: string;
-  limit?: number;
+type PostSearchParams = SearchParams & {
   offset?: number;
-  newerThanMumbleId?: string;
-  creator?: string;
-}): Promise<{ count: number; mumbles: Mumble[] }> => {
-  const { token, limit, offset, newerThanMumbleId, creator } = params || {};
+  limit?: number;
+};
+
+export const fetchMumbles = async (params?: FetchMumblesParams): Promise<MumbleList> => {
+  const { accessToken, limit, offset, newerThanMumbleId, olderThanMumbleId, creator } = params || {};
+
   const searchParams = new URLSearchParams({
-    limit: limit?.toString() || '10',
+    limit: limit?.toString() || '2',
     offset: offset?.toString() || '0',
     newerThan: newerThanMumbleId || '',
+    olderThan: olderThanMumbleId || '',
     creator: creator || '',
   });
 
-  try {
-    const { count, data } = await qwackerApi.getWithoutAuth<QwackerMumbleResponse>('posts', searchParams);
-    const mumbles = await Promise.all(data.map(async (mumble) => await transformApiPostResultToMumble(mumble, token)));
+  const { count, data } = accessToken
+    ? await qwackerApi.get<QwackerMumbleResponse>('posts', accessToken, searchParams)
+    : await qwackerApi.getWithoutAuth<QwackerMumbleResponse>('posts', searchParams);
 
-    return {
-      count,
-      mumbles,
-    };
-  } catch (error) {
-    // todo: Handle any error happened.
-    throw new Error('Something was not okay');
-  }
-};
+  const mumbles: Mumble[] = await Promise.all(
+    data.map(async (mumble: ApiPostResult): Promise<Mumble> => await transformApiPostResultToMumble(mumble, accessToken))
+  );
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const postMumble = async (text: string, file: UploadImage | null, accessToken?: string) => {
-  /*  if (!accessToken) {
-    throw new Error('No access token');
-  }
-
-  const formData = new FormData();
-  formData.append('text', text);
-  if (file) {
-    formData.append('image', file);
-  }
-
-  try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_QWACKER_API_URL}posts`, {
-      method: 'POST',
-      body: formData,
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-    if (!response.ok) {
-      throw new Error('Something was not okay');
-    }
-
-    return transformApiPostResultToMumble(await response.json());
-  } catch (error) {
-    throw new Error(error instanceof Error ? error.message : 'Could not post mumble');
-  }
-  */
-};
-
-const transformApiPostResultToMumble = async (mumble: ApiPostResult, token?: string): Promise<Mumble> => {
-  const creator = await fetchUserById({ id: mumble.creator as string, accessToken: token });
   return {
-    ...mumble,
+    count,
+    mumbles,
+  };
+};
+
+export const postMumble = async (params: PostMumbleParams): Promise<Mumble> => {
+  const { accessToken, text, file } = params || {};
+
+  // todo: ErrorHandling prüfen ob ein Text gesetzt ist
+  const formDataBody = new FormData();
+  formDataBody.append('text', text);
+
+  if (file) {
+    formDataBody.append('image', file);
+  }
+
+  const apiPostResult: Post = await qwackerApi.postFormData<Post>(`posts`, accessToken, formDataBody);
+
+  return await transformApiPostResultToMumble(apiPostResult, accessToken);
+};
+
+export const postReply = async (params: PostReplyParams): Promise<Mumble> => {
+  const { accessToken, mumbleId, text, file } = params || {};
+
+  // todo: ErrorHandling prüfen ob mumbleId und ein Text gesetzt ist
+  const formDataBody = new FormData();
+  formDataBody.append('text', text);
+
+  if (file) {
+    formDataBody.append('image', file);
+  }
+
+  const apiPostResult = await qwackerApi.postFormData<Reply>(`posts/${mumbleId}`, accessToken, formDataBody);
+  return await transformApiPostResultToMumble(apiPostResult, accessToken);
+};
+
+export const fetchMumbleById = async (id: string, accessToken?: string): Promise<Mumble> => {
+  let apiPostResult;
+  if (accessToken) {
+    apiPostResult = await qwackerApi.get<ApiPostResult>(`posts/${id}`, accessToken);
+  } else {
+    apiPostResult = await qwackerApi.getWithoutAuth<ApiPostResult>(`posts/${id}`);
+  }
+
+  return await transformApiPostResultToMumble(apiPostResult, accessToken);
+};
+
+export const fetchRepliesByMumbleId = async (id: string, accessToken?: string): Promise<Mumble[]> => {
+  let apiPostResult;
+  if (accessToken) {
+    apiPostResult = await qwackerApi.get<Reply[]>(`posts/${id}/replies`, accessToken);
+  } else {
+    apiPostResult = await qwackerApi.getWithoutAuth<Reply[]>(`posts/${id}/replies`);
+  }
+
+  return await Promise.all(
+    apiPostResult.map(async (reply: Reply): Promise<Mumble> => await transformApiPostResultToMumble(reply, accessToken))
+  );
+};
+
+export const searchMumbles = async (params: SearchMumblesParams): Promise<MumbleList> => {
+  const { accessToken, limit, offset, text, tags, mentions, isReply, likedBy } = params || {};
+
+  const body: PostSearchParams = {
+    limit: limit || 2,
+    offset: offset || 0,
+  };
+
+  if (text !== undefined && text !== null) {
+    body.text = text;
+  }
+  if (tags !== undefined && tags !== null) {
+    body.tags = tags;
+  }
+  if (mentions !== undefined && mentions !== null) {
+    body.mentions = mentions;
+  }
+  if (isReply !== undefined && isReply !== null) {
+    body.isReply = isReply;
+  }
+  if (likedBy !== undefined && likedBy !== null) {
+    body.likedBy = [likedBy];
+  }
+
+  const { count, data } = await qwackerApi.post<PostSearchParams, QwackerMumbleResponse>(`posts/search`, accessToken, body);
+  const mumbles: Mumble[] = await Promise.all(
+    data.map(async (mumble: ApiPostResult): Promise<Mumble> => await transformApiPostResultToMumble(mumble, accessToken))
+  );
+
+  return { mumbles, count };
+};
+
+export const likeMumbleById = async (id: string, accessToken: string): Promise<boolean> => {
+  return qwackerApi.put(`posts/${id}/likes`, accessToken);
+};
+
+export const unlikeMumbleById = async (id: string, accessToken: string): Promise<boolean> => {
+  return qwackerApi.delete(`posts/${id}/likes`, accessToken);
+};
+
+const transformApiPostResultToMumble = async (apiPostResult: ApiPostResult, accessToken?: string): Promise<Mumble> => {
+  const creator = await fetchUserById(apiPostResult.creator, accessToken);
+  // todo: TransformError?
+  return {
+    ...apiPostResult,
     creator,
-    createdAt: new Date(decodeTime(mumble.id)).toISOString(),
+    createdAt: new Date(decodeTime(apiPostResult.id)).toISOString(),
   };
 };

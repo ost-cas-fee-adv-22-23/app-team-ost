@@ -1,66 +1,33 @@
-import { GetServerSideProps, GetServerSidePropsContext, InferGetStaticPropsType } from 'next';
-import MainLayout from '../components/layouts/main-layout';
+import { MumbleCardVariant } from '@/components/cards/mumble-card';
+import MainLayout from '@/components/layouts/main-layout';
+import { MumbleList } from '@/components/lists/mumble-list';
+import { fetchMumbles } from '@/services/qwacker-api/posts';
+import { MumbleList as TMumbleList } from '@/types/mumble';
 import {
   Heading,
   HeadingSize,
-  IconMumble,
   Stack,
-  StackAlignItems,
   StackDirection,
-  StackJustifyContent,
   StackSpacing,
-  TextButton,
-  TextButtonColor,
-  TextButtonDisplayMode,
-  TextButtonSize,
 } from '@smartive-education/design-system-component-library-team-ost';
+import { GetServerSideProps, GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
+import { getToken, JWT } from 'next-auth/jwt';
 import Head from 'next/head';
-import { MumbleCard, MumbleCardVariant } from '../components/cards/mumble-card';
-import { Mumble } from '../types/mumble';
-import { WriteCard, WriteCardVariant } from '../components/cards/write-card';
-import { fetchMumbles } from '../services/qwacker-api/posts';
-import { getToken } from 'next-auth/jwt';
-import { useSession } from 'next-auth/react';
-import { useState } from 'react';
 
-type PageProps = {
-  count: number;
-  mumbles: Mumble[];
+type TimelinePageProps = {
+  jwtPayload: JWT;
+  mumbleList: TMumbleList;
 };
 
-export default function PageHome({
-  count: initialCount,
-  mumbles: initialMumbles,
-}: PageProps): InferGetStaticPropsType<typeof getServerSideProps> {
-  // todo: reducer statt useState verwenden
-  const [mumbles, setMumbles] = useState(initialMumbles);
-  const [loading, setLoading] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [count, setCount] = useState(initialCount);
-  const [hasMore, setHasMore] = useState(initialMumbles.length < count);
-
-  const { data: session } = useSession();
-
-  const loadMore = async () => {
-    const { count, mumbles: newMumbles } = await fetchMumbles({
-      limit: 10,
-      offset: mumbles.length,
-      token: session?.accessToken,
-    });
-
-    setLoading(false);
-    setHasMore(mumbles.length + newMumbles.length < count);
-    setMumbles([...mumbles, ...newMumbles]);
-  };
-
+export default function TimelinePage(props: TimelinePageProps): InferGetServerSidePropsType<typeof getServerSideProps> {
   return (
-    <MainLayout>
+    <MainLayout jwtPayload={props.jwtPayload}>
       <>
         <Head>
-          <title>Mumble Home</title>
+          <title>Timeline</title>
         </Head>
-        <div className="text-violet-600 pt-l">
-          <Heading headingLevel={HeadingSize.h1}>Willkommen auf Mumble {count}</Heading>
+        <div className="text-violet-600">
+          <Heading headingLevel={HeadingSize.h1}>Willkommen auf Mumble</Heading>
         </div>
         <div className="text-slate-500 pt-xs pb-l">
           <Heading headingLevel={HeadingSize.h4}>
@@ -68,37 +35,16 @@ export default function PageHome({
           </Heading>
         </div>
         <Stack direction={StackDirection.col} spacing={StackSpacing.s} withDivider={true}>
-          <>
-            {/* eslint-disable-next-line @typescript-eslint/no-empty-function */}
-            {session && (
-              <WriteCard
-                variant={WriteCardVariant.main}
-                handleChange={() => console.log('click')}
-                handleSubmit={() => console.log('click')}
-              />
-            )}
-            {mumbles.map((mumble) => (
-              <MumbleCard key={mumble.id} variant={MumbleCardVariant.timeline} mumble={mumble} />
-            ))}
-            {hasMore && (
-              <Stack
-                alignItems={StackAlignItems.center}
-                justifyContent={StackJustifyContent.center}
-                spacing={StackSpacing.xl}
-              >
-                <TextButton
-                  ariaLabel="Start mumble"
-                  color={TextButtonColor.gradient}
-                  displayMode={TextButtonDisplayMode.inline}
-                  icon={<IconMumble />}
-                  onClick={() => loadMore()}
-                  size={TextButtonSize.l}
-                >
-                  {loading ? '...' : 'Weitere Mumbles laden'}
-                </TextButton>
-              </Stack>
-            )}
-          </>
+          <MumbleList
+            canUpdate={true}
+            count={props.mumbleList.count}
+            isLikeActionVisible={true}
+            isReplyActionVisible={true}
+            isWriteCardVisible={true}
+            jwtPayload={props.jwtPayload}
+            mumbles={props.mumbleList.mumbles}
+            variant={MumbleCardVariant.timeline}
+          />
         </Stack>
       </>
     </MainLayout>
@@ -106,35 +52,14 @@ export default function PageHome({
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ req }: GetServerSidePropsContext) => {
-  try {
-    const token = await getToken({ req });
+  const jwtPayload = (await getToken({ req })) as JWT;
 
-    // if (!token) {
-    //   return {
-    //     redirect: {
-    //       destination: '/login',
-    //       permanent: false,
-    //     },
-    //   };
-    // }
+  const mumbleList = await fetchMumbles({ accessToken: jwtPayload.accessToken });
 
-    // eslint-disable-next-line prefer-const
-    let { count, mumbles } = await fetchMumbles({ token: token?.accessToken as string });
-
-    return {
-      props: {
-        count,
-        mumbles,
-      },
-    };
-  } catch (error) {
-    let message;
-    if (error instanceof Error) {
-      message = error.message;
-    } else {
-      message = String(error);
-    }
-
-    return { props: { error: message, mumbles: [], count: 0 } };
-  }
+  return {
+    props: {
+      jwtPayload,
+      mumbleList,
+    },
+  };
 };

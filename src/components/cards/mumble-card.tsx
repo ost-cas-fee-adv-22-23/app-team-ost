@@ -1,3 +1,5 @@
+import { timeAgo } from '@/helpers/time-ago';
+import { Mumble } from '@/types/mumble';
 import {
   BorderRadiusType,
   Card,
@@ -16,8 +18,11 @@ import {
   UserShortRepresentationLabelType,
   UserShortRepresentationProfilePictureSize,
 } from '@smartive-education/design-system-component-library-team-ost';
+import Image from 'next/image';
+import Link from 'next/link';
 import { FC } from 'react';
-import { Mumble } from '../../types/mumble';
+
+const BASE_URL = process.env.NEXT_PUBLIC_URL;
 
 // todo: bessere Namen für Variants. Evtl. eigene Components für Variants erstellen
 export enum MumbleCardVariant {
@@ -29,6 +34,9 @@ export enum MumbleCardVariant {
 type MumbleCardProps = {
   variant: MumbleCardVariant;
   mumble: Mumble;
+  onLikeClick: (mumble: Mumble) => void;
+  isReplyActionVisible?: boolean;
+  isLikeActionVisible?: boolean;
 };
 
 type MumbleCardVariantMap = {
@@ -67,24 +75,38 @@ const mumbleCardVariantMap: Record<MumbleCardVariant, MumbleCardVariantMap> = {
   },
 };
 
-//TODO Define state for like counter, handle the like click and pass a callback for handling the like click
-export const MumbleCard: FC<MumbleCardProps> = ({ variant, mumble }) => {
+export const MumbleCard: FC<MumbleCardProps> = ({
+  isReplyActionVisible = false,
+  isLikeActionVisible = false,
+  variant,
+  mumble,
+  onLikeClick,
+}) => {
   const settings = mumbleCardVariantMap[variant] || mumbleCardVariantMap.detailpage;
 
   return (
     <Card borderRadiusType={settings.borderRadiusType} isInteractive={settings.isInteractive}>
-      {variant != MumbleCardVariant.response && (
+      {variant !== MumbleCardVariant.response && (
         <div className="absolute -left-l">
-          <ProfilePicture alt={mumble.creator.userName} size={settings.profilePictureSize} src={mumble.creator.avatarUrl} />
+          <ProfilePicture
+            alt={mumble.creator.userName}
+            imageComponent={Image}
+            width={80}
+            height={80}
+            size={settings.profilePictureSize}
+            src={mumble.creator.avatarUrl}
+          />
         </div>
       )}
+
       <Stack direction={StackDirection.col} spacing={StackSpacing.s}>
-        {variant != MumbleCardVariant.response ? (
+        {variant !== MumbleCardVariant.response ? (
           <UserShortRepresentation
             displayName={mumble.creator.displayName}
             hrefProfile={mumble.creator.profileUrl}
             labelType={settings.userShortRepresentationLabelType}
-            timestamp={mumble.createdAt}
+            linkComponent={Link}
+            timestamp={timeAgo(mumble.createdAt)}
             username={mumble.creator.userName}
           />
         ) : (
@@ -92,39 +114,53 @@ export const MumbleCard: FC<MumbleCardProps> = ({ variant, mumble }) => {
             alt={mumble.creator.userName}
             displayName={mumble.creator.displayName}
             hrefProfile={mumble.creator.profileUrl}
+            imageComponent={Image}
+            imageComponentArgs={{ width: 50, height: 50 }}
             labelType={settings.userShortRepresentationLabelType}
+            linkComponent={Link}
             profilePictureSize={settings.userShortRepresentationProfilePictureSize}
             src={mumble.creator.avatarUrl || ''}
-            timestamp={mumble.createdAt}
+            timestamp={timeAgo(mumble.createdAt)}
             username={mumble.creator.userName}
           />
         )}
         <div className="text-slate-900">
           <Paragraph size={settings.textSize}>{mumble.text}</Paragraph>
         </div>
-        <ImageContainer
-          alt={mumble.text}
-          onClick={function noRefCheck() {
-            console.log('click');
+        {mumble.mediaUrl !== null && (
+          <ImageContainer
+            alt={mumble.text}
+            imageComponent={Image}
+            fill
+            priority
+            sizes="(max-width: 640px) 80vw, (max-width: 1536px) 50vw, 30vw"
+            onClick={function noRefCheck() {
+              console.log('click');
+            }}
+            src={mumble.mediaUrl ?? ''}
+          />
+        )}
+        <Stack
+          direction={{
+            default: StackDirection.col,
+            sm: StackDirection.col,
+            md: StackDirection.col,
+            lg: StackDirection.row,
           }}
-          src={mumble.mediaUrl}
-        />
-        <Stack spacing={StackSpacing.m}>
-          <Reply
-            onClick={function noRefCheck() {
-              console.log('click');
-            }}
-            repliesCount={mumble.replyCount ?? 0}
-            withReaction
-          />
-          <Like
-            likesCount={mumble.likeCount}
-            onClick={function noRefCheck() {
-              console.log('click');
-            }}
-            withReaction
-          />
-          <Share linkToCopy="https://www.fcsg.ch/" />
+          spacing={StackSpacing.m}
+        >
+          {isReplyActionVisible && (
+            <Reply
+              href={`/mumble/${mumble.id}`}
+              linkComponent={Link}
+              repliesCount={mumble.replyCount ?? 0}
+              withReaction={(mumble.replyCount ?? 0) > 0}
+            />
+          )}
+          {isLikeActionVisible && (
+            <Like likesCount={mumble.likeCount} onClick={() => onLikeClick(mumble)} withReaction={mumble.likedByUser} />
+          )}
+          <Share linkToCopy={`${BASE_URL}mumble/${mumble.id}`} />
         </Stack>
       </Stack>
     </Card>

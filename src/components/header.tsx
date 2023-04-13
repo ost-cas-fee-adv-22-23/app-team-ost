@@ -1,27 +1,28 @@
+import { SettingsModal } from '@/components/modals/settings-modal';
 import {
-  PageHeader,
-  MumbleWhiteHorizontal,
-  Navigation,
-  ProfilePictureButton,
-  SettingsButton,
-  LogoutButton,
   Label,
   LabelSize,
+  LogoutButton,
+  MumbleWhiteHorizontal,
+  Navigation,
+  PageHeader,
+  ProfilePictureButton,
+  SettingsButton,
 } from '@smartive-education/design-system-component-library-team-ost';
-import { SettingsModal } from './modals/settings-modal';
-import { ChangeEvent, FC, FormEvent, ReactElement, useState } from 'react';
-import { FileuploadModal } from './modals/fileupload-modal';
-import { useSession } from 'next-auth/react';
+import { JWT } from 'next-auth/jwt';
+import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { ChangeEvent, FC, FormEvent, ReactElement, useState } from 'react';
 
 type HeaderProps = {
   children?: ReactElement;
+  jwtPayload?: JWT | null;
 };
 
-export const Header: FC<HeaderProps> = () => {
-  const { data: session } = useSession();
+export const Header: FC<HeaderProps> = (props) => {
   const [isOpenSettings, setIsOpenSettings] = useState(false);
-  const [isOpenFileUpload, setIsOpenFileUpload] = useState(false);
+  const router = useRouter();
 
   const [form, setForm] = useState({
     name: '',
@@ -37,13 +38,6 @@ export const Header: FC<HeaderProps> = () => {
     });
   };
 
-  const [file, setFile] = useState<File>();
-
-  const handleFileChange = (file: File) => {
-    console.log(file);
-    setFile(file);
-  };
-
   const handleSubmitSettings = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     //TODO call api function
@@ -51,32 +45,30 @@ export const Header: FC<HeaderProps> = () => {
     console.log('submit settings');
     setIsOpenSettings(false);
   };
-  const handleSubmitFileupload = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    //TODO call api function
-    console.log(file);
-    console.log('submit fileupload');
-    setIsOpenFileUpload(false);
-  };
 
-  const navgation = session ? (
+  const navigation = props.jwtPayload ? (
     <Navigation>
+      {/* We decided to navigate on the profile picture to the profile page */}
       <ProfilePictureButton
-        alt={session.user.username}
-        aria-label="Edit profilepicture"
-        onClick={() => setIsOpenFileUpload(true)}
-        src={session.user.avatarUrl as string}
+        alt={props.jwtPayload.user.username}
+        aria-label="go to profile page"
+        imageComponent={Image}
+        imageComponentArgs={{ width: 50, height: 50 }}
+        linkComponent={Link}
+        linkComponentArgs={{ href: `/profile/${props.jwtPayload.user.id}` }}
+        renderAsLink={true}
+        src={props.jwtPayload.user.avatarUrl as string}
       />
       <SettingsButton onClick={() => setIsOpenSettings(true)} />
       <LogoutButton
-        onClick={() => {
-          console.log('click');
-        }}
+        linkComponent={Link}
+        linkComponentArgs={{ href: `/auth/logout?callbackUrl=${router.asPath}` }}
+        renderAsLink={true}
       />
     </Navigation>
   ) : (
     <Navigation>
-      <Link href={'/login'}>
+      <Link href={`/auth/login?callbackUrl=${router.asPath}`}>
         <div className="text-white">
           <Label size={LabelSize.l}>Login</Label>
         </div>
@@ -86,16 +78,11 @@ export const Header: FC<HeaderProps> = () => {
 
   return (
     <PageHeader>
-      <div className="flex items-center justify-between w-full sm:w-7/12">
+      <div className="flex items-center justify-between h-14 w-full sm:w-2/3 2xl:w-1/2">
         <div className="h-10">
-          <MumbleWhiteHorizontal
-            ariaLabel="Go to mumble"
-            onClick={() => {
-              console.log('click');
-            }}
-          />
+          <MumbleWhiteHorizontal ariaLabel="go to timeline" linkComponent={Link} href={'/'} renderWithLink />
         </div>
-        {navgation}
+        {navigation}
       </div>
       <SettingsModal
         form={form}
@@ -103,12 +90,6 @@ export const Header: FC<HeaderProps> = () => {
         isOpen={isOpenSettings}
         setIsOpen={setIsOpenSettings}
         handleSubmit={handleSubmitSettings}
-      />
-      <FileuploadModal
-        handleChange={handleFileChange}
-        isOpen={isOpenFileUpload}
-        setIsOpen={setIsOpenFileUpload}
-        handleSubmit={handleSubmitFileupload}
       />
     </PageHeader>
   );
