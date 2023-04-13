@@ -2,10 +2,12 @@ import { MumbleCardVariant } from '@/components/cards/mumble-card';
 import MainLayout from '@/components/layouts/main-layout';
 import { LikesList } from '@/components/lists/likes-list';
 import { MumbleList } from '@/components/lists/mumble-list';
+import fetcher from '@/hooks/api/fetcher';
 import { fetchMumbles } from '@/services/qwacker-api/posts';
 import { fetchUserById } from '@/services/qwacker-api/users';
 import { MumbleList as TMumbleList } from '@/types/mumble';
 import { User } from '@/types/user';
+import useSWR from 'swr';
 import {
   IconCheckmark,
   Label,
@@ -49,6 +51,10 @@ enum ProfilePageStateTypes {
 export default function ProfilePage(props: ProfilePageProps): InferGetServerSidePropsType<typeof getServerSideProps> {
   const [postType, setPostType] = useState<ProfilePageStateTypes>(ProfilePageStateTypes.mumbles);
   const isCurrentUser = props.user.id === props.jwtPayload.user.id;
+
+  const urlParams = new URLSearchParams();
+  props.user && urlParams.set('likedBy', props.user.id);
+  const { data, error, isLoading } = useSWR<TMumbleList, Error>(`/api/posts/search-mumbles?${urlParams}`, fetcher);
 
   return (
     <MainLayout jwtPayload={props.jwtPayload}>
@@ -145,9 +151,13 @@ export default function ProfilePage(props: ProfilePageProps): InferGetServerSide
               mumbles={props.mumbleList.mumbles}
               variant={MumbleCardVariant.timeline}
             />
+          ) : isLoading ? (
+            <Paragraph size={ParagraphSize.l}>Deine Likes werden gerade gesammelt.</Paragraph>
           ) : (
             /* todo: Falscher Anwendungsfall der MumbleCardVariant */
             <LikesList
+              mumbles={data ? data.mumbles : []}
+              count={data ? data.count : 0}
               creator={props.user.id}
               isLikeActionVisible={true}
               isReplyActionVisible={true}
