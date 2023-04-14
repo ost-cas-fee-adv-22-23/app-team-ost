@@ -1,6 +1,6 @@
 import { MumbleCardVariant } from '@/components/cards/mumble-card';
 import MainLayout from '@/components/layouts/main-layout';
-import { MumbleList } from '@/components/lists/mumble-list';
+import { SearchList } from '@/components/lists/search-list';
 import { searchMumbles } from '@/services/qwacker-api/posts';
 import { MumbleList as TMumbleList } from '@/types/mumble';
 import {
@@ -34,15 +34,12 @@ export default function TagPage(props: TagPageProps): InferGetServerSidePropsTyp
           <Heading headingLevel={HeadingSize.h4}>Here you will find all mumbles with tag: {props.tag}</Heading>
         </div>
         <Stack direction={StackDirection.col} spacing={StackSpacing.s} withDivider={true}>
-          {/* todo: canUpdate könnte noch aktiviert werden */}
-          <MumbleList
-            canUpdate={false}
+          <SearchList
+            mumbles={props.mumbleList.mumbles}
             count={props.mumbleList.count}
             isLikeActionVisible={true}
             isReplyActionVisible={true}
-            isWriteCardVisible={false}
-            jwtPayload={props.jwtPayload}
-            mumbles={props.mumbleList.mumbles}
+            tag={props.tag}
             variant={MumbleCardVariant.timeline}
           />
         </Stack>
