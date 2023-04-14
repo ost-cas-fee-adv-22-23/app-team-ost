@@ -1,4 +1,3 @@
-import { LayoutProps } from '@/components/layouts/types/page-with-layout';
 import {
   IconMumble,
   IconSize,
@@ -10,14 +9,18 @@ import {
   StackSpacing,
 } from '@smartive-education/design-system-component-library-team-ost';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { FC, ReactElement, useEffect, useState } from 'react';
 
 const classMap: Record<string, string> = {
   leave: 'animate-pageLeave',
   enter: 'animate-pageEnter',
 };
 
-export const PageWithTransition: LayoutProps = ({ children }) => {
+type PageWithTransitionProps = {
+  children?: ReactElement;
+};
+
+export const PageWithTransition: FC<PageWithTransitionProps> = ({ children }: PageWithTransitionProps) => {
   const router = useRouter();
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
