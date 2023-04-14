@@ -43,7 +43,6 @@ export default function MumblePage(props: MumblePageProps): InferGetServerSidePr
           replyToMumbleId={props.mumble.id}
           writeCardVariant={WriteCardVariant.inline}
         />
-        {/* </div> */}
       </>
     </MainLayout>
   );

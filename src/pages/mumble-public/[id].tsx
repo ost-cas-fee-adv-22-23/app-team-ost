@@ -21,28 +21,24 @@ export default function MumblePublicPage(props: MumblePublicPageProps): InferGet
         <Head>
           <title>Mumble</title>
         </Head>
-        <div className="bg-white">
-          <MumbleCard
-            isReplyActionVisible={false}
-            mumble={props.mumble}
-            onLikeClick={onLikeClick}
-            variant={MumbleCardVariant.detailpage}
-          />
-          <Stack direction={StackDirection.col} spacing={StackSpacing.s} withDivider={true}>
-            <MumbleList
-              canUpdate={false}
-              count={props.replies.length}
-              isLikeActionVisible={false}
-              isReplyActionVisible={true}
-              isWriteCardVisible={false}
-              listStackWithDivider={true}
-              mumbles={props.replies}
-              mumbleCardVariant={MumbleCardVariant.response}
-              replyToMumbleId={props.mumble.id}
-              writeCardVariant={WriteCardVariant.inline}
-            />
-          </Stack>
-        </div>
+        <MumbleCard
+          isReplyActionVisible={false}
+          mumble={props.mumble}
+          onLikeClick={onLikeClick}
+          variant={MumbleCardVariant.detailpage}
+        />
+        <MumbleList
+          canUpdate={false}
+          count={props.replies.length}
+          isLikeActionVisible={false}
+          isReplyActionVisible={true}
+          isWriteCardVisible={false}
+          listStackWithDivider={true}
+          mumbles={props.replies}
+          mumbleCardVariant={MumbleCardVariant.response}
+          replyToMumbleId={props.mumble.id}
+          writeCardVariant={WriteCardVariant.inline}
+        />
       </>
     </MainLayout>
   );
