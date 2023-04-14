@@ -15,7 +15,7 @@ We use SSR for:
 ## Static Side Generation (SSG) / Incremental Static Regeneration (ISR)
 
 For the timeline, as well as the Mumble detail page, a public version is also available, without user data. Since we do not need an authenticated server session for fetching this data, these pages can be generated statically.
-With a revalidation of the pages every 20 seconds we can ensure that nevertheless always current pages are available for the users. This value can be adjusted with some experience to number of users, server power etc.
+With a revalidation of the pages every 5 seconds we can ensure that nevertheless always current pages are available for the users. This value can be adjusted with some experience to number of users, server power etc.
 
 We use SSG/ISR for:
 
