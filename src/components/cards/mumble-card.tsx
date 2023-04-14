@@ -160,7 +160,7 @@ export const MumbleCard: FC<MumbleCardProps> = ({
             md: StackDirection.col,
             lg: StackDirection.row,
           }}
-          spacing={StackSpacing.m}
+          spacing={StackSpacing.s}
         >
           {isReplyActionVisible && (
             <Reply

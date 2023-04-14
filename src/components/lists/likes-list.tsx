@@ -9,6 +9,7 @@ import {
   ParagraphSize,
   Stack,
   StackAlignItems,
+  StackDirection,
   StackJustifyContent,
   StackSpacing,
   TextButton,
@@ -19,12 +20,14 @@ import {
 import { FC, useReducer } from 'react';
 
 type LikesListProps = {
-  mumbles: Mumble[];
   count: number;
-  variant: MumbleCardVariant;
+  mumbles: Mumble[];
+  mumbleCardVariant: MumbleCardVariant;
   creator?: string;
-  isReplyActionVisible?: boolean;
   isLikeActionVisible?: boolean;
+  isReplyActionVisible?: boolean;
+  listStackWithDivider?: boolean;
+  listStackWithSpacing?: boolean;
 };
 
 // We decided to make two different lists for mumbles and likes
@@ -67,16 +70,22 @@ export const LikesList: FC<LikesListProps> = (props: LikesListProps) => {
 
   return (
     <>
-      {listState.mumbles.map((mumble) => (
-        <MumbleCard
-          key={mumble.id}
-          variant={props.variant}
-          mumble={mumble}
-          onLikeClick={onLikeClick}
-          isReplyActionVisible={props.isReplyActionVisible}
-          isLikeActionVisible={props.isLikeActionVisible}
-        />
-      ))}
+      <Stack
+        direction={StackDirection.col}
+        spacing={props.listStackWithSpacing ? StackSpacing.s : StackSpacing.none}
+        withDivider={props.listStackWithDivider ? props.listStackWithDivider : false}
+      >
+        {listState.mumbles.map((mumble) => (
+          <MumbleCard
+            key={mumble.id}
+            variant={props.mumbleCardVariant}
+            mumble={mumble}
+            onLikeClick={onLikeClick}
+            isReplyActionVisible={props.isReplyActionVisible}
+            isLikeActionVisible={props.isLikeActionVisible}
+          />
+        ))}
+      </Stack>
       {listState.hasMore && (
         <Stack alignItems={StackAlignItems.center} justifyContent={StackJustifyContent.center} spacing={StackSpacing.xl}>
           <TextButton

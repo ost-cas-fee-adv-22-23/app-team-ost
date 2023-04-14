@@ -144,24 +144,26 @@ export default function ProfilePage(props: ProfilePageProps): InferGetServerSide
             <MumbleList
               canUpdate={false}
               count={props.mumbleList.count}
-              creator={props.user.id}
+              creatorUserId={props.user.id}
               isLikeActionVisible={true}
               isReplyActionVisible={true}
               isWriteCardVisible={false}
+              listStackWithSpacing={true}
               mumbles={props.mumbleList.mumbles}
-              variant={MumbleCardVariant.timeline}
+              mumbleCardVariant={MumbleCardVariant.timeline}
             />
           ) : isLoading ? (
             <Paragraph size={ParagraphSize.l}>Deine Likes werden gerade gesammelt.</Paragraph>
           ) : (
             /* todo: Falscher Anwendungsfall der MumbleCardVariant */
             <LikesList
-              mumbles={data ? data.mumbles : []}
               count={data ? data.count : 0}
               creator={props.user.id}
               isLikeActionVisible={true}
               isReplyActionVisible={true}
-              variant={MumbleCardVariant.timeline}
+              listStackWithSpacing={true}
+              mumbleCardVariant={MumbleCardVariant.timeline}
+              mumbles={data ? data.mumbles : []}
             />
           )}
         </Stack>

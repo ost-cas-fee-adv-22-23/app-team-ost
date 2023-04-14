@@ -15,6 +15,7 @@ import {
   ParagraphSize,
   Stack,
   StackAlignItems,
+  StackDirection,
   StackJustifyContent,
   StackSpacing,
   TextButton,
@@ -26,17 +27,19 @@ import { JWT } from 'next-auth/jwt';
 import { ChangeEvent, FC, FormEvent, useEffect, useReducer } from 'react';
 
 type MumbleListProps = {
-  canUpdate?: boolean;
   count: number;
-  creator?: string;
+  mumbles: Mumble[];
+  mumbleCardVariant: MumbleCardVariant;
+  canUpdate?: boolean;
+  creatorUserId?: string;
   isLikeActionVisible?: boolean;
   isReplyActionVisible?: boolean;
   isWriteCardVisible?: boolean;
   jwtPayload?: JWT | null;
-  likesFilter?: boolean;
-  mumbles: Mumble[];
+  listStackWithDivider?: boolean;
+  listStackWithSpacing?: boolean;
   replyToMumbleId?: string;
-  variant: MumbleCardVariant;
+  writeCardVariant?: WriteCardVariant;
 };
 
 export const MumbleList: FC<MumbleListProps> = (props: MumbleListProps) => {
@@ -63,13 +66,13 @@ export const MumbleList: FC<MumbleListProps> = (props: MumbleListProps) => {
   const [writeState, dispatchWrite] = useReducer(writeReducer, initialWriteState);
 
   const { data: moreMumbles } = useFetchMumbles(
-    props.creator,
+    props.creatorUserId,
     undefined,
     listState.mumbles.length > 0 ? listState.mumbles[listState.mumbles.length - 1].id : undefined
   );
 
   const { data: newMumbles } = useFetchMumblesRefresh(
-    props.creator,
+    props.creatorUserId,
     listState.mumbles.length > 0 ? listState.mumbles[0].id : undefined,
     undefined
   );
@@ -141,7 +144,7 @@ export const MumbleList: FC<MumbleListProps> = (props: MumbleListProps) => {
     }
   };
 
-  if (!props.mumbles || (props.mumbles.length <= 0 && props.creator)) {
+  if (!props.mumbles || (props.mumbles.length <= 0 && props.creatorUserId)) {
     return <Paragraph size={ParagraphSize.l}>Uups. Wir finden keine Mumbles für dich.</Paragraph>;
   }
 
@@ -171,19 +174,25 @@ export const MumbleList: FC<MumbleListProps> = (props: MumbleListProps) => {
           isSubmitting={writeState.formIsSubmitting}
           jwtPayload={props.jwtPayload}
           resetFileinputError={resetFileinputError}
-          variant={WriteCardVariant.main}
+          variant={props.writeCardVariant ? props.writeCardVariant : WriteCardVariant.main}
         />
       )}
-      {listState.mumbles.map((mumble) => (
-        <MumbleCard
-          key={mumble.id}
-          variant={props.variant}
-          mumble={mumble}
-          onLikeClick={onLikeClick}
-          isLikeActionVisible={props.isLikeActionVisible}
-          isReplyActionVisible={props.isReplyActionVisible}
-        />
-      ))}
+      <Stack
+        direction={StackDirection.col}
+        spacing={props.listStackWithSpacing ? StackSpacing.s : StackSpacing.none}
+        withDivider={props.listStackWithDivider ? props.listStackWithDivider : false}
+      >
+        {listState.mumbles.map((mumble) => (
+          <MumbleCard
+            key={mumble.id}
+            variant={props.mumbleCardVariant}
+            mumble={mumble}
+            onLikeClick={onLikeClick}
+            isLikeActionVisible={props.isLikeActionVisible}
+            isReplyActionVisible={props.isReplyActionVisible}
+          />
+        ))}
+      </Stack>
       {listState.hasMore && (
         <Stack alignItems={StackAlignItems.center} justifyContent={StackJustifyContent.center} spacing={StackSpacing.xl}>
           <TextButton

@@ -1,4 +1,5 @@
 import { MumbleCard, MumbleCardVariant } from '@/components/cards/mumble-card';
+import { WriteCardVariant } from '@/components/cards/write-card';
 import MainLayout from '@/components/layouts/main-layout';
 import { MumbleList } from '@/components/lists/mumble-list';
 import { onLikeClick } from '@/helpers/like-mumble';
@@ -34,9 +35,11 @@ export default function MumblePublicPage(props: MumblePublicPageProps): InferGet
               isLikeActionVisible={false}
               isReplyActionVisible={true}
               isWriteCardVisible={false}
+              listStackWithDivider={true}
               mumbles={props.replies}
+              mumbleCardVariant={MumbleCardVariant.response}
               replyToMumbleId={props.mumble.id}
-              variant={MumbleCardVariant.response}
+              writeCardVariant={WriteCardVariant.inline}
             />
           </Stack>
         </div>
