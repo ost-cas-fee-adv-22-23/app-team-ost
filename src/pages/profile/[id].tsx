@@ -1,6 +1,6 @@
 import { MumbleCardVariant } from '@/components/cards/mumble-card';
 import MainLayout from '@/components/layouts/main-layout';
-import { LikesList } from '@/components/lists/likes-list';
+import { SearchList } from '@/components/lists/search-list';
 import { MumbleList } from '@/components/lists/mumble-list';
 import fetcher from '@/hooks/api/fetcher';
 import { fetchMumbles } from '@/services/qwacker-api/posts';
@@ -156,14 +156,14 @@ export default function ProfilePage(props: ProfilePageProps): InferGetServerSide
             <Paragraph size={ParagraphSize.l}>Deine Likes werden gerade gesammelt.</Paragraph>
           ) : (
             /* todo: Falscher Anwendungsfall der MumbleCardVariant */
-            <LikesList
+            <SearchList
               count={data ? data.count : 0}
               creator={props.user.id}
               isLikeActionVisible={true}
               isReplyActionVisible={true}
               listStackWithSpacing={true}
-              mumbleCardVariant={MumbleCardVariant.timeline}
               mumbles={data ? data.mumbles : []}
+              mumbleCardVariant={MumbleCardVariant.timeline}
             />
           )}
         </Stack>

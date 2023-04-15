@@ -17,7 +17,7 @@ const getSearchMumbles = async (nextReq: NextApiRequest, nextRes: NextApiRespons
       offset: Number(offset) | 0,
       limit: 5,
       text: text as string | undefined,
-      tags: tags as string[] | undefined,
+      tags: tags ? [tags as string] : undefined,
       mentions: mentions as string[] | undefined,
       likedBy: likedBy as string | undefined,
     };

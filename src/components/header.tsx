@@ -80,7 +80,7 @@ export const Header: FC<HeaderProps> = (props) => {
     <PageHeader>
       <div className="flex items-center justify-between h-14 w-full sm:w-2/3 2xl:w-1/2">
         <div className="h-10">
-          <MumbleWhiteHorizontal ariaLabel="go to timeline" linkComponent={Link} href={'/'} renderWithLink />
+          <MumbleWhiteHorizontal ariaLabel="go to timeline" linkComponent={Link} href={'/'} renderWithLink={true} />
         </div>
         {navigation}
       </div>
