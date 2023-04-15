@@ -35,12 +35,12 @@ export default function TagPage(props: TagPageProps): InferGetServerSidePropsTyp
         </div>
         <Stack direction={StackDirection.col} spacing={StackSpacing.s} withDivider={true}>
           <SearchList
-            mumbles={props.mumbleList.mumbles}
             count={props.mumbleList.count}
             isLikeActionVisible={true}
             isReplyActionVisible={true}
+            mumbles={props.mumbleList.mumbles}
+            mumbleCardVariant={MumbleCardVariant.timeline}
             tag={props.tag}
-            variant={MumbleCardVariant.timeline}
           />
         </Stack>
       </>
