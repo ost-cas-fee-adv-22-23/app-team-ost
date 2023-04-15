@@ -1,5 +1,3 @@
-import { FetchPagesApiError } from '@/types/error';
-
 export type HttpMethod = 'GET' | 'DELETE' | 'HEAD' | 'OPTIONS' | 'POST' | 'PUT' | 'PATCH' | 'PURGE' | 'LINK' | 'UNLINK';
 
 export enum HttpStatusCodesSuccess {
@@ -19,10 +17,4 @@ export enum HttpStatusCodesError {
 export const HttpStatusCodes = {
   ...HttpStatusCodesSuccess,
   ...HttpStatusCodesError,
-};
-
-export type FetchData<T> = {
-  data?: T;
-  isLoading: boolean;
-  error?: FetchPagesApiError;
 };

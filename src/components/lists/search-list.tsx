@@ -18,20 +18,21 @@ import {
 } from '@smartive-education/design-system-component-library-team-ost';
 import { FC, useReducer } from 'react';
 
-type LikesListProps = {
+type SearchListProps = {
   mumbles: Mumble[];
   count: number;
   variant: MumbleCardVariant;
   creator?: string;
+  tag?: string;
   isReplyActionVisible?: boolean;
   isLikeActionVisible?: boolean;
 };
 
-// We decided to make two different lists for mumbles and likes
+// We decided to make two different lists for mumbles and search
 // as the behavior of the two is different in initializing
 // and they use different hooks for loading more mumbles.
 // But they use the same reducer for state handling.
-export const LikesList: FC<LikesListProps> = (props: LikesListProps) => {
+export const SearchList: FC<SearchListProps> = (props: SearchListProps) => {
   const initialState: ListState = {
     hasMore: props.mumbles.length < props.count,
     hasUpdate: false,
@@ -46,7 +47,7 @@ export const LikesList: FC<LikesListProps> = (props: LikesListProps) => {
   const { data: moreMumbles } = useSearchMumbles(
     undefined,
     listState.mumbles.length.toString(),
-    undefined,
+    props.tag,
     undefined,
     props.creator
   );
@@ -62,7 +63,7 @@ export const LikesList: FC<LikesListProps> = (props: LikesListProps) => {
   };
 
   if (!listState.mumbles || listState.mumbles.length <= 0) {
-    return <Paragraph size={ParagraphSize.l}>Uups. Da sind noch keine Likes von dir.</Paragraph>;
+    return <Paragraph size={ParagraphSize.l}>Uups. Da sind noch keine Mumbles.</Paragraph>;
   }
 
   return (

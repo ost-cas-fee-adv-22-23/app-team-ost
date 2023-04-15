@@ -22,6 +22,7 @@ import {
 import Image from 'next/image';
 import Link from 'next/link';
 import { FC } from 'react';
+import { replaceHashtagsWithLinks } from '@/helpers/replace-hashtags-with-links';
 
 const BASE_URL = process.env.NEXT_PUBLIC_URL;
 
@@ -138,7 +139,7 @@ export const MumbleCard: FC<MumbleCardProps> = ({
           />
         )}
         <div className="text-slate-900">
-          <Paragraph size={settings.textSize}>{mumble.text}</Paragraph>
+          <Paragraph size={settings.textSize}>{replaceHashtagsWithLinks(mumble.text)}</Paragraph>
         </div>
         {mumble.mediaUrl !== null && (
           <ImageContainer

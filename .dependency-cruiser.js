@@ -30,7 +30,6 @@ module.exports = {
           '(^|/)tsconfig\\.json$', // TypeScript config
           '(^|/)(babel|webpack)\\.config\\.(js|cjs|mjs|ts|json)$', // other configs
           '(^|/)src/pages/api/auth/\\[...nextauth\\].ts', // Next.js file
-          '(^|/)src/pages/_document.tsx', // Next.js file
           '(^|/)src/middleware.ts', // Next.js file
         ],
       },

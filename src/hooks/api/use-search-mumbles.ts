@@ -1,5 +1,5 @@
 import { FetchPagesApiError } from '@/types/error';
-import { FetchData } from '@/types/http';
+import { FetchData } from '@/types/fetch-data';
 import { MumbleList } from '@/types/mumble';
 import useSWR from 'swr';
 import fetcher from './fetcher';
