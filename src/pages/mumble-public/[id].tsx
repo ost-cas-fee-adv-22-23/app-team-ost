@@ -1,4 +1,5 @@
 import { MumbleCard, MumbleCardVariant } from '@/components/cards/mumble-card';
+import { WriteCardVariant } from '@/components/cards/write-card';
 import MainLayout from '@/components/layouts/main-layout';
 import { MumbleList } from '@/components/lists/mumble-list';
 import { onLikeClick } from '@/helpers/like-mumble';
@@ -20,26 +21,24 @@ export default function MumblePublicPage(props: MumblePublicPageProps): InferGet
         <Head>
           <title>Mumble</title>
         </Head>
-        <div className="bg-white">
-          <MumbleCard
-            isReplyActionVisible={false}
-            mumble={props.mumble}
-            onLikeClick={onLikeClick}
-            variant={MumbleCardVariant.detailpage}
-          />
-          <Stack direction={StackDirection.col} spacing={StackSpacing.s} withDivider={true}>
-            <MumbleList
-              canUpdate={false}
-              count={props.replies.length}
-              isLikeActionVisible={false}
-              isReplyActionVisible={true}
-              isWriteCardVisible={false}
-              mumbles={props.replies}
-              replyToMumbleId={props.mumble.id}
-              variant={MumbleCardVariant.response}
-            />
-          </Stack>
-        </div>
+        <MumbleCard
+          isReplyActionVisible={false}
+          mumble={props.mumble}
+          onLikeClick={onLikeClick}
+          variant={MumbleCardVariant.detailpage}
+        />
+        <MumbleList
+          canUpdate={false}
+          count={props.replies.length}
+          isLikeActionVisible={false}
+          isReplyActionVisible={true}
+          isWriteCardVisible={false}
+          listStackWithDivider={true}
+          mumbles={props.replies}
+          mumbleCardVariant={MumbleCardVariant.response}
+          replyToMumbleId={props.mumble.id}
+          writeCardVariant={WriteCardVariant.inline}
+        />
       </>
     </MainLayout>
   );

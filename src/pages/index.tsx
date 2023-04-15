@@ -42,8 +42,9 @@ export default function TimelinePage(props: TimelinePageProps): InferGetServerSi
             isReplyActionVisible={true}
             isWriteCardVisible={true}
             jwtPayload={props.jwtPayload}
+            listStackWithSpacing={true}
             mumbles={props.mumbleList.mumbles}
-            variant={MumbleCardVariant.timeline}
+            mumbleCardVariant={MumbleCardVariant.timeline}
           />
         </Stack>
       </>

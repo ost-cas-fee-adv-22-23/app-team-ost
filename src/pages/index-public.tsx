@@ -39,8 +39,9 @@ export default function TimelinePublicPage(props: TimelinePublicPage): InferGetS
             isLikeActionVisible={false}
             isReplyActionVisible={true}
             isWriteCardVisible={false}
+            listStackWithSpacing={true}
             mumbles={props.mumbleList.mumbles}
-            variant={MumbleCardVariant.timeline}
+            mumbleCardVariant={MumbleCardVariant.timeline}
           />
         </Stack>
       </>

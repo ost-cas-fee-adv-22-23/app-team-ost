@@ -1,4 +1,5 @@
 import { MumbleCard, MumbleCardVariant } from '@/components/cards/mumble-card';
+import { WriteCardVariant } from '@/components/cards/write-card';
 import MainLayout from '@/components/layouts/main-layout';
 import { MumbleList } from '@/components/lists/mumble-list';
 import { onLikeClick } from '@/helpers/like-mumble';
@@ -22,28 +23,26 @@ export default function MumblePage(props: MumblePageProps): InferGetServerSidePr
         <Head>
           <title>Mumble</title>
         </Head>
-        <div className="bg-white">
-          <MumbleCard
-            isLikeActionVisible={true}
-            isReplyActionVisible={false}
-            mumble={props.mumble}
-            onLikeClick={onLikeClick}
-            variant={MumbleCardVariant.detailpage}
-          />
-          <Stack direction={StackDirection.col} spacing={StackSpacing.s} withDivider={true}>
-            <MumbleList
-              canUpdate={false}
-              count={props.replies.length}
-              isLikeActionVisible={true}
-              isReplyActionVisible={true}
-              isWriteCardVisible={true}
-              jwtPayload={props.jwtPayload}
-              mumbles={props.replies}
-              replyToMumbleId={props.mumble.id}
-              variant={MumbleCardVariant.response}
-            />
-          </Stack>
-        </div>
+        <MumbleCard
+          isLikeActionVisible={true}
+          isReplyActionVisible={false}
+          mumble={props.mumble}
+          onLikeClick={onLikeClick}
+          variant={MumbleCardVariant.detailpage}
+        />
+        <MumbleList
+          canUpdate={false}
+          count={props.replies.length}
+          isLikeActionVisible={true}
+          isReplyActionVisible={true}
+          isWriteCardVisible={true}
+          jwtPayload={props.jwtPayload}
+          listStackWithDivider={true}
+          mumbles={props.replies}
+          mumbleCardVariant={MumbleCardVariant.response}
+          replyToMumbleId={props.mumble.id}
+          writeCardVariant={WriteCardVariant.inline}
+        />
       </>
     </MainLayout>
   );
