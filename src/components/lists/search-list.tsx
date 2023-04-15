@@ -47,9 +47,9 @@ export const SearchList: FC<SearchListProps> = (props: SearchListProps) => {
   const { data: moreMumbles } = useSearchMumbles(
     undefined,
     listState.mumbles.length.toString(),
-    props.tag && props.tag,
+    props.tag,
     undefined,
-    props.creator && props.creator
+    props.creator
   );
 
   const loadMore = () => {
