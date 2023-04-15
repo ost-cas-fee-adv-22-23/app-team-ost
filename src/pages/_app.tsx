@@ -16,6 +16,10 @@ export default function App({ Component, router, pageProps: { session, ...pagePr
     <>
       <Head>
         <meta charSet="utf-8" />
+        <meta
+          name="description"
+          content="This App is the result of the second part of the CAS Frontend Engineering Advanced course. It's our very own Twitter Clone - Mumble."
+        />
         <meta name="theme-color" content="#7C3AED" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="manifest" href="/manifest.json" />
@@ -28,6 +32,10 @@ export default function App({ Component, router, pageProps: { session, ...pagePr
         <link rel="icon" href="/maskable_icon_x192.png" />
         <link rel="icon" href="/maskable_icon_x384.png" />
         <link rel="icon" href="/maskable_icon_x512.png" />
+        <link rel="icon" href="/icon-192x192.png" />
+        <link rel="icon" href="/icon-256x256.png" />
+        <link rel="icon" href="/icon-384x384.png" />
+        <link rel="icon" href="/icon-512x512.png" />
       </Head>
       <SessionProvider session={session}>
         <main className={`${poppins.variable} font-poppins`}>
