@@ -155,7 +155,6 @@ export default function ProfilePage(props: ProfilePageProps): InferGetServerSide
           ) : isLoading ? (
             <Paragraph size={ParagraphSize.l}>Deine Likes werden gerade gesammelt.</Paragraph>
           ) : (
-            /* todo: Falscher Anwendungsfall der MumbleCardVariant */
             <SearchList
               count={data ? data.count : 0}
               creator={props.user.id}
