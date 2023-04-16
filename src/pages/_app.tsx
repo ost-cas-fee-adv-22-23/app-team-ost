@@ -1,4 +1,5 @@
 import '@/styles/globals.css';
+import ErrorBoundary from '@/components/error-boundary';
 import { SessionProvider } from 'next-auth/react';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
@@ -37,10 +38,13 @@ export default function App({ Component, router, pageProps: { session, ...pagePr
         <link rel="icon" href="/icon-384x384.png" />
         <link rel="icon" href="/icon-512x512.png" />
       </Head>
+
       <SessionProvider session={session}>
         <main className={`${poppins.variable} font-poppins`}>
-          {/* We use the router as the key for a correct state handling while navigating between dynamic pages. Ex. profilepages or mumble detailpages. */}
-          <Component {...pageProps} key={router.asPath} />
+          <ErrorBoundary>
+            {/* We use the router as the key for a correct state handling while navigating between dynamic pages. Ex. profilepages or mumble detailpages. */}
+            <Component {...pageProps} key={router.asPath} />
+          </ErrorBoundary>
         </main>
       </SessionProvider>
     </>
