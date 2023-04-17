@@ -93,12 +93,12 @@ C4Dynamic
           Boundary(b3, "Pages") {
             System(SystemPagesAnonym, "anonymized pages (ISR)", "Public Timeline, Mumble-Detail")
             System(SystemPagesProtected, "protected pages (SSR)", "Timeline, Mumble-Detail and Profile")
-            System(SystemPagesAuth, "auth pages (CSR)", "Login, Logout, Register")
+            System(SystemPagesAuth, "auth pages (Static)", "Login, Logout, Register")
           }
           Boundary(b4, "Services") {
             System(SystemComponents, "components", "Global used components (Cards, Lists, Modals)")
             System(SystemPagesApi, "pages/api", "Api-routes for user interactions")
-            System(SystemHooks, "custom hooks", "Load-more, refresh intervall")
+            System(SystemHooks, "custom hooks", "Ex. Load-More, Load-New-Mumbles with refresh intervall")
             System(SystemHelper, "helper", "General helpers")
             System(SystemTypes, "types", "Global Types")
             System(SystemServices, "services/qwacker-api", "Api functions for posts, users and likes")
@@ -110,6 +110,7 @@ C4Dynamic
         Boundary(b6, "External Services") {
           System(QwackerAPI, "qwacker REST API")
           SystemDb(QwackerDB, "qwacker DB")
+          SystemDb(GoogleImage, "Google Image Storage")
           System(SystemZitadel, "Zitadel Auth")
         }
       }
@@ -127,6 +128,7 @@ C4Dynamic
       BiRel(SystemPagesApi, SystemServices, "")
       BiRel(SystemServices, QwackerAPI, "")
       BiRel(QwackerAPI, QwackerDB, "")
+      BiRel(QwackerAPI, GoogleImage, "")
       BiRel(SystemNextAuth, SystemZitadel, "")
 
       UpdateElementStyle(customerB, $fontColor="#db2777", $bgColor="#fbcfe8", $borderColor="#db2777")
