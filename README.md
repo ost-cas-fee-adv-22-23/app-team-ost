@@ -12,16 +12,29 @@ Advanced course. It's our very own Twitter Clone - Mumble.
 
 The latest version of the App is available [here](https://app-team-ost.vercel.app/).
 
-## Architecture: Rendering Strategies and Context
+## Architecture, Rendering Strategies and Context
 
 The detailed architecture, as well as decisions about the rendering strategy, can be found [here](./docs/app-architecture.md).
 
-## Project Setup
+# Setup the project
 
-### Installation
+## Authenticating GitHub Registry
+
+1. Create a personal GitHub access token.
+2. Create a new ~/.npmrc file if one doesn't exist.
+3. Include the following line, replacing TOKEN with your personal access token.
 
 ```console
-npm install
+@smartive-education:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=TOKEN
+```
+
+Additional information can be found [here](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry).
+
+## Next-App Installation
+
+```console
+npm ci
 ```
 
 This installs:
@@ -38,7 +51,7 @@ This installs:
 - eslint, prettier, dependency cruiser for code quality
 - husky, lint-staged as precommit hooks for linting/prettifying staged files
 
-### Create Environment Variables
+## Create Environment Variables
 
 In the git repository you can find an example .env.example-file. You can use it to create your own .env-file in the root of the project. The following variables are needed:
 
@@ -52,7 +65,7 @@ REVALIDATE_SECRET_TOKEN= { Revalidate API Secret }
 NEXT_PUBLIC_URL= { Public URL of the application is used to create the share url => for local development: http://localhost:3000/ }
 ```
 
-### Run Project
+## Run/Build Project
 
 The local next app runs on port 3000.
 To start the dev-server run:
@@ -76,7 +89,7 @@ npm run start
 **_NOTE:_**
 Static sites (SSG, ISR) like the public timeline or mumble-page are rendered on build time. To test it you have to build and start this build. In development mode (npm run dev) this sites are generated on every request (like SSR sites).
 
-## Development
+## Development and Conventions
 
 ### Conventional Commits
 
