@@ -6,7 +6,7 @@ import { SearchMumblesParams } from '@/types/mumble';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { getToken, JWT } from 'next-auth/jwt';
 
-const getSearchMumbles = async (nextReq: NextApiRequest, nextRes: NextApiResponse): Promise<void> => {
+const getSearch = async (nextReq: NextApiRequest, nextRes: NextApiResponse): Promise<void> => {
   const { offset, text, tags, mentions, likedBy } = nextReq.query;
 
   if (await isAuthorized(nextReq, nextRes)) {
@@ -28,5 +28,5 @@ const getSearchMumbles = async (nextReq: NextApiRequest, nextRes: NextApiRespons
 };
 
 export default apiHandler({
-  GET: getSearchMumbles,
+  GET: getSearch,
 });

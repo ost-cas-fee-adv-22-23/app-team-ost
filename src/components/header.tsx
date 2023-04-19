@@ -21,34 +21,33 @@ type HeaderProps = {
 };
 
 export const Header: FC<HeaderProps> = (props) => {
-  const [isOpenSettings, setIsOpenSettings] = useState(false);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const router = useRouter();
 
-  const [form, setForm] = useState({
+  const [settingsForm, setSettingsForm] = useState({
     name: '',
     email: '',
     city: '',
     biography: '',
   });
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setForm({
-      ...form,
+  const handleSettingsFormChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
+    setSettingsForm({
+      ...settingsForm,
       [e.target.name]: e.target.value,
     });
   };
 
-  const handleSubmitSettings = (e: FormEvent<HTMLFormElement>) => {
+  const handleSettingsFormSubmit = (e: FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
-    //TODO call api function
-    console.log(form);
-    console.log('submit settings');
-    setIsOpenSettings(false);
+    // todo: call api function
+    console.log('submit settings', settingsForm);
+    setIsSettingsModalOpen(false);
   };
 
   const navigation = props.jwtPayload ? (
     <Navigation>
-      {/* We decided to navigate on the profile picture to the profile page */}
+      {/* We decided to navigate by clicking on the profile picture to the profile page */}
       <ProfilePictureButton
         alt={props.jwtPayload.user.username}
         aria-label="go to profile page"
@@ -59,7 +58,7 @@ export const Header: FC<HeaderProps> = (props) => {
         renderAsLink={true}
         src={props.jwtPayload.user.avatarUrl as string}
       />
-      <SettingsButton onClick={() => setIsOpenSettings(true)} />
+      <SettingsButton onClick={() => setIsSettingsModalOpen(true)} />
       <LogoutButton
         linkComponent={Link}
         linkComponentArgs={{ href: `/auth/logout?callbackUrl=${router.asPath}` }}
@@ -85,11 +84,11 @@ export const Header: FC<HeaderProps> = (props) => {
         {navigation}
       </div>
       <SettingsModal
-        form={form}
-        handleChange={handleChange}
-        isOpen={isOpenSettings}
-        setIsOpen={setIsOpenSettings}
-        handleSubmit={handleSubmitSettings}
+        form={settingsForm}
+        handleChange={handleSettingsFormChange}
+        isOpen={isSettingsModalOpen}
+        setIsOpen={setIsSettingsModalOpen}
+        handleSubmit={handleSettingsFormSubmit}
       />
     </PageHeader>
   );

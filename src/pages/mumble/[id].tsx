@@ -5,7 +5,6 @@ import { MumbleList } from '@/components/lists/mumble-list';
 import { onLikeClick } from '@/helpers/like-mumble';
 import { fetchMumbleById, fetchRepliesByMumbleId } from '@/services/qwacker-api/posts';
 import { Mumble } from '@/types/mumble';
-import { Stack, StackDirection, StackSpacing } from '@smartive-education/design-system-component-library-team-ost';
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import { getToken, JWT } from 'next-auth/jwt';
 import Head from 'next/head';
@@ -28,7 +27,7 @@ export default function MumblePage(props: MumblePageProps): InferGetServerSidePr
           isReplyActionVisible={false}
           mumble={props.mumble}
           onLikeClick={onLikeClick}
-          variant={MumbleCardVariant.detailpage}
+          variant={MumbleCardVariant.detail}
         />
         <MumbleList
           canUpdate={false}
@@ -39,9 +38,9 @@ export default function MumblePage(props: MumblePageProps): InferGetServerSidePr
           jwtPayload={props.jwtPayload}
           listStackWithDivider={true}
           mumbles={props.replies}
-          mumbleCardVariant={MumbleCardVariant.response}
+          mumbleCardVariant={MumbleCardVariant.reply}
           replyToMumbleId={props.mumble.id}
-          writeCardVariant={WriteCardVariant.inline}
+          writeCardVariant={WriteCardVariant.replyMumble}
         />
       </>
     </MainLayout>

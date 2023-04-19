@@ -26,11 +26,10 @@ import Link from 'next/link';
 import { ChangeEvent, FC, FormEvent, useState } from 'react';
 
 export enum WriteCardVariant {
-  inline = 'inline',
-  main = 'main', // todo: besserer Name wie main für die Variant finden
+  replyMumble = 'replyMumble',
+  newMumble = 'newMumble',
 }
 
-// todo: eigene Typen
 type WriteCardProps = {
   form: {
     textinputError: string;
@@ -53,17 +52,16 @@ type WriteCardVariantMap = {
 };
 
 const writeCardVariantMap: Record<WriteCardVariant, WriteCardVariantMap> = {
-  inline: {
+  replyMumble: {
     borderRadiusType: BorderRadiusType.none,
     isInteractive: false,
   },
-  main: {
+  newMumble: {
     borderRadiusType: BorderRadiusType.roundedFull,
     isInteractive: false,
   },
 };
 
-// todo: eigener Typ
 export const WriteCard: FC<WriteCardProps> = ({
   form,
   variant,
@@ -75,15 +73,15 @@ export const WriteCard: FC<WriteCardProps> = ({
   isSubmitting,
   jwtPayload,
 }) => {
-  const settings = writeCardVariantMap[variant] || writeCardVariantMap.inline;
+  const settings = writeCardVariantMap[variant] || writeCardVariantMap.replyMumble;
   const [isOpenFileUpload, setIsOpenFileUpload] = useState(false);
 
-  const submitClick = (e: FormEvent<HTMLFormElement>) => {
+  const onSubmitClick = (e: FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
     console.log('submit click');
   };
 
-  const fileUploadClick = () => {
+  const onFileUploadClick = (): void => {
     resetFileinputError();
     setIsOpenFileUpload(true);
   };
@@ -91,7 +89,7 @@ export const WriteCard: FC<WriteCardProps> = ({
   return (
     jwtPayload && (
       <Card borderRadiusType={settings.borderRadiusType} isInteractive={settings.isInteractive}>
-        {variant === WriteCardVariant.main && (
+        {variant === WriteCardVariant.newMumble && (
           <div className="absolute -left-l top-m">
             <ProfilePicture
               alt={jwtPayload.user.username}
@@ -104,9 +102,9 @@ export const WriteCard: FC<WriteCardProps> = ({
           </div>
         )}
         <Stack direction={StackDirection.col} spacing={StackSpacing.s}>
-          {variant === WriteCardVariant.main && <Heading headingLevel={HeadingSize.h4}>Hey, was läuft?</Heading>}
+          {variant === WriteCardVariant.newMumble && <Heading headingLevel={HeadingSize.h4}>Hey, was läuft?</Heading>}
 
-          {variant === WriteCardVariant.inline && (
+          {variant === WriteCardVariant.replyMumble && (
             <UserShortRepresentation
               alt={jwtPayload.user.username}
               displayName={`${jwtPayload.user.firstname} ${jwtPayload?.user.lastname}`}
@@ -151,7 +149,7 @@ export const WriteCard: FC<WriteCardProps> = ({
                 color={TextButtonColor.slate}
                 displayMode={TextButtonDisplayMode.fullWidth}
                 icon={<IconUpload />}
-                onClick={fileUploadClick}
+                onClick={onFileUploadClick}
                 size={TextButtonSize.m}
                 type="button"
               >
@@ -162,7 +160,7 @@ export const WriteCard: FC<WriteCardProps> = ({
                 disabled={isSubmitting}
                 displayMode={TextButtonDisplayMode.fullWidth}
                 icon={<IconUpload />}
-                onClick={() => submitClick}
+                onClick={() => onSubmitClick}
                 size={TextButtonSize.m}
                 type="submit"
               >

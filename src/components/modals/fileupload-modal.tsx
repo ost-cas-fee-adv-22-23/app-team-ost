@@ -27,7 +27,7 @@ type FileuploadProps = {
 export const FileuploadModal: FC<FileuploadProps> = ({ handleFileChange, isOpen, file, fileInputError, setIsOpen }) => {
   const [tempfile, setTempfile] = useState<File | null>();
 
-  const handleSaveFile = () => {
+  const handleSaveFile = (): void => {
     if (tempfile) {
       const valid = handleFileChange(tempfile);
       setTempfile(null);
@@ -38,7 +38,7 @@ export const FileuploadModal: FC<FileuploadProps> = ({ handleFileChange, isOpen,
     }
   };
 
-  const handleAbbort = () => {
+  const handleCancel = (): void => {
     setIsOpen(false);
     setTempfile(null);
   };
@@ -58,20 +58,20 @@ export const FileuploadModal: FC<FileuploadProps> = ({ handleFileChange, isOpen,
             color={TextButtonColor.slate}
             displayMode={TextButtonDisplayMode.fullWidth}
             icon={<IconCancel />}
-            onClick={handleAbbort}
+            onClick={handleCancel}
             size={TextButtonSize.m}
           >
             Abbrechen
           </TextButton>
 
-          {/* todo: add a disbabled-state style for the button */}
+          {/* todo: add a disabled-state style for the button */}
           <TextButton
             color={TextButtonColor.violet}
             displayMode={TextButtonDisplayMode.fullWidth}
             icon={<IconCheckmark />}
             onClick={handleSaveFile}
             size={TextButtonSize.m}
-            disabled={!tempfile ? true : false}
+            disabled={!tempfile}
           >
             Speichern
           </TextButton>

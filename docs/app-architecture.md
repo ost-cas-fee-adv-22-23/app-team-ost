@@ -21,7 +21,8 @@ We use SSG/ISR for:
 
 - Index-public (anonymized Timeline)
 - Mumble Detailpage public
-  The middleware decides whether an anonymized page or a page with user data is displayed to the user. More about this below.
+
+The middleware decides whether an anonymized page or a page with user data is displayed to the user. More about this below.
 
 ## Client Side Rendering (CSR)
 

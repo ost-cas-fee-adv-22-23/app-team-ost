@@ -5,7 +5,6 @@ import { MumbleList } from '@/components/lists/mumble-list';
 import { onLikeClick } from '@/helpers/like-mumble';
 import { fetchMumbleById, fetchRepliesByMumbleId } from '@/services/qwacker-api/posts';
 import { Mumble } from '@/types/mumble';
-import { Stack, StackDirection, StackSpacing } from '@smartive-education/design-system-component-library-team-ost';
 import { GetStaticProps, InferGetStaticPropsType } from 'next';
 import Head from 'next/head';
 
@@ -25,7 +24,7 @@ export default function MumblePublicPage(props: MumblePublicPageProps): InferGet
           isReplyActionVisible={false}
           mumble={props.mumble}
           onLikeClick={onLikeClick}
-          variant={MumbleCardVariant.detailpage}
+          variant={MumbleCardVariant.detail}
         />
         <MumbleList
           canUpdate={false}
@@ -35,9 +34,9 @@ export default function MumblePublicPage(props: MumblePublicPageProps): InferGet
           isWriteCardVisible={false}
           listStackWithDivider={true}
           mumbles={props.replies}
-          mumbleCardVariant={MumbleCardVariant.response}
+          mumbleCardVariant={MumbleCardVariant.reply}
           replyToMumbleId={props.mumble.id}
-          writeCardVariant={WriteCardVariant.inline}
+          writeCardVariant={WriteCardVariant.replyMumble}
         />
       </>
     </MainLayout>

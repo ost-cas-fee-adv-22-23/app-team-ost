@@ -1,6 +1,11 @@
 import { HttpStatusCodes } from '@/types/http';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
+/*
+ * We could use this handler in the future for revalidate some isr page, like mumble-public/:id or timeline-public
+ * after some experience with numbers of users, available server power / capacity, etc.
+ * e.g. revalidate mumble-detail if there is a new reply or the like count has changed.
+ */
 export default async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   // Check for secret to confirm this is a valid request
   if (req.query.secret !== process.env.REVALIDATE_SECRET_TOKEN) {
