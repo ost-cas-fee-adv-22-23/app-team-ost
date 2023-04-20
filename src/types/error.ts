@@ -55,21 +55,14 @@ export class UnknownReducerActionError extends Error {
   }
 }
 
-// todo: ValidationError
-
 export type ErrorResponse = {
   message: string;
   statusCode: HttpStatusCodesError;
 };
 
 export const createPagesApiError = (message: string, statusCode: HttpStatusCodesError): void => {
-  // todo: loggen
+  // todo: Hier könnte ein PagesApiError geloggt werden.
   throw new PagesApiError(message, statusCode);
-};
-
-export const createQwackerError = (message: string): void => {
-  // todo: loggen
-  throw new QwackerError(message);
 };
 
 export const createErrorResponse = (message: string, statusCode: HttpStatusCodesError): ErrorResponse => {

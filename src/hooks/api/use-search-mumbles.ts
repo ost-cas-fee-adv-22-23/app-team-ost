@@ -28,10 +28,7 @@ export const useSearchMumbles = (
     urlParams.set('likedBy', likedBy);
   }
 
-  const { data, error, isLoading } = useSWR<MumbleList, FetchPagesApiError>(
-    `/api/posts/search-mumbles?${urlParams}`,
-    fetcher
-  );
+  const { data, error, isLoading } = useSWR<MumbleList, FetchPagesApiError>(`/api/mumbles/search?${urlParams}`, fetcher);
 
   return {
     data,

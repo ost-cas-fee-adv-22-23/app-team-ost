@@ -26,11 +26,10 @@ import { replaceHashtagsWithLinks } from '@/helpers/replace-hashtags-with-links'
 
 const BASE_URL = process.env.NEXT_PUBLIC_URL;
 
-// todo: bessere Namen für Variants. Evtl. eigene Components für Variants erstellen
 export enum MumbleCardVariant {
-  detailpage = 'detailpage',
-  response = 'response',
-  timeline = 'timeline',
+  detail = 'detail',
+  reply = 'reply',
+  list = 'list',
 }
 
 type MumbleCardProps = {
@@ -51,7 +50,7 @@ type MumbleCardVariantMap = {
 };
 
 const mumbleCardVariantMap: Record<MumbleCardVariant, MumbleCardVariantMap> = {
-  detailpage: {
+  detail: {
     borderRadiusType: BorderRadiusType.roundedTop,
     isInteractive: false,
     profilePictureSize: ProfilePictureSize.m,
@@ -59,7 +58,7 @@ const mumbleCardVariantMap: Record<MumbleCardVariant, MumbleCardVariantMap> = {
     userShortRepresentationLabelType: UserShortRepresentationLabelType.l,
     userShortRepresentationProfilePictureSize: UserShortRepresentationProfilePictureSize.s,
   },
-  response: {
+  reply: {
     borderRadiusType: BorderRadiusType.none,
     isInteractive: false,
     profilePictureSize: ProfilePictureSize.s,
@@ -67,7 +66,7 @@ const mumbleCardVariantMap: Record<MumbleCardVariant, MumbleCardVariantMap> = {
     userShortRepresentationLabelType: UserShortRepresentationLabelType.s,
     userShortRepresentationProfilePictureSize: UserShortRepresentationProfilePictureSize.s,
   },
-  timeline: {
+  list: {
     borderRadiusType: BorderRadiusType.roundedFull,
     isInteractive: true,
     profilePictureSize: ProfilePictureSize.m,
@@ -84,7 +83,7 @@ export const MumbleCard: FC<MumbleCardProps> = ({
   mumble,
   onLikeClick,
 }) => {
-  const settings = mumbleCardVariantMap[variant] || mumbleCardVariantMap.detailpage;
+  const settings = mumbleCardVariantMap[variant] || mumbleCardVariantMap.detail;
 
   const handleOnLikeClick = async (): Promise<void> => {
     try {
@@ -100,7 +99,7 @@ export const MumbleCard: FC<MumbleCardProps> = ({
 
   return (
     <Card borderRadiusType={settings.borderRadiusType} isInteractive={settings.isInteractive}>
-      {variant !== MumbleCardVariant.response && (
+      {variant !== MumbleCardVariant.reply && (
         <div className="absolute -left-l">
           <ProfilePicture
             alt={mumble.creator.userName}
@@ -114,7 +113,7 @@ export const MumbleCard: FC<MumbleCardProps> = ({
       )}
 
       <Stack direction={StackDirection.col} spacing={StackSpacing.s}>
-        {variant !== MumbleCardVariant.response ? (
+        {variant !== MumbleCardVariant.reply ? (
           <UserShortRepresentation
             displayName={mumble.creator.displayName}
             hrefProfile={mumble.creator.profileUrl}
@@ -148,8 +147,8 @@ export const MumbleCard: FC<MumbleCardProps> = ({
             fill
             priority
             sizes="(max-width: 640px) 80vw, (max-width: 1536px) 50vw, 30vw"
-            onClick={function noRefCheck() {
-              console.log('click');
+            onClick={() => {
+              console.log('open fullscreen');
             }}
             src={mumble.mediaUrl ?? ''}
           />

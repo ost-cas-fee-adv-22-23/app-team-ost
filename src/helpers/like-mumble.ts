@@ -8,7 +8,7 @@ import { Mumble } from '@/types/mumble';
  * @returns describes if the action was successful
  */
 export const onLikeClick = async (mumble: Mumble): Promise<void> => {
-  const res = await fetch(`/api/posts/${mumble.id}/like`, { method: mumble.likedByUser ? 'DELETE' : 'PUT' });
+  const res = await fetch(`/api/mumbles/${mumble.id}/like`, { method: mumble.likedByUser ? 'DELETE' : 'PUT' });
 
   if (res.status !== HttpStatusCodes.NO_CONTENT) {
     throw new LikeError(`failed to like/unlike mumble with id ${mumble.id}`);

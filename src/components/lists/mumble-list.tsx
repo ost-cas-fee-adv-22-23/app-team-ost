@@ -1,7 +1,7 @@
 import { MumbleCard, MumbleCardVariant } from '@/components/cards/mumble-card';
 import { WriteCard, WriteCardVariant } from '@/components/cards/write-card';
 import { onLikeClick } from '@/helpers/like-mumble';
-import { listReducer, ListState } from '@/helpers/reducers/lists-reducer';
+import { listReducer, ListState } from '@/helpers/reducers/list-reducer';
 import { writeReducer, WriteState } from '@/helpers/reducers/write-reducer';
 import { validateFileinput } from '@/helpers/validate-fileinput';
 import { useFetchMumbles } from '@/hooks/api/use-fetch-mumbles';
@@ -43,7 +43,7 @@ type MumbleListProps = {
 };
 
 export const MumbleList: FC<MumbleListProps> = (props: MumbleListProps) => {
-  const initialState: ListState = {
+  const initialListState: ListState = {
     hasMore: props.mumbles.length < props.count,
     hasUpdate: false,
     isLoading: false,
@@ -62,7 +62,7 @@ export const MumbleList: FC<MumbleListProps> = (props: MumbleListProps) => {
     formIsSubmitting: false,
   };
 
-  const [listState, dispatchList] = useReducer(listReducer, initialState);
+  const [listState, dispatchList] = useReducer(listReducer, initialListState);
   const [writeState, dispatchWrite] = useReducer(writeReducer, initialWriteState);
 
   const { data: moreMumbles } = useFetchMumbles(
@@ -89,7 +89,7 @@ export const MumbleList: FC<MumbleListProps> = (props: MumbleListProps) => {
     });
   };
 
-  const loadMore = async (): Promise<void> => {
+  const loadMore = (): void => {
     dispatchList({ type: 'fetch_mumbles' });
     try {
       moreMumbles && dispatchList({ type: 'fetch_mumbles_success', payload: moreMumbles.mumbles });
@@ -100,7 +100,6 @@ export const MumbleList: FC<MumbleListProps> = (props: MumbleListProps) => {
   };
 
   const handleWriteCardFormChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
-    //todo validate textinput
     dispatchWrite({ type: 'form_change', payload: e.target.value });
   };
 
@@ -122,7 +121,7 @@ export const MumbleList: FC<MumbleListProps> = (props: MumbleListProps) => {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     dispatchWrite({ type: 'submit_form' });
-    //todo: postMumble über next page/api aufrufen
+    // todo: postMumble über next page/api aufrufen
     try {
       let newMumble: Mumble;
       props.replyToMumbleId
@@ -174,7 +173,7 @@ export const MumbleList: FC<MumbleListProps> = (props: MumbleListProps) => {
           isSubmitting={writeState.formIsSubmitting}
           jwtPayload={props.jwtPayload}
           resetFileinputError={resetFileinputError}
-          variant={props.writeCardVariant ? props.writeCardVariant : WriteCardVariant.main}
+          variant={props.writeCardVariant ? props.writeCardVariant : WriteCardVariant.newMumble}
         />
       )}
       <Stack

@@ -40,7 +40,7 @@ export default function TagPage(props: TagPageProps): InferGetServerSidePropsTyp
             isReplyActionVisible={true}
             listStackWithSpacing={true}
             mumbles={props.mumbleList.mumbles}
-            mumbleCardVariant={MumbleCardVariant.timeline}
+            mumbleCardVariant={MumbleCardVariant.list}
             tag={props.tag}
           />
         </Stack>

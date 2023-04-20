@@ -1,3 +1,4 @@
+// Use required import like in the tutorial: https://tailwindcss.com/docs/font-family
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { fontFamily } = require('tailwindcss/defaultTheme');
 

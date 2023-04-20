@@ -4,9 +4,7 @@ import { HttpStatusCodes } from '@/types/http';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { getToken } from 'next-auth/jwt';
 
-// todo: post zu mumbles umbenennen
-// todo: fetch-mumbles route umbenennen
-const getFetchMumbles = async (nextReq: NextApiRequest, nextRes: NextApiResponse): Promise<void> => {
+const getMumbles = async (nextReq: NextApiRequest, nextRes: NextApiResponse): Promise<void> => {
   const { creator, newerThan, olderThan } = nextReq.query;
   const jwtPayload = await getToken({ req: nextReq });
 
@@ -24,5 +22,5 @@ const getFetchMumbles = async (nextReq: NextApiRequest, nextRes: NextApiResponse
 };
 
 export default apiHandler({
-  GET: getFetchMumbles,
+  GET: getMumbles,
 });

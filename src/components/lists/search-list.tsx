@@ -1,6 +1,6 @@
 import { MumbleCard, MumbleCardVariant } from '@/components/cards/mumble-card';
 import { onLikeClick } from '@/helpers/like-mumble';
-import { listReducer, ListState } from '@/helpers/reducers/lists-reducer';
+import { listReducer, ListState } from '@/helpers/reducers/list-reducer';
 import { useSearchMumbles } from '@/hooks/api/use-search-mumbles';
 import { Mumble } from '@/types/mumble';
 import {
@@ -36,7 +36,7 @@ type SearchListProps = {
 // and they use different hooks for loading more mumbles.
 // But they use the same reducer for state handling.
 export const SearchList: FC<SearchListProps> = (props: SearchListProps) => {
-  const initialState: ListState = {
+  const initialListState: ListState = {
     hasMore: props.mumbles.length < props.count,
     hasUpdate: false,
     isLoading: false,
@@ -45,7 +45,7 @@ export const SearchList: FC<SearchListProps> = (props: SearchListProps) => {
     error: '',
   };
 
-  const [listState, dispatchList] = useReducer(listReducer, initialState);
+  const [listState, dispatchList] = useReducer(listReducer, initialListState);
 
   const { data: moreMumbles } = useSearchMumbles(
     undefined,
@@ -55,7 +55,7 @@ export const SearchList: FC<SearchListProps> = (props: SearchListProps) => {
     props.creator
   );
 
-  const loadMore = () => {
+  const loadMore = (): void => {
     dispatchList({ type: 'fetch_mumbles' });
     try {
       moreMumbles && dispatchList({ type: 'fetch_mumbles_success', payload: moreMumbles.mumbles });
@@ -74,7 +74,7 @@ export const SearchList: FC<SearchListProps> = (props: SearchListProps) => {
       <Stack
         direction={StackDirection.col}
         spacing={props.listStackWithSpacing ? StackSpacing.s : StackSpacing.none}
-        withDivider={props.listStackWithDivider ? props.listStackWithDivider : false}
+        withDivider={props.listStackWithDivider}
       >
         {listState.mumbles.map((mumble) => (
           <MumbleCard

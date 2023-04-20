@@ -20,10 +20,7 @@ export const useFetchMumbles = (
     urlParams.set('olderThan', olderThanMumbleId);
   }
 
-  const { data, error, isLoading } = useSWR<MumbleList, FetchPagesApiError>(
-    `/api/posts/fetch-mumbles?${urlParams}`,
-    fetcher
-  );
+  const { data, error, isLoading } = useSWR<MumbleList, FetchPagesApiError>(`/api/mumbles?${urlParams}`, fetcher);
   return {
     data,
     isLoading,

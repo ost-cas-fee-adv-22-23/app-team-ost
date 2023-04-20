@@ -1,13 +1,13 @@
 import { MumbleCardVariant } from '@/components/cards/mumble-card';
 import MainLayout from '@/components/layouts/main-layout';
-import { SearchList } from '@/components/lists/search-list';
 import { MumbleList } from '@/components/lists/mumble-list';
+import { SearchList } from '@/components/lists/search-list';
 import fetcher from '@/hooks/api/fetcher';
 import { fetchMumbles } from '@/services/qwacker-api/posts';
 import { fetchUserById } from '@/services/qwacker-api/users';
+import { FetchPagesApiError } from '@/types/error';
 import { MumbleList as TMumbleList } from '@/types/mumble';
 import { User } from '@/types/user';
-import useSWR from 'swr';
 import {
   IconCheckmark,
   Label,
@@ -36,6 +36,7 @@ import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
+import useSWR from 'swr';
 
 type ProfilePageProps = {
   jwtPayload: JWT;
@@ -54,7 +55,7 @@ export default function ProfilePage(props: ProfilePageProps): InferGetServerSide
 
   const urlParams = new URLSearchParams();
   props.user && urlParams.set('likedBy', props.user.id);
-  const { data, error, isLoading } = useSWR<TMumbleList, Error>(`/api/posts/search-mumbles?${urlParams}`, fetcher);
+  const { data, error, isLoading } = useSWR<TMumbleList, FetchPagesApiError>(`/api/mumbles/search?${urlParams}`, fetcher);
 
   return (
     <MainLayout jwtPayload={props.jwtPayload}>
@@ -150,10 +151,12 @@ export default function ProfilePage(props: ProfilePageProps): InferGetServerSide
               isWriteCardVisible={false}
               listStackWithSpacing={true}
               mumbles={props.mumbleList.mumbles}
-              mumbleCardVariant={MumbleCardVariant.timeline}
+              mumbleCardVariant={MumbleCardVariant.list}
             />
           ) : isLoading ? (
             <Paragraph size={ParagraphSize.l}>Deine Likes werden gerade gesammelt.</Paragraph>
+          ) : error ? (
+            <Paragraph size={ParagraphSize.l}>Deine Likes konnten nicht geladen werden.</Paragraph>
           ) : (
             <SearchList
               count={data ? data.count : 0}
@@ -162,7 +165,7 @@ export default function ProfilePage(props: ProfilePageProps): InferGetServerSide
               isReplyActionVisible={true}
               listStackWithSpacing={true}
               mumbles={data ? data.mumbles : []}
-              mumbleCardVariant={MumbleCardVariant.timeline}
+              mumbleCardVariant={MumbleCardVariant.list}
             />
           )}
         </Stack>

@@ -79,7 +79,6 @@ export const fetchMumbles = async (params?: FetchMumblesParams): Promise<MumbleL
 export const postMumble = async (params: PostMumbleParams): Promise<Mumble> => {
   const { accessToken, text, file } = params || {};
 
-  // todo: ErrorHandling prüfen ob ein Text gesetzt ist
   const formDataBody = new FormData();
   formDataBody.append('text', text);
 
@@ -95,7 +94,6 @@ export const postMumble = async (params: PostMumbleParams): Promise<Mumble> => {
 export const postReply = async (params: PostReplyParams): Promise<Mumble> => {
   const { accessToken, mumbleId, text, file } = params || {};
 
-  // todo: ErrorHandling prüfen ob mumbleId und ein Text gesetzt ist
   const formDataBody = new FormData();
   formDataBody.append('text', text);
 
@@ -173,7 +171,7 @@ export const unlikeMumbleById = async (id: string, accessToken: string): Promise
 
 const transformApiPostResultToMumble = async (apiPostResult: ApiPostResult, accessToken?: string): Promise<Mumble> => {
   const creator = await fetchUserById(apiPostResult.creator, accessToken);
-  // todo: TransformError?
+
   return {
     ...apiPostResult,
     creator,
