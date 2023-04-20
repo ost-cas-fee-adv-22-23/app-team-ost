@@ -131,11 +131,14 @@ export const MumbleList: FC<MumbleListProps> = (props: MumbleListProps) => {
             text: writeState.form.textinput,
             file: writeState.form.file,
           }))
-        : (newMumble = await postMumble({
-            accessToken: props.jwtPayload?.accessToken as string,
-            text: writeState.form.textinput,
-            file: writeState.form.file,
-          }));
+        : (newMumble = await fetch(
+          `/api/mumbles/post`,
+          { method: 'POST', 
+            headers: { 'Content-Type': 'application/json',}, 
+            body: JSON.stringify({ text: writeState.form.textinput, file: writeState.form.file }) 
+          }
+        )
+        )
       dispatchList({ type: 'add_new_post_to_list', payload: newMumble });
       dispatchWrite({ type: 'submit_form_success' });
     } catch (error) {
