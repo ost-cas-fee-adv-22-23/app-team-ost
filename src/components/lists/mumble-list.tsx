@@ -124,23 +124,31 @@ export const MumbleList: FC<MumbleListProps> = (props: MumbleListProps) => {
     // todo: postMumble über next page/api aufrufen
     try {
       let newMumble: Mumble;
-      props.replyToMumbleId
-        ? (newMumble = await postReply({
-            accessToken: props.jwtPayload?.accessToken as string,
-            mumbleId: props.replyToMumbleId,
-            text: writeState.form.textinput,
-            file: writeState.form.file,
-          }))
-        : (newMumble = await fetch(
-          `/api/mumbles/post`,
-          { method: 'POST', 
-            headers: { 'Content-Type': 'application/json',}, 
-            body: JSON.stringify({ text: writeState.form.textinput, file: writeState.form.file }) 
-          }
-        )
-        )
-      dispatchList({ type: 'add_new_post_to_list', payload: newMumble });
-      dispatchWrite({ type: 'submit_form_success' });
+      if (props.replyToMumbleId) {
+        newMumble = await postReply({
+          accessToken: props.jwtPayload?.accessToken as string,
+          mumbleId: props.replyToMumbleId,
+          text: writeState.form.textinput,
+          file: writeState.form.file,
+        });
+        dispatchList({ type: 'add_new_post_to_list', payload: newMumble });
+        dispatchWrite({ type: 'submit_form_success' });
+      } else {
+        console.log('NEW MUMBLE');
+
+        const formDataBody = new FormData();
+        formDataBody.append('text', writeState.form.textinput);
+
+        if (writeState.form.file) {
+          formDataBody.append('file', writeState.form.file);
+        }
+        const res = await fetch(`/api/mumbles/newmumble`, { method: 'POST', body: formDataBody });
+        if (res) {
+          newMumble = res as unknown as Mumble;
+          dispatchList({ type: 'add_new_post_to_list', payload: newMumble });
+          dispatchWrite({ type: 'submit_form_success' });
+        }
+      }
     } catch (error) {
       dispatchWrite({ type: 'submit_form_error', payload: `Ein Fehler ist aufgetreten: ${error}` });
     }
