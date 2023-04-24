@@ -142,9 +142,9 @@ export const MumbleList: FC<MumbleListProps> = (props: MumbleListProps) => {
         if (writeState.form.file) {
           formDataBody.append('file', writeState.form.file);
         }
-        const res = await fetch(`/api/mumbles/newmumble`, { method: 'POST', body: formDataBody });
+        const res = await fetch(`/api/mumbles/createmumble/post`, { method: 'POST', body: formDataBody });
         if (res) {
-          newMumble = res as unknown as Mumble;
+          newMumble = await (res.json() as unknown as Mumble);
           dispatchList({ type: 'add_new_post_to_list', payload: newMumble });
           dispatchWrite({ type: 'submit_form_success' });
         }

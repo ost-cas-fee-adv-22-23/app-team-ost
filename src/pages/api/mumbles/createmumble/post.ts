@@ -1,42 +1,49 @@
+import middleware from './middleware';
 import nextConnect from 'next-connect';
-import multer from 'multer';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { isAuthorized } from '@/helpers/api/is-authorized';
 import { postMumble } from '@/services/qwacker-api/posts';
 import { HttpStatusCodes } from '@/types/http';
 import { getToken, JWT } from 'next-auth/jwt';
-import { apiHandler } from '@/helpers/api/api-handler';
+import { text } from 'stream/consumers';
 
 type NextApiRequestWithFile = {
   file: File;
 } & NextApiRequest;
 
-export const config = {
-  api: {
-    bodyParser: false, // Disallow body parsing, consume as stream
-  },
-};
+const handler = nextConnect();
 
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+handler.use(middleware);
 
-const apiRoute = nextConnect()
-  .use(upload.single('file'))
-  .post(async (req: NextApiRequestWithFile, res: NextApiResponse) => {
-    const file = req.file;
-    const text = req.body.text;
+handler.post(async (req: NextApiRequestWithFile, res: NextApiResponse) => {
+  console.log('HANDLER GO');
+
+  try {
+    // const file = req.file;
+    // const body = req.body;
 
     if (await isAuthorized(req, res)) {
       const jwtPayload = (await getToken({ req: req })) as JWT;
       const response = await postMumble({
         accessToken: jwtPayload.accessToken as string,
-        text: text,
+        text: req.body.text,
         file: req.file,
       });
+
       res.status(HttpStatusCodes.OK).json(response);
     }
-  });
 
-export default apiHandler({
-  POST: apiRoute,
+    // do stuff with files and body
+    res.status(200).json({});
+  } catch (err) {
+    res.status(500).json({ 'error: err.message': err });
+  }
 });
+
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
+
+export default handler;

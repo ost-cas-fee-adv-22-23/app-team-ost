@@ -82,6 +82,10 @@ export const postMumble = async (params: PostMumbleParams): Promise<Mumble> => {
   const formDataBody = new FormData();
   formDataBody.append('text', text);
 
+  console.log('FILE in POSTMUMBLE');
+
+  console.log(file);
+
   if (file) {
     formDataBody.append('image', file);
   }
