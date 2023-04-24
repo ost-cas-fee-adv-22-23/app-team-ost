@@ -121,7 +121,11 @@ export const MumbleList: FC<MumbleListProps> = (props: MumbleListProps) => {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     dispatchWrite({ type: 'submit_form' });
-    // todo: postMumble über next page/api aufrufen
+    // todo: postMumble/replyMumble über next page/api aufrufen, gem. Architektur.
+    // Dazu muss der Next-API Handler mit next-connect erweitert
+    // und multer (oder ähnliches) verwendet werden, um das Filehandling
+    // mit multipart/formdata zu unterstützen.
+    // Das wurde aus zeitlichen Gründen nicht mehr umgesetzt.
     try {
       let newMumble: Mumble;
       props.replyToMumbleId
