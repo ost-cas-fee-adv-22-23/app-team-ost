@@ -38,6 +38,7 @@ test.describe('New Mumble', () => {
     await sendButton.click();
 
     //Expect a new mumble
+    await page.goto(process.env.NEXT_PUBLIC_URL as string);
     await expect(page.getByText(testdate)).toBeVisible();
   });
 });
