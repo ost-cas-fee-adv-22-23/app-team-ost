@@ -13,11 +13,9 @@ test.describe('New Mumble', () => {
     const testdate = Date.now().toString();
 
     await page.goto(process.env.NEXT_PUBLIC_URL as string);
-    const loginButton = page.getByText('Login');
-    await loginButton.click();
+    await page.getByRole('link', { name: 'Login' }).click();
 
-    const loginWithZitadel = page.getByText('Anmelden mit ZITADEL');
-    await loginWithZitadel.click();
+    await page.getByRole('button', { name: 'login with zitadel' }).click();
 
     const loginnameField = page.getByPlaceholder('username');
     await loginnameField.fill(process.env.ZITADEL_USERNAME as string);
@@ -31,11 +29,11 @@ test.describe('New Mumble', () => {
 
     // Create locators for textarea and send button
     const newMumble = page.getByPlaceholder('Und was meinst du dazu?');
-    const sendButton = page.getByText('Absenden');
 
     // Create new mumble and submit
+    await newMumble.click();
     await newMumble.fill(`Playwright Test - ${testdate}`);
-    await sendButton.click();
+    await page.getByRole('button', { name: 'Absenden' }).click();
 
     //Expect a new mumble
     await page.goto(process.env.NEXT_PUBLIC_URL as string);
