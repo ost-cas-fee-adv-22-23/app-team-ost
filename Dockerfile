@@ -52,6 +52,7 @@ RUN echo "//npm.pkg.github.com/:_authToken=$NPM_TOKEN" > .npmrc && \
     npm ci && \
     rm -rf .npmrc
     
+COPY --from=build /app/public ./public
 COPY --from=build /app/.next ./.next
 
 USER appuser
