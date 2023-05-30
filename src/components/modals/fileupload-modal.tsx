@@ -48,6 +48,7 @@ export const FileuploadModal: FC<FileuploadProps> = ({ handleFileChange, isOpen,
       <Stack direction={StackDirection.col} spacing={StackSpacing.s}>
         {file && !tempfile && <Label size={LabelSize.l}>Willst du das Bild {file.name} ersetzen?</Label>}
         <Fileinput
+          data-testid="fileinput"
           description="JPEG oder PNG, maximal 5 MB"
           onAddFile={(f) => setTempfile(f)}
           title="Datei hierhin ziehen"
@@ -55,6 +56,7 @@ export const FileuploadModal: FC<FileuploadProps> = ({ handleFileChange, isOpen,
         ></Fileinput>
         <Stack direction={StackDirection.row} spacing={StackSpacing.xs}>
           <TextButton
+            data-testid="button-cancel"
             color={TextButtonColor.slate}
             displayMode={TextButtonDisplayMode.fullWidth}
             icon={<IconCancel />}
@@ -66,6 +68,7 @@ export const FileuploadModal: FC<FileuploadProps> = ({ handleFileChange, isOpen,
 
           {/* todo: add a disabled-state style for the button */}
           <TextButton
+            data-testid="button-save"
             color={TextButtonColor.violet}
             displayMode={TextButtonDisplayMode.fullWidth}
             icon={<IconCheckmark />}
