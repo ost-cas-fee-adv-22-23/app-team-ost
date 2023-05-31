@@ -92,6 +92,7 @@ export const WriteCard: FC<WriteCardProps> = ({
         {variant === WriteCardVariant.newMumble && (
           <div className="absolute -left-l top-m">
             <ProfilePicture
+              data-testid="profile-picture"
               alt={jwtPayload.user.username}
               imageComponent={Image}
               width={80}
@@ -106,6 +107,7 @@ export const WriteCard: FC<WriteCardProps> = ({
 
           {variant === WriteCardVariant.replyMumble && (
             <UserShortRepresentation
+              data-testid="user-short-representation"
               alt={jwtPayload.user.username}
               displayName={`${jwtPayload.user.firstname} ${jwtPayload?.user.lastname}`}
               hrefProfile={`../profile/${jwtPayload.user.id}`}
@@ -146,6 +148,7 @@ export const WriteCard: FC<WriteCardProps> = ({
               spacing={StackSpacing.s}
             >
               <TextButton
+                data-testid="button-upload-image"
                 color={TextButtonColor.slate}
                 displayMode={TextButtonDisplayMode.fullWidth}
                 icon={<IconUpload />}
@@ -156,6 +159,7 @@ export const WriteCard: FC<WriteCardProps> = ({
                 Bild hochladen
               </TextButton>
               <TextButton
+                data-testid="button-submit"
                 color={TextButtonColor.violet}
                 disabled={isSubmitting}
                 displayMode={TextButtonDisplayMode.fullWidth}

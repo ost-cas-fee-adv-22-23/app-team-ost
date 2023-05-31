@@ -1,3 +1,4 @@
+import { replaceHashtagsWithLinks } from '@/helpers/replace-hashtags-with-links';
 import { timeAgo } from '@/helpers/time-ago';
 import { LikeError } from '@/types/error';
 import { Mumble } from '@/types/mumble';
@@ -22,7 +23,6 @@ import {
 import Image from 'next/image';
 import Link from 'next/link';
 import { FC } from 'react';
-import { replaceHashtagsWithLinks } from '@/helpers/replace-hashtags-with-links';
 
 const BASE_URL = process.env.NEXT_PUBLIC_URL;
 
@@ -100,7 +100,7 @@ export const MumbleCard: FC<MumbleCardProps> = ({
   return (
     <Card borderRadiusType={settings.borderRadiusType} isInteractive={settings.isInteractive}>
       {variant !== MumbleCardVariant.reply && (
-        <div className="absolute -left-l">
+        <div className="absolute -left-l" data-testid="profile-picture">
           <ProfilePicture
             alt={mumble.creator.userName}
             imageComponent={Image}
@@ -115,6 +115,7 @@ export const MumbleCard: FC<MumbleCardProps> = ({
       <Stack direction={StackDirection.col} spacing={StackSpacing.s}>
         {variant !== MumbleCardVariant.reply ? (
           <UserShortRepresentation
+            data-testid="user-short-representation-not-reply"
             displayName={mumble.creator.displayName}
             hrefProfile={mumble.creator.profileUrl}
             labelType={settings.userShortRepresentationLabelType}
@@ -124,6 +125,7 @@ export const MumbleCard: FC<MumbleCardProps> = ({
           />
         ) : (
           <UserShortRepresentation
+            data-testid="user-short-representation-reply"
             alt={mumble.creator.userName}
             displayName={mumble.creator.displayName}
             hrefProfile={mumble.creator.profileUrl}
@@ -138,10 +140,13 @@ export const MumbleCard: FC<MumbleCardProps> = ({
           />
         )}
         <div className="text-slate-900">
-          <Paragraph size={settings.textSize}>{replaceHashtagsWithLinks(mumble.text)}</Paragraph>
+          <Paragraph data-testid="mumble-text" size={settings.textSize}>
+            {replaceHashtagsWithLinks(mumble.text)}
+          </Paragraph>
         </div>
         {mumble.mediaUrl !== null && (
           <ImageContainer
+            data-testid="mumble-image"
             alt={mumble.text}
             imageComponent={Image}
             fill
@@ -164,6 +169,7 @@ export const MumbleCard: FC<MumbleCardProps> = ({
         >
           {isReplyActionVisible && (
             <Reply
+              data-testid="action-reply"
               href={`/mumble/${mumble.id}`}
               linkComponent={Link}
               repliesCount={mumble.replyCount ?? 0}
@@ -171,9 +177,14 @@ export const MumbleCard: FC<MumbleCardProps> = ({
             />
           )}
           {isLikeActionVisible && (
-            <Like likesCount={mumble.likeCount} onClick={handleOnLikeClick} withReaction={mumble.likedByUser} />
+            <Like
+              data-testid="action-like"
+              likesCount={mumble.likeCount}
+              onClick={handleOnLikeClick}
+              withReaction={mumble.likedByUser}
+            />
           )}
-          <Share linkToCopy={`${BASE_URL}mumble/${mumble.id}`} />
+          <Share data-testid="action-share" linkToCopy={`${BASE_URL}mumble/${mumble.id}`} />
         </Stack>
       </Stack>
     </Card>
