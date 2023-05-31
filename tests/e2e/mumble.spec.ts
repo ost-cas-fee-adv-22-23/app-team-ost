@@ -6,13 +6,12 @@ test.describe('Create a mumble', () => {
 
     const testdate = Date.now().toString();
 
-    // Create locators for textarea and send button
-    const newMumble = page.getByPlaceholder('Und was meinst du dazu?');
+    const newMumble = page.getByTestId('new-mumble-textarea');
 
     // Create new mumble and submit
     await newMumble.click();
     await newMumble.fill(`Playwright Test - ${testdate}`);
-    await page.getByRole('button', { name: 'Absenden' }).click();
+    await page.getByTestId('button-submit').click();
 
     //Expect a new mumble
     await page.goto(process.env.NEXT_PUBLIC_URL as string);
@@ -22,13 +21,17 @@ test.describe('Create a mumble', () => {
   test('should upload an image and verify filetype', async ({ page }) => {
     await page.goto(process.env.NEXT_PUBLIC_URL as string);
 
-    await page.getByRole('button', { name: 'Bild hochladen' }).click();
+    await page.getByTestId('button-upload-image').click();
+
+    // Select the first file which should show an error message - test.txt
     page.on('filechooser', async (filechooser) => {
       await filechooser.setFiles('./tests/e2e/test.txt');
     });
     await page.locator('label').click();
     await page.getByRole('button', { name: 'Speichern' }).click();
     await expect(page.getByText('Falsches Dateiformat - Erlaubt sind JPEG, PNG oder GIF.')).toBeVisible();
+
+    // Select the second file which should be uploaded - test.png
     page.on('filechooser', async (filechooser) => {
       await filechooser.setFiles('./tests/e2e/refresh.gif');
     });
@@ -43,15 +46,22 @@ test.describe('Like a Mumble', () => {
     const testdate = Date.now().toString();
 
     await page.goto(process.env.NEXT_PUBLIC_URL as string);
-    await page.getByPlaceholder('Und was meinst du dazu?').click();
-    await page.getByPlaceholder('Und was meinst du dazu?').fill(`I like this mumble at ${testdate}`);
-    await page.getByRole('button', { name: 'Absenden' }).click();
+    const newMumble = page.getByTestId('new-mumble-textarea');
+
+    // Create new mumble and submit
+    await newMumble.click();
+    await newMumble.fill(`I like this mumble at ${testdate}`);
+    await page.getByTestId('button-submit').click();
+
+    // Navigate to home and like the mumble
     await page.goto(process.env.NEXT_PUBLIC_URL as string);
     await page
       .getByRole('article')
       .filter({ hasText: `I like this mumble at ${testdate}` })
       .getByRole('button', { name: 'Like' })
       .click();
+
+    // Navigate to user profile and verify the liked mumble
     await page.getByRole('navigation').getByRole('link', { name: 'toenn' }).click();
     await expect(page.getByRole('paragraph').filter({ hasText: `I like this mumble at ${testdate}` })).toBeVisible();
   });

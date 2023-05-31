@@ -129,6 +129,7 @@ export const WriteCard: FC<WriteCardProps> = ({
             )}
             <Textarea
               ariaLabel="Und was meinst du dazu?"
+              data-testid="new-mumble-textarea"
               disabled={isSubmitting}
               errorMessage={form.textinputError}
               name="textinput"
