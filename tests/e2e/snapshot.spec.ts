@@ -1,9 +1,9 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Compares a snapshot of the login page', () => {
-  test('snapshot test the login page', async ({ page }) => {
+test.describe('Visual comparisons', () => {
+  test('should open the logout page and snapshot test it', async ({ page }) => {
     await page.goto(process.env.NEXT_PUBLIC_URL as string);
-    await page.getByRole('link', { name: 'Login' }).click();
+    await page.getByRole('link', { name: 'Logout' }).click();
     await expect(page).toHaveScreenshot();
   });
 });
