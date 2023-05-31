@@ -1,24 +1,9 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Create a new Mumble', () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto(process.env.NEXT_PUBLIC_URL as string);
-    await page.getByRole('link', { name: 'Login' }).click();
-
-    await page.getByRole('button', { name: 'login with zitadel' }).click();
-
-    const loginnameField = page.getByPlaceholder('username');
-    await loginnameField.fill(process.env.ZITADEL_USERNAME as string);
-    const forwardButton = page.getByText('next');
-    await forwardButton.click();
-
-    const passwordField = page.getByLabel('password');
-    await passwordField.fill(process.env.ZITADEL_PASSWORD as string);
-    const forwardPwButton = page.getByText('next');
-    await forwardPwButton.click();
-  });
-
+test.describe('Create a mumble', () => {
   test('should add a new mumble', async ({ page }) => {
+    await page.goto(process.env.NEXT_PUBLIC_URL as string);
+
     const testdate = Date.now().toString();
 
     // Create locators for textarea and send button
@@ -34,16 +19,18 @@ test.describe('Create a new Mumble', () => {
     await expect(page.getByText(testdate)).toBeVisible();
   });
 
-  test('should upload an image', async ({ page }) => {
+  test('should upload an image and verify filetype', async ({ page }) => {
+    await page.goto(process.env.NEXT_PUBLIC_URL as string);
+
     await page.getByRole('button', { name: 'Bild hochladen' }).click();
     page.on('filechooser', async (filechooser) => {
-      await filechooser.setFiles('./src/tests/e2e/test.txt');
+      await filechooser.setFiles('./tests/e2e/test.txt');
     });
     await page.locator('label').click();
     await page.getByRole('button', { name: 'Speichern' }).click();
     await expect(page.getByText('Falsches Dateiformat - Erlaubt sind JPEG, PNG oder GIF.')).toBeVisible();
     page.on('filechooser', async (filechooser) => {
-      await filechooser.setFiles('./src/tests/e2e/refresh.gif');
+      await filechooser.setFiles('./tests/e2e/refresh.gif');
     });
     await page.locator('label').click();
     await page.getByRole('button', { name: 'Speichern' }).click();
@@ -52,24 +39,7 @@ test.describe('Create a new Mumble', () => {
 });
 
 test.describe('Like a Mumble', () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto(process.env.NEXT_PUBLIC_URL as string);
-    await page.getByRole('link', { name: 'Login' }).click();
-
-    await page.getByRole('button', { name: 'login with zitadel' }).click();
-
-    const loginnameField = page.getByPlaceholder('username');
-    await loginnameField.fill(process.env.ZITADEL_USERNAME as string);
-    const forwardButton = page.getByText('next');
-    await forwardButton.click();
-
-    const passwordField = page.getByLabel('password');
-    await passwordField.fill(process.env.ZITADEL_PASSWORD as string);
-    const forwardPwButton = page.getByText('next');
-    await forwardPwButton.click();
-  });
-
-  test('Likes a new mumble and check the liked mumble in profile', async ({ page }) => {
+  test('should add a new mumble, like it and verify it in the user profile', async ({ page }) => {
     const testdate = Date.now().toString();
 
     await page.goto(process.env.NEXT_PUBLIC_URL as string);
