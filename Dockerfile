@@ -11,7 +11,7 @@ WORKDIR /app
 COPY ./package.json ./package-lock.json ./
 
 RUN echo "//npm.pkg.github.com/:_authToken=$NPM_TOKEN" > .npmrc && \
-    npm ci && \
+    HUSKY=0 npm ci && \
     rm -rf .npmrc
 
 COPY . .
@@ -49,7 +49,7 @@ RUN adduser -D appuser && \
 COPY --from=build /app/package.json /app/package-lock.json ./
 
 RUN echo "//npm.pkg.github.com/:_authToken=$NPM_TOKEN" > .npmrc && \
-    npm ci && \
+    HUSKY=0 npm ci --omit=dev --ignore-scripts && \
     rm -rf .npmrc
     
 COPY --from=build /app/public ./public

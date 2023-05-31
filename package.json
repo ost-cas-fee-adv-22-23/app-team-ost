@@ -11,7 +11,8 @@
     "format:check": "prettier --check src/**/*.{js,jsx,ts,tsx,css,md,json} --config ./.prettierrc",
     "format": "prettier --write src/**/*.{js,jsx,ts,tsx,css,md,json} --config ./.prettierrc",
     "dep-graph:validate": "npx depcruise src --include-only \"^src\" --config .dependency-cruiser.js",
-    "dep-graph:create-svg": "npx depcruise src --include-only \"^src\" --config .dependency-cruiser.js --output-type dot | dot -T svg > dependency-graph.svg"
+    "dep-graph:create-svg": "npx depcruise src --include-only \"^src\" --config .dependency-cruiser.js --output-type dot | dot -T svg > dependency-graph.svg",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@smartive-education/design-system-component-library-team-ost": "^1.50.0",
