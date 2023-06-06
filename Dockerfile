@@ -44,7 +44,7 @@ ENV NODE_ENV=production \
 
 LABEL org.opencontainers.image.source="https://github.com/smartive-education/app-team-ost" \
     org.opencontainers.image.authors="Nando Schär und Martin Thomann" \
-    org.opencontainers.image.url="https://github.com/smartive-education/app-team-ost" \
+    org.opencontainers.image.url="https://europe-west6-docker.pkg.dev/app-team-ost/team-ost-repo/app" \
     org.opencontainers.image.documentation="https://github.com/smartive-education/app-team-ost/blob/main/README.md" \
     org.opencontainers.image.source="https://github.com/smartive-education/app-team-ost/blob/main/Dockerfile" \
     org.opencontainers.image.version="${BUILD_VERSION}" \
