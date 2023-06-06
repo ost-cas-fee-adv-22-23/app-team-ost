@@ -4,7 +4,18 @@ FROM node:18-alpine AS base
 # Install dependencies and build app
 FROM base as build
 
-ARG NPM_TOKEN
+ARG NPM_TOKEN \
+    NEXT_PUBLIC_QWACKER_API_URL \
+    NEXTAUTH_URL \
+    NEXTAUTH_SECRET \
+    ZITADEL_ISSUER \
+    ZITADEL_CLIENT_ID
+
+ENV NEXT_PUBLIC_QWACKER_API_URL=${NEXT_PUBLIC_QWACKER_API_URL} \
+    NEXTAUTH_URL=${NEXTAUTH_URL} \
+    NEXTAUTH_SECRET=${NEXTAUTH_SECRET} \
+    ZITADEL_ISSUER=${ZITADEL_ISSUER} \
+    ZITADEL_CLIENT_ID=${ZITADEL_CLIENT_ID}
 
 WORKDIR /app
 
@@ -15,16 +26,17 @@ RUN echo "//npm.pkg.github.com/:_authToken=$NPM_TOKEN" > .npmrc && \
     rm -rf .npmrc
 
 COPY . .
-COPY .env.deploy .env
 
 RUN npm run build
 
 # Production image and run app
 FROM base as release
 
-ARG BUILD_VERSION
-ARG COMMIT_SHA
-ARG NPM_TOKEN
+ARG BUILD_VERSION \
+    COMMIT_SHA \
+    NPM_TOKEN \
+    NEXT_PUBLIC_URL \
+    NEXT_PUBLIC_QWACKER_API_URL
 
 ENV NODE_ENV=production \
     BUILD_VERSION=${BUILD_VERSION} \
