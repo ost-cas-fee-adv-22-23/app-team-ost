@@ -5,7 +5,6 @@ import * as dotenv from 'dotenv';
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
  */
-// require('dotenv').config();
 dotenv.config();
 
 // Session storage file to use for authentication.

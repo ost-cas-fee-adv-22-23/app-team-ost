@@ -18,20 +18,24 @@ test.describe('Create a mumble', () => {
     await expect(page.getByText(testdate)).toBeVisible();
   });
 
-  test('should upload an image and verify filetype', async ({ page }) => {
+  test('should detect wrong file format', async ({ page }) => {
     await page.goto(process.env.NEXT_PUBLIC_URL as string);
 
     await page.getByTestId('button-upload-image').click();
 
-    // Select the first file which should show an error message - test.txt
     page.on('filechooser', async (filechooser) => {
       await filechooser.setFiles('./tests/e2e/test.txt');
     });
     await page.locator('label').click();
     await page.getByRole('button', { name: 'Speichern' }).click();
     await expect(page.getByText('Falsches Dateiformat - Erlaubt sind JPEG, PNG oder GIF.')).toBeVisible();
+  });
 
-    // Select the second file which should be uploaded - test.png
+  test('should upload a gif image', async ({ page }) => {
+    await page.goto(process.env.NEXT_PUBLIC_URL as string);
+
+    await page.getByTestId('button-upload-image').click();
+
     page.on('filechooser', async (filechooser) => {
       await filechooser.setFiles('./tests/e2e/refresh.gif');
     });
