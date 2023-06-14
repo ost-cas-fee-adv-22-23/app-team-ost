@@ -4,26 +4,27 @@ FROM node:18-alpine AS base
 # Install dependencies and build app
 FROM base as build
 
-ARG NPM_TOKEN \
-    NEXT_PUBLIC_QWACKER_API_URL \
-    NEXTAUTH_URL \
+ARG NEXTAUTH_URL \
     NEXTAUTH_SECRET \
     ZITADEL_ISSUER \
-    ZITADEL_CLIENT_ID
+    ZITADEL_CLIENT_ID \
+    REVALIDATE_SECRET_TOKEN \
+    NEXT_PUBLIC_QWACKER_API_URL \
+    NEXT_PUBLIC_URL
 
-ENV NEXT_PUBLIC_QWACKER_API_URL=${NEXT_PUBLIC_QWACKER_API_URL} \
-    NEXTAUTH_URL=${NEXTAUTH_URL} \
+ENV NEXTAUTH_URL=${NEXTAUTH_URL} \
     NEXTAUTH_SECRET=${NEXTAUTH_SECRET} \
     ZITADEL_ISSUER=${ZITADEL_ISSUER} \
-    ZITADEL_CLIENT_ID=${ZITADEL_CLIENT_ID}
+    ZITADEL_CLIENT_ID=${ZITADEL_CLIENT_ID} \
+    REVALIDATE_SECRET_TOKEN=${REVALIDATE_SECRET_TOKEN} \
+    NEXT_PUBLIC_QWACKER_API_URL=${NEXT_PUBLIC_QWACKER_API_URL} \
+    NEXT_PUBLIC_URL=${NEXT_PUBLIC_URL}
 
 WORKDIR /app
 
 COPY ./package.json ./package-lock.json ./
 
-RUN echo "//npm.pkg.github.com/:_authToken=$NPM_TOKEN" > .npmrc && \
-    HUSKY=0 npm ci && \
-    rm -rf .npmrc
+RUN --mount=type=secret,id=npmrc,target=/root/.npmrc HUSKY=0 && npm ci
 
 COPY . .
 
@@ -33,10 +34,7 @@ RUN npm run build
 FROM base as release
 
 ARG BUILD_VERSION \
-    COMMIT_SHA \
-    NPM_TOKEN \
-    NEXT_PUBLIC_URL \
-    NEXT_PUBLIC_QWACKER_API_URL
+    COMMIT_SHA
 
 ENV NODE_ENV=production \
     BUILD_VERSION=${BUILD_VERSION} \
@@ -44,7 +42,7 @@ ENV NODE_ENV=production \
 
 LABEL org.opencontainers.image.source="https://github.com/smartive-education/app-team-ost" \
     org.opencontainers.image.authors="Nando Schär und Martin Thomann" \
-    org.opencontainers.image.url="https://github.com/smartive-education/app-team-ost" \
+    org.opencontainers.image.url="https://europe-west6-docker.pkg.dev/app-team-ost/team-ost-repo/app" \
     org.opencontainers.image.documentation="https://github.com/smartive-education/app-team-ost/blob/main/README.md" \
     org.opencontainers.image.source="https://github.com/smartive-education/app-team-ost/blob/main/Dockerfile" \
     org.opencontainers.image.version="${BUILD_VERSION}" \
@@ -58,14 +56,14 @@ WORKDIR /app
 RUN adduser -D appuser && \
     chown -R appuser /app
 
-COPY --from=build /app/package.json /app/package-lock.json ./
+COPY --from=build /app/package.json /app/package-lock.json /app/next.config.js ./
 
-RUN echo "//npm.pkg.github.com/:_authToken=$NPM_TOKEN" > .npmrc && \
-    HUSKY=0 npm ci --omit=dev --ignore-scripts && \
-    rm -rf .npmrc
-    
-COPY --from=build /app/public ./public
-COPY --from=build /app/.next ./.next
+RUN --mount=type=secret,id=npmrc,target=/root/.npmrc HUSKY=0 && \
+    npm ci --omit=dev --ignore-scripts && \
+    npm cache clean --force
+
+COPY --from=build --chown=appuser:appuser /app/public ./public
+COPY --from=build --chown=appuser:appuser /app/.next ./.next
 
 USER appuser
 
