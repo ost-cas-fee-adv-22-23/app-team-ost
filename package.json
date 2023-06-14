@@ -13,6 +13,8 @@
     "dep-graph:validate": "npx depcruise src --include-only \"^src\" --config .dependency-cruiser.js",
     "dep-graph:create-svg": "npx depcruise src --include-only \"^src\" --config .dependency-cruiser.js --output-type dot | dot -T svg > dependency-graph.svg",
     "prepare": "husky install",
+    "test-playwright": "npx playwright test",
+    "test-playwright:ui": "npx playwright test --ui",
     "test": "jest --watch",
     "test:ci": "jest --ci"
   },
@@ -27,8 +29,10 @@
     "ulid": "^2.3.0"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.7.1",
     "@commitlint/cli": "^17.6.5",
     "@commitlint/config-conventional": "^17.6.5",
+    "@playwright/test": "^1.34.3",
     "@smartive/eslint-config": "^3.1.1",
     "@smartive/prettier-config": "^3.0.0",
     "@testing-library/jest-dom": "^5.16.5",
@@ -39,6 +43,7 @@
     "@types/react-dom": "^18.2.5",
     "autoprefixer": "^10.4.14",
     "dependency-cruiser": "^12.12.2",
+    "dotenv": "^16.0.3",
     "eslint": "^8.42.0",
     "eslint-config-next": "^13.4.5",
     "eslint-config-prettier": "^8.8.0",

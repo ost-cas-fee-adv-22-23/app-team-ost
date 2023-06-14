@@ -578,3 +578,9 @@ FodyWeavers.xsd
 **/public/sw.js.map
 **/public/workbox-*.js.map
 **/public/worker-*.js.map
+
+# Playwright generated files
+/test-results/
+/playwright-report/
+/playwright/.auth/
+/playwright/.cache/
