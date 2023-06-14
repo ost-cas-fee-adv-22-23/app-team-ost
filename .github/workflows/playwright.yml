@@ -18,7 +18,8 @@ jobs:
       run: npm ci
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        NEXT_PUBLIC_URL: ${{ secrets.NEXT_PUBLIC_URL }}
+        ZITADEL_USERNAME: ${{ secrets.ZITADEL_USERNAME }}
+        ZITADEL_PASSWORD: ${{ secrets.ZITADEL_PASSWORD }}
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
     - name: Run Playwright tests
