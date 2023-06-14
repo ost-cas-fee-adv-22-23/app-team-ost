@@ -45,7 +45,7 @@ jobs:
           context: .
           file: ./Dockerfile
           build-args: |
-            NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL_PROD }}
+            NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL_PROD }}
             NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
             ZITADEL_ISSUER=${{ secrets.ZITADEL_ISSUER }}
             ZITADEL_CLIENT_ID=${{ secrets.ZITADEL_CLIENT_ID }}
