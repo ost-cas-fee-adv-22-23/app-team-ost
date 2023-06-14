@@ -26,7 +26,7 @@ output "cloud-runner-email" {
   value = google_service_account.cloud-runner.email
 }
 
-resource "google_cloud_run_service" "demo" {
+resource "google_cloud_run_service" "app" {
   name                       = local.name
   location                   = local.gcp_region
   autogenerate_revision_name = true
@@ -34,11 +34,20 @@ resource "google_cloud_run_service" "demo" {
   template {
     spec {
       containers {
-        image = "europe-west6-docker.pkg.dev/app-team-ost/team-ost-repo/app"
+        image = "europe-west6-docker.pkg.dev/app-team-ost/team-ost-repo/app:${local.image_tag}"
 
         resources {
           limits = {
-            "memory" = "256Mi"
+            "cpu" : "2000m"
+            "memory" = "1Gi"
+          }
+        }
+
+        dynamic "env" {
+          for_each = local.environment_vars
+          content {
+            name  = env.key
+            value = env.value
           }
         }
 
@@ -59,7 +68,7 @@ resource "google_cloud_run_service" "demo" {
 }
 
 output "cloud-run-url" {
-  value = google_cloud_run_service.demo.status[0].url
+  value = google_cloud_run_service.app.status[0].url
 }
 
 data "google_iam_policy" "noauth" {
@@ -72,9 +81,9 @@ data "google_iam_policy" "noauth" {
 }
 
 resource "google_cloud_run_service_iam_policy" "noauth" {
-  location = google_cloud_run_service.demo.location
-  project  = google_cloud_run_service.demo.project
-  service  = google_cloud_run_service.demo.name
+  location = google_cloud_run_service.app.location
+  project  = google_cloud_run_service.app.project
+  service  = google_cloud_run_service.app.name
 
   policy_data = data.google_iam_policy.noauth.policy_data
 }
