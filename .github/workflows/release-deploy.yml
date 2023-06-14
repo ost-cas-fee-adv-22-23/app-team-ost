@@ -80,8 +80,9 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
 
-      - run: Terraform Init
-        working-directory: infrastructure/prod
+      - name: Terraform Init
+        id: init
+        run: terraform init
 
       - name: Terraform Validate
         id: validate
