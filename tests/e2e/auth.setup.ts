@@ -2,7 +2,7 @@ import { test as setup } from '@playwright/test';
 import { authFile } from '../../playwright.config';
 
 setup('authenticate as test user', async ({ page }) => {
-  await page.goto(process.env.NEXT_PUBLIC_URL as string);
+  await page.goto('/');
   await page.getByRole('link', { name: 'Login' }).click();
 
   await page.getByRole('button', { name: 'login with zitadel' }).click();

@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Create a mumble', () => {
   test('should add a new mumble', async ({ page }) => {
-    await page.goto(process.env.NEXT_PUBLIC_URL as string);
+    await page.goto('/');
 
     const testdate = Date.now().toString();
 
@@ -14,12 +14,12 @@ test.describe('Create a mumble', () => {
     await page.getByTestId('button-submit').click();
 
     //Expect a new mumble
-    await page.goto(process.env.NEXT_PUBLIC_URL as string);
+    await page.goto('/');
     await expect(page.getByText(testdate)).toBeVisible();
   });
 
   test('should detect wrong file format', async ({ page }) => {
-    await page.goto(process.env.NEXT_PUBLIC_URL as string);
+    await page.goto('/');
 
     await page.getByTestId('button-upload-image').click();
 
@@ -32,7 +32,7 @@ test.describe('Create a mumble', () => {
   });
 
   test('should upload a gif image', async ({ page }) => {
-    await page.goto(process.env.NEXT_PUBLIC_URL as string);
+    await page.goto('/');
 
     await page.getByTestId('button-upload-image').click();
 
@@ -49,7 +49,7 @@ test.describe('Like a Mumble', () => {
   test('should add a new mumble, like it and verify it in the user profile', async ({ page }) => {
     const testdate = Date.now().toString();
 
-    await page.goto(process.env.NEXT_PUBLIC_URL as string);
+    await page.goto('/');
     const newMumble = page.getByTestId('new-mumble-textarea');
 
     // Create new mumble and submit
@@ -58,7 +58,7 @@ test.describe('Like a Mumble', () => {
     await page.getByTestId('button-submit').click();
 
     // Navigate to home and like the mumble
-    await page.goto(process.env.NEXT_PUBLIC_URL as string);
+    await page.goto('/');
     await page
       .getByRole('article')
       .filter({ hasText: `I like this mumble at ${testdate}` })

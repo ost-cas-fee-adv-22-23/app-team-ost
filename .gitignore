@@ -580,4 +580,5 @@ FodyWeavers.xsd
 **/public/worker-*.js.map
 /test-results/
 /playwright-report/
+/playwright/.auth/
 /playwright/.cache/
