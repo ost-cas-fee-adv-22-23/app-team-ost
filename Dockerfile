@@ -34,8 +34,7 @@ RUN npm run build
 FROM base as release
 
 ARG BUILD_VERSION \
-    COMMIT_SHA \
-    NPM_TOKEN
+    COMMIT_SHA
 
 ENV NODE_ENV=production \
     BUILD_VERSION=${BUILD_VERSION} \
