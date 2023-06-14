@@ -18,12 +18,13 @@ jobs:
       run: npm ci
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        ZITADEL_USERNAME: ${{ secrets.ZITADEL_USERNAME }}
-        ZITADEL_PASSWORD: ${{ secrets.ZITADEL_PASSWORD }}
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
     - name: Run Playwright tests
       run: npx playwright test
+      env:
+        ZITADEL_USERNAME: ${{ secrets.ZITADEL_USERNAME }}
+        ZITADEL_PASSWORD: ${{ secrets.ZITADEL_PASSWORD }}
     - uses: actions/upload-artifact@v3
       if: always()
       with:
