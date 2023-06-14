@@ -1,7 +1,6 @@
 name: Release and Deploy App
 
-on:
-  # push:
+on: # push:
   pull_request:
     branches:
       - main
@@ -13,9 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       new_release_published: ${{ steps.semantic.outputs.new_release_published }}
-      new_release_version: ${{ steps.semantic.outputs.new_release_version }}
     steps:
-      - name: checkout
+      - name: Checkout
         uses: actions/checkout@v3
 
       - name: Set up Docker Buildx
@@ -59,30 +57,36 @@ jobs:
             europe-west6-docker.pkg.dev/app-team-ost/team-ost-repo/app:latest
             europe-west6-docker.pkg.dev/app-team-ost/team-ost-repo/app:${{ github.sha }}
 
+  deploy:
+    name: Deploy Docker Image on Google Cloud Platform
+    runs-on: ubuntu-latest
+    env:
+      TF_CLI_ARGUMENTS: -var imageTag=${{ github.sha }} -var nextauthUrl=${{ secrets.NEXTAUTH_URL_PROD }} -var nextauthSecret=${{ secrets.NEXTAUTH_SECRET }} -var zitadelIssuer=${{ secrets.ZITADEL_ISSUER }} -var zitadelClientId=${{ secrets.ZITADEL_CLIENT_ID }} -var revalidateSecretToken=${{ secrets.REVALIDATE_SECRET_TOKEN }} -var nextPublicQwackerApiUrl=${{ secrets.NEXT_PUBLIC_QWACKER_API_URL }} -var nextPublicUrl=${{ secrets.NEXT_PUBLIC_URL_PROD }}
+    defaults:
+      run:
+        working-directory: ./terraform
+    needs:
+      - release
+    if: needs.release.outputs.new_release_published == 'true'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
 
-#  deploy-production:
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v3
-#      - uses: actions/setup-node@v3
-#        with:
-#          node-version: 18.x
-#          registry-url: https://npm.pkg.github.com/
-#          scope: '@smartive-education'
-#      - name: Install Vercel CLI
-#        run: npm install --global vercel@latest
-#      - name: Pull Vercel Environment Information
-#        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
-#      - name: Build Project Artifacts
-#        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
-#        env:
-#          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-#          NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
-#          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
-#          NEXT_PUBLIC_URL: ${{ secrets.NEXT_PUBLIC_URL }}
-#          NEXT_PUBLIC_QWACKER_API_URL: ${{ secrets.NEXT_PUBLIC_QWACKER_API_URL }}
-#          ZITADEL_ISSUER: ${{ secrets.ZITADEL_ISSUER }}
-#          ZITADEL_CLIENT_ID: ${{ secrets.ZITADEL_CLIENT_ID }}
-#          REVALIDATE_SECRET_TOKEN: ${{ secrets.REVALIDATE_SECRET_TOKEN }}
-#      - name: Deploy Project Artifacts to Vercel
-#        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Login to Google Cloud
+        uses: google-github-actions/auth@v0
+        with:
+          credentials_json: '${{ secrets.TF_DEPLOYER_KEY }}'
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - run: Terraform Init
+        working-directory: infrastructure/prod
+
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate -no-color
+
+      - name: Terraform Apply
+        id: apply
+        run: terraform apply -auto-approve ${{ env.TF_CLI_ARGUMENTS }}
