@@ -43,6 +43,7 @@ const nextConfig = {
   },
   reactStrictMode: true,
   swcMinify: true,
+  output: 'standalone',
 };
 
 // Use required import like in the tutorial: https://www.npmjs.com/package/next-pwa
