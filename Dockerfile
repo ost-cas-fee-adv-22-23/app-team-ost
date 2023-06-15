@@ -33,12 +33,15 @@ RUN npm run build
 # Production image and run app
 FROM base as release
 
+WORKDIR /app
+
 ARG BUILD_VERSION \
     COMMIT_SHA
 
 ENV NODE_ENV=production \
     BUILD_VERSION=${BUILD_VERSION} \
-    COMMIT_SHA=${COMMIT_SHA}
+    COMMIT_SHA=${COMMIT_SHA} \
+    NEXT_TELEMETRY_DISABLED=1
 
 LABEL org.opencontainers.image.source="https://github.com/smartive-education/app-team-ost" \
     org.opencontainers.image.authors="Nando Schär und Martin Thomann" \
@@ -51,22 +54,15 @@ LABEL org.opencontainers.image.source="https://github.com/smartive-education/app
     org.opencontainers.image.title="App Team-Ost" \
     org.opencontainers.image.description="This App is the result of the second part of the CAS Frontend Engineering Advanced course. It's our very own Twitter Clone - Mumble."
 
-WORKDIR /app
-
 RUN adduser -D appuser && \
     chown -R appuser /app
 
-COPY --from=build /app/package.json /app/package-lock.json /app/next.config.js ./
-
-RUN --mount=type=secret,id=npmrc,target=/root/.npmrc HUSKY=0 && \
-    npm ci --omit=dev --ignore-scripts && \
-    npm cache clean --force
-
 COPY --from=build --chown=appuser:appuser /app/public ./public
-COPY --from=build --chown=appuser:appuser /app/.next ./.next
+COPY --from=build --chown=appuser:appuser /app/.next/standalone ./
+COPY --from=build --chown=appuser:appuser /app/.next/static ./.next/static
 
 USER appuser
 
 EXPOSE 3000
 
-CMD ["npm", "run", "start"]
+CMD ["node", "server.js"]
