@@ -34,7 +34,7 @@ resource "google_cloud_run_service" "app" {
   template {
     spec {
       containers {
-        image = "europe-west6-docker.pkg.dev/app-team-ost/team-ost-repo/app:${local.image_tag}"
+        image = "europe-west6-docker.pkg.dev/app-team-ost/team-ost-repo/app:${var.imageTag}"
 
         resources {
           limits = {
