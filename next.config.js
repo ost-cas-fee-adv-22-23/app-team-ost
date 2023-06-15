@@ -48,6 +48,7 @@ const nextConfig = {
 // Use required import like in the tutorial: https://www.npmjs.com/package/next-pwa
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const withPWA = require('next-pwa')({
+  cacheStartUrl: false,
   dest: 'public',
   disable: process.env.NODE_ENV === 'development',
 });
