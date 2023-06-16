@@ -1,4 +1,4 @@
-name: Quality (Prettier, ESLint, Dependency Graph, Build)
+name: Quality (Prettier, ESLint, Dependency Graph, Jest, Build)
 
 on:
   pull_request:

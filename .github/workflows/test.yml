@@ -1,4 +1,4 @@
-name: Tests
+name: Build/Release Docker Image on Github Container Registry and run e2e tests
 on:
   pull_request:
     branches:
