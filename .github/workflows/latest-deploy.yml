@@ -1,0 +1,37 @@
+name: Deploy latest Version of the App
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy Docker Image on Google Cloud Platform
+    runs-on: ubuntu-latest
+    env:
+      TF_CLI_ARGUMENTS: -var imageTag=latest -var nextauthUrl=${{ secrets.NEXTAUTH_URL_PROD }} -var nextauthSecret=${{ secrets.NEXTAUTH_SECRET }} -var zitadelIssuer=${{ secrets.ZITADEL_ISSUER }} -var zitadelClientId=${{ secrets.ZITADEL_CLIENT_ID }} -var revalidateSecretToken=${{ secrets.REVALIDATE_SECRET_TOKEN }} -var nextPublicQwackerApiUrl=${{ secrets.NEXT_PUBLIC_QWACKER_API_URL }} -var nextPublicUrl=${{ secrets.NEXT_PUBLIC_URL_PROD }}
+    defaults:
+      run:
+        working-directory: ./terraform
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Login to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: '${{ secrets.TF_DEPLOYER_KEY }}'
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Terraform Init
+        id: init
+        run: terraform init
+
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate -no-color
+
+      - name: Terraform Apply
+        id: apply
+        run: terraform apply -auto-approve ${{ env.TF_CLI_ARGUMENTS }}

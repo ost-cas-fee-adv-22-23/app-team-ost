@@ -51,6 +51,8 @@ jobs:
             REVALIDATE_SECRET_TOKEN=${{ secrets.REVALIDATE_SECRET_TOKEN }}
             NEXT_PUBLIC_QWACKER_API_URL=${{ secrets.NEXT_PUBLIC_QWACKER_API_URL }}
             NEXT_PUBLIC_URL=${{ secrets.NEXT_PUBLIC_URL_PROD }}
+            COMMIT_SHA={{ github.sha }},
+            BUILD_VERSION=${{ steps.semantic.outputs.new_release_version }}
           secrets: |
             "npmrc=${{ secrets.NPMRC }}"
           push: true
@@ -62,7 +64,7 @@ jobs:
     name: Deploy Docker Image on Google Cloud Platform
     runs-on: ubuntu-latest
     env:
-      TF_CLI_ARGUMENTS: -var imageTag=${{ github.sha }} -var buildVersion=${{ needs.release.outputs.new_release_version }} -var nextauthUrl=${{ secrets.NEXTAUTH_URL_PROD }} -var nextauthSecret=${{ secrets.NEXTAUTH_SECRET }} -var zitadelIssuer=${{ secrets.ZITADEL_ISSUER }} -var zitadelClientId=${{ secrets.ZITADEL_CLIENT_ID }} -var revalidateSecretToken=${{ secrets.REVALIDATE_SECRET_TOKEN }} -var nextPublicQwackerApiUrl=${{ secrets.NEXT_PUBLIC_QWACKER_API_URL }} -var nextPublicUrl=${{ secrets.NEXT_PUBLIC_URL_PROD }}
+      TF_CLI_ARGUMENTS: -var imageTag=${{ github.sha }} -var nextauthUrl=${{ secrets.NEXTAUTH_URL_PROD }} -var nextauthSecret=${{ secrets.NEXTAUTH_SECRET }} -var zitadelIssuer=${{ secrets.ZITADEL_ISSUER }} -var zitadelClientId=${{ secrets.ZITADEL_CLIENT_ID }} -var revalidateSecretToken=${{ secrets.REVALIDATE_SECRET_TOKEN }} -var nextPublicQwackerApiUrl=${{ secrets.NEXT_PUBLIC_QWACKER_API_URL }} -var nextPublicUrl=${{ secrets.NEXT_PUBLIC_URL_PROD }}
     defaults:
       run:
         working-directory: ./terraform

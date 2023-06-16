@@ -37,8 +37,3 @@ variable "imageTag" {
   type        = string
   description = "Identifier of the docker image which will be deployed."
 }
-
-variable "buildVersion" {
-  type        = string
-  description = "Version of the new release."
-}

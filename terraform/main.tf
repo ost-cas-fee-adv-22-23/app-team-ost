@@ -1,6 +1,7 @@
 locals {
   name       = "app-team-ost"
   gcp_region = "europe-west6"
+  image_tag  = var.imageTag
   environment_vars = {
     NEXTAUTH_URL                = var.nextauthUrl,
     NEXTAUTH_SECRET             = var.nextauthSecret,
@@ -8,9 +9,7 @@ locals {
     ZITADEL_CLIENT_ID           = var.zitadelClientId,
     REVALIDATE_SECRET_TOKEN     = var.revalidateSecretToken,
     NEXT_PUBLIC_QWACKER_API_URL = var.nextPublicQwackerApiUrl,
-    NEXT_PUBLIC_URL             = var.nextPublicUrl,
-    COMMIT_SHA                  = var.imageTag,
-    BUILD_VERSION               = var.buildVersion
+    NEXT_PUBLIC_URL             = var.nextPublicUrl
   }
 }
 
