@@ -7,13 +7,13 @@ setup('authenticate as test user', async ({ page }) => {
 
   await page.getByRole('button', { name: 'login with zitadel' }).click();
 
-  const loginnameField = page.getByPlaceholder('username');
+  const loginnameField = page.getByPlaceholder('username@domain');
   await loginnameField.fill(process.env.ZITADEL_USERNAME as string);
   const forwardButton = page.getByText('next');
   await forwardButton.click();
 
-  const passwordField = page.getByLabel('password');
-  await passwordField.fill(process.env.ZITADEL_PASSWORD as string);
+  const passwordField = await page.waitForSelector('input[name="password"]');
+  passwordField.fill(process.env.ZITADEL_PASSWORD as string);
   const forwardPwButton = page.getByText('next');
   await forwardPwButton.click();
 
