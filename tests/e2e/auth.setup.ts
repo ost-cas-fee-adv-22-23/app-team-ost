@@ -17,6 +17,6 @@ setup('authenticate as test user', async ({ page }) => {
   const forwardPwButton = page.getByText('next');
   await forwardPwButton.click();
 
-  //Save the auth state
+  //Save the auth state in context
   await page.context().storageState({ path: authFile });
 });
