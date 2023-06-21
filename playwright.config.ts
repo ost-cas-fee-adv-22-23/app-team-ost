@@ -49,6 +49,7 @@ export default defineConfig({
         storageState: authFile,
       },
       dependencies: ['setup'],
+      timeout: 20000,
     },
 
     /* Test against other browsers. */
