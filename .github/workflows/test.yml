@@ -55,6 +55,8 @@ jobs:
           REVALIDATE_SECRET_TOKEN: ${{ secrets.REVALIDATE_SECRET_TOKEN }}
           NEXT_PUBLIC_QWACKER_API_URL: ${{ secrets.NEXT_PUBLIC_QWACKER_API_URL }}
           NEXT_PUBLIC_URL: ${{ secrets.NEXT_PUBLIC_URL }}
+          ZITADEL_USERNAME: ${{ secrets.ZITADEL_USERNAME }}
+          ZITADEL_PASSWORD: ${{ secrets.ZITADEL_PASSWORD }}
         ports:
           - 3000:3000
     steps:
@@ -72,12 +74,16 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
+      - name: 'Create env file'
+        run: |
+          touch .env
+          echo "${{ secrets.ENV_FILE }}" > .env
       - name: Run Playwright tests
         run: npm run test-playwright
         env:
           ZITADEL_USERNAME: ${{ secrets.ZITADEL_USERNAME }}
           ZITADEL_PASSWORD: ${{ secrets.ZITADEL_PASSWORD }}
-          NEXT_PUBLIC_URL: ${{ 'http://localhost:3000' }}
+          NEXT_PUBLIC_URL: ${{ secrets.NEXT_PUBLIC_URL }}
       - uses: actions/upload-artifact@v3
         if: always()
         with:

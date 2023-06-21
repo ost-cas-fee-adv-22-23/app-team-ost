@@ -45,24 +45,24 @@ export default defineConfig({
       testMatch: /.*\.setup\.ts/,
     },
 
-    // {
-    //   name: 'chromium',
-    //   use: {
-    //     ...devices['Desktop Chrome'],
-    //     storageState: authFile,
-    //   },
-    //   dependencies: ['setup'],
-    // },
-
-    /* Test against other browsers. */
     {
-      name: 'firefox',
+      name: 'chromium',
       use: {
-        ...devices['Desktop Firefox'],
+        ...devices['Desktop Chrome'],
         storageState: authFile,
       },
       dependencies: ['setup'],
     },
+
+    /* Test against other browsers. */
+    // {
+    //   name: 'firefox',
+    //   use: {
+    //     ...devices['Desktop Firefox'],
+    //     storageState: authFile,
+    //   },
+    //   dependencies: ['setup'],
+    // },
     // {
     //   name: 'webkit',
     //   use: {
