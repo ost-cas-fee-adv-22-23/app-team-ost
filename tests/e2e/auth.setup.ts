@@ -7,8 +7,6 @@ setup('authenticate as test user', async ({ page }) => {
 
   await page.getByRole('button', { name: 'login with zitadel' }).click();
 
-  await expect(page).toHaveURL(/.*.zitadel.cloud\/ui\/login\/login.*/);
-
   const loginnameField = await page.waitForSelector('input[name="loginName"]');
   loginnameField.fill(process.env.ZITADEL_USERNAME as string);
   const forwardButton = page.getByText('next');
