@@ -74,10 +74,6 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
-      - name: 'Create env file'
-        run: |
-          touch .env
-          echo "${{ secrets.ENV_FILE }}" > .env
       - name: Run Playwright tests
         run: npm run test-playwright
         env:
