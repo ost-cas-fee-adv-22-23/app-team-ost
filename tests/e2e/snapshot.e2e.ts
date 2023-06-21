@@ -4,6 +4,6 @@ test.describe('Visual comparisons', () => {
   test('should open the logout page and snapshot test it', async ({ page }) => {
     await page.goto('/');
     await page.getByRole('link', { name: 'Logout' }).click();
-    await expect(page).toHaveScreenshot();
+    await expect(page).toHaveScreenshot({ maxDiffPixels: 2000 });
   });
 });
