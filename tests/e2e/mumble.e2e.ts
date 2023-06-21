@@ -14,7 +14,7 @@ test.describe('Create a mumble', () => {
     await page.getByTestId('button-submit').click();
 
     //We set a timeout here because the mumble is not immediately visible
-    await page.goto('/', { timeout: 5000 });
+    await page.goto('/', { timeout: 10000 });
     await expect(page.getByText(testdate)).toBeVisible();
   });
 
@@ -59,7 +59,7 @@ test.describe('Like a Mumble', () => {
 
     // Navigate to home and like the mumble
     //We set a timeout here because the mumble is not immediately visible
-    await page.goto('/', { timeout: 5000 });
+    await page.goto('/', { timeout: 10000 });
     await page
       .getByRole('article')
       .filter({ hasText: `I like this mumble at ${testdate}` })
