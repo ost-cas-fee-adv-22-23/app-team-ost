@@ -42,6 +42,8 @@ jobs:
   test-e2e: 
     name: Playwright e2e tests
     runs-on: ubuntu-latest
+    needs:
+      - publish
     services:
       latest:
         image: ghcr.io/smartive-education/app-team-ost:latest
