@@ -2,15 +2,17 @@
 
 ![Issues](https://img.shields.io/github/issues/smartive-education/app-team-ost)
 ![Pull Requests](https://img.shields.io/github/issues-pr/smartive-education/app-team-ost)
-![Quality (Prettier, ESLint, Dependency Graph, Build)](https://github.com/smartive-education/app-team-ost/actions/workflows/quality.yml/badge.svg)
-![Vercel Production Deployment](https://github.com/smartive-education/app-team-ost/actions/workflows/deploy.yml/badge.svg)
+
+![Quality (Prettier, ESLint, Dependency Graph, Unit Test, Build)](https://github.com/smartive-education/app-team-ost/actions/workflows/quality.yml/badge.svg)
+![Test (Build/Release Docker on Github Registry and e2e-Test)](https://github.com/smartive-education/app-team-ost/actions/workflows/test.yml/badge.svg)
+![Release and Deploy on Google Cloud with Terraform](https://github.com/smartive-education/app-team-ost/actions/workflows/release-deploy.yml/badge.svg)
 
 This App is the result of the second part of the CAS Frontend Engineering
 Advanced course. It's our very own Twitter Clone - Mumble.
 
 ## Live Demo
 
-The latest version of the App is available [here](https://app-team-ost.vercel.app/).
+The latest version of the App is available [here](https://app-team-ost-6cdrsmjqoa-oa.a.run.app/).
 
 ## Architecture, Rendering Strategies and Context
 
@@ -80,7 +82,7 @@ To build the application local run:
 npm run build
 ```
 
-and start the local build with:
+This creates an optimized production build as a **standalone output** in the .next folder. You can start the build with:
 
 ```console
 npm run start
@@ -88,6 +90,20 @@ npm run start
 
 **_NOTE:_**
 Static sites (SSG, ISR) like the public timeline or mumble-page are rendered on build time. To test it you have to build and start this build. In development mode (npm run dev) this sites are generated on every request (like SSR sites).
+
+## Docker
+
+To run docker locally you have to build the image first (.env-file and .npmrc-file are needed):
+
+```console
+docker build --secret "id=npmrc,src=.npmrc" --build-arg="BUILD_VERSION=v0.0.1" --build-arg="COMMIT_SHA=1" --build-arg="NEXT_PUBLIC_URL=https://app-team-ost-6cdrsmjqoa-oa.a.run.app/" --build-arg="NEXT_PUBLIC_QWACKER_API_URL=https://qwacker-api-http-prod-4cxdci3drq-oa.a.run.app/" --build-arg="NEXTAUTH_URL=https://app-team-ost-6cdrsmjqoa-oa.a.run.app" --build-arg="NEXTAUTH_SECRET=<your-secret>" --build-arg="ZITADEL_ISSUER=https://cas-fee-advanced-ocvdad.zitadel.cloud" --build-arg="ZITADEL_CLIENT_ID=<your-client-id>" -t europe-west6-docker.pkg.dev/app-team-ost/team-ost-repo/app .
+```
+
+After that you can run the image with:
+
+```console
+docker run --env-file=.env -p 3000:3000 europe-west6-docker.pkg.dev/app-team-ost/team-ost-repo/app
+```
 
 ## Development and Conventions
 
@@ -160,6 +176,12 @@ Checks for dependency violations and create an svg graph
 npm run dep-graph:validate
 npm run dep-graph:create-svg
 ```
+
+### CI/CD
+
+- Every pull request on the main branch triggers a quality check with prettier, eslint, dependency cruiser and unit tests. As well as a build.
+- Every pull request on the main branch triggers a Docker build and release on Github Registry. This image is e2e tested locally on github.
+- Every commit to the main branch triggers a build and deploy to the production environment on Google Cloud.
 
 ## Maintainer
 
