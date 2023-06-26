@@ -177,7 +177,33 @@ npm run dep-graph:validate
 npm run dep-graph:create-svg
 ```
 
-### CI/CD
+## Testing
+
+### Unit/Component Tests
+
+Unit tests are written with Jest and React Testing Library. The tests are located in the component folders. The tests are executed in the CI/CD pipeline.
+
+```console
+npm run test
+```
+
+### E2E Tests
+
+Critical user flows are tested with Playwright. The tests are located in the tests/e2e folder. The tests are executed in the CI/CD pipeline.
+
+```console
+npm run test-playwright:ui
+```
+
+After UI changes you can update the screenshots with:
+
+```console
+npm run test-playwright:update-snapshot
+```
+
+at the moment, only the logout page is snapshot tested.
+
+## CI/CD
 
 - Every pull request on the main branch triggers a quality check with prettier, eslint, dependency cruiser and unit tests. As well as a build.
 - Every pull request on the main branch triggers a Docker build and release on Github Registry. This image is e2e tested locally on github.
