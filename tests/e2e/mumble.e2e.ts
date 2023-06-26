@@ -13,8 +13,8 @@ test.describe('Create a mumble', () => {
     await newMumble.fill(`Playwright Test - ${testdate}`);
     await page.getByTestId('button-submit').click();
 
-    //Expect a new mumble
-    await page.goto('/');
+    //We set a timeout here because the mumble is not immediately visible
+    await page.goto('/', { timeout: 10000 });
     await expect(page.getByText(testdate)).toBeVisible();
   });
 
@@ -58,7 +58,8 @@ test.describe('Like a Mumble', () => {
     await page.getByTestId('button-submit').click();
 
     // Navigate to home and like the mumble
-    await page.goto('/');
+    //We set a timeout here because the mumble is not immediately visible
+    await page.goto('/', { timeout: 10000 });
     await page
       .getByRole('article')
       .filter({ hasText: `I like this mumble at ${testdate}` })

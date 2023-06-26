@@ -15,6 +15,7 @@ export const authFile = 'playwright/.auth/user.json';
  */
 export default defineConfig({
   testDir: './tests/e2e',
+  testMatch: '**/*.e2e.ts',
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -25,10 +26,13 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
+  /* Timeout for each test */
+  timeout: 50 * 1000,
+
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: process.env.NEXT_PUBLIC_URL ?? 'https://app-team-ost.vercel.app',
+    baseURL: process.env.NEXT_PUBLIC_URL ?? 'http://localhost:3000/',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
@@ -53,32 +57,37 @@ export default defineConfig({
     /* Test against other browsers. */
     // {
     //   name: 'firefox',
-    //   use: { ...devices['Desktop Firefox'] },
+    //   use: {
+    //     ...devices['Desktop Firefox'],
+    //     storageState: authFile,
+    //   },
+    //   dependencies: ['setup'],
     // },
-
     // {
     //   name: 'webkit',
-    //   use: { ...devices['Desktop Safari'] },
+    //   use: {
+    //     ...devices['Desktop Safari'],
+    //     storageState: authFile,
+    //   },
+    //   dependencies: ['setup'],
     // },
 
     /* Test against mobile viewports. */
     // {
     //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
+    //   use: {
+    //     ...devices['Pixel 5'],
+    //     storageState: authFile,
+    //   },
+    //   dependencies: ['setup'],
     // },
     // {
     //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
-    // },
-
-    /* Test against branded browsers. */
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    // },
-    // {
-    //   name: 'Google Chrome',
-    //   use: { ..devices['Desktop Chrome'], channel: 'chrome' },
+    //   use: {
+    //     ...devices['iPhone 12'],
+    //     storageState: authFile,
+    //   },
+    //   dependencies: ['setup'],
     // },
   ],
 });

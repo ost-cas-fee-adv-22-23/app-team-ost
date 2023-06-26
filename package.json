@@ -15,6 +15,7 @@
     "prepare": "husky install",
     "test-playwright": "npx playwright test",
     "test-playwright:ui": "npx playwright test --ui",
+    "test-playwright:update-snapshot": "npx playwright test --update-snapshots",
     "test": "jest --watch",
     "test:ci": "jest --ci"
   },

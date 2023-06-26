@@ -1,4 +1,4 @@
-name: Quality (Prettier, ESLint, Dependency Graph, Build)
+name: Quality (Prettier, ESLint, Dependency Graph, Jest, Build)
 
 on:
   pull_request:
@@ -27,6 +27,8 @@ jobs:
         run: npm run lint
       - name: Run Dependency Graph
         run: npm run dep-graph:validate
+      - name: Run Jest/Test-Library Tests
+        run: npm run test:ci
       - name: Run Build
         run: npm run build
         env:
