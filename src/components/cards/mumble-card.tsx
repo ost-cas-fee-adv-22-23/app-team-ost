@@ -147,7 +147,7 @@ export const MumbleCard: FC<MumbleCardProps> = ({
         {mumble.mediaUrl !== null && (
           <ImageContainer
             data-testid="mumble-image"
-            alt={mumble.text}
+            alt={mumble.text === ' ' ? 'mumble image' : mumble.text}
             imageComponent={Image}
             fill
             priority
