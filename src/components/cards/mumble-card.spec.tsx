@@ -23,8 +23,6 @@ const mockMumble: Mumble = {
  * Mit diesen Tests wird einzig die Komposition getestet.
  */
 
-// todo: Test mit Bild
-
 describe('MumbleCard', () => {
   it('should render card as list', () => {
     // ARRANGE
@@ -103,7 +101,6 @@ describe('MumbleCard', () => {
     expect(screen.getByTestId('action-like')).toBeInTheDocument();
   });
 
-  // todo: keine kompliziert aufeinander aufbauende e2e Test: Sollen display like action und handle zusammengefasst werden?
   it('should handle on like click', async () => {
     // ARRANGE
     const user = userEvent.setup();

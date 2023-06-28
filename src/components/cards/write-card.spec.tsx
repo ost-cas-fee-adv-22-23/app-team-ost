@@ -2,7 +2,6 @@ import { WriteCard, WriteCardVariant } from '@/components/cards/write-card';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-// todo: Sollen jest mocks verwendet werden?
 const mockFormEmpty = {
   textinputError: '',
   textinput: '',
@@ -29,67 +28,64 @@ const mockJwtPayload = {
   },
 };
 
-// todo: Wie sollen die describe Blöcke verschachtelt werden?
 describe('WriteCard', () => {
-  describe('render variants', () => {
-    it('should render WriteCard as newMumble variant', () => {
-      // ARRANGE
-      const handleTextChange = jest.fn();
-      const handleFileChange = jest.fn();
-      const handleSubmit = jest.fn();
-      const resetFileinputError = jest.fn();
-      render(
-        <WriteCard
-          variant={WriteCardVariant.newMumble}
-          jwtPayload={mockJwtPayload}
-          handleChange={handleTextChange}
-          handleSubmit={handleSubmit}
-          handleFileChange={handleFileChange}
-          isSubmitting={false}
-          resetFileinputError={resetFileinputError}
-          fileinputError={''}
-          form={mockFormEmpty}
-        />
-      );
+  it('should render WriteCard as newMumble variant', () => {
+    // ARRANGE
+    const handleTextChange = jest.fn();
+    const handleFileChange = jest.fn();
+    const handleSubmit = jest.fn();
+    const resetFileinputError = jest.fn();
+    render(
+      <WriteCard
+        variant={WriteCardVariant.newMumble}
+        jwtPayload={mockJwtPayload}
+        handleChange={handleTextChange}
+        handleSubmit={handleSubmit}
+        handleFileChange={handleFileChange}
+        isSubmitting={false}
+        resetFileinputError={resetFileinputError}
+        fileinputError={''}
+        form={mockFormEmpty}
+      />
+    );
 
-      // ASSERT
-      expect(screen.getByText('Hey, was läuft?')).toBeInTheDocument();
-      expect(screen.getByPlaceholderText('Und was meinst du dazu?')).toBeInTheDocument();
-      expect(screen.getByText('Bild hochladen')).toBeInTheDocument();
-      expect(screen.getByText('Absenden')).toBeInTheDocument();
-      expect(screen.getByTestId('profile-picture')).toBeInTheDocument();
-      expect(screen.queryByTestId('user-short-representation')).not.toBeInTheDocument();
-    });
+    // ASSERT
+    expect(screen.getByText('Hey, was läuft?')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Und was meinst du dazu?')).toBeInTheDocument();
+    expect(screen.getByText('Bild hochladen')).toBeInTheDocument();
+    expect(screen.getByText('Absenden')).toBeInTheDocument();
+    expect(screen.getByTestId('profile-picture')).toBeInTheDocument();
+    expect(screen.queryByTestId('user-short-representation')).not.toBeInTheDocument();
+  });
 
-    it('should render WriteCard as replyMumble variant', () => {
-      // ARRANGE
-      const handleTextChange = jest.fn();
-      const handleFileChange = jest.fn();
-      const handleSubmit = jest.fn();
-      const resetFileinputError = jest.fn();
+  it('should render WriteCard as replyMumble variant', () => {
+    // ARRANGE
+    const handleTextChange = jest.fn();
+    const handleFileChange = jest.fn();
+    const handleSubmit = jest.fn();
+    const resetFileinputError = jest.fn();
 
-      render(
-        <WriteCard
-          variant={WriteCardVariant.replyMumble}
-          jwtPayload={mockJwtPayload}
-          handleChange={handleTextChange}
-          handleSubmit={handleSubmit}
-          handleFileChange={handleFileChange}
-          isSubmitting={false}
-          resetFileinputError={resetFileinputError}
-          fileinputError={''}
-          form={mockFormEmpty}
-        />
-      );
+    render(
+      <WriteCard
+        variant={WriteCardVariant.replyMumble}
+        jwtPayload={mockJwtPayload}
+        handleChange={handleTextChange}
+        handleSubmit={handleSubmit}
+        handleFileChange={handleFileChange}
+        isSubmitting={false}
+        resetFileinputError={resetFileinputError}
+        fileinputError={''}
+        form={mockFormEmpty}
+      />
+    );
 
-      // ASSERT
-      expect(screen.queryByText('Hey, was läuft?')).not.toBeInTheDocument();
-      expect(screen.getByPlaceholderText('Und was meinst du dazu?')).toBeInTheDocument();
-      expect(screen.getByText('Bild hochladen')).toBeInTheDocument();
-      expect(screen.getByText('Absenden')).toBeInTheDocument();
-      expect(screen.queryByTestId('profile-picture')).not.toBeInTheDocument();
-      expect(screen.getByTestId('user-short-representation')).toBeInTheDocument();
-    });
+    // ASSERT
+    expect(screen.queryByText('Hey, was läuft?')).not.toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Und was meinst du dazu?')).toBeInTheDocument();
+    expect(screen.getByText('Bild hochladen')).toBeInTheDocument();
+    expect(screen.getByText('Absenden')).toBeInTheDocument();
+    expect(screen.queryByTestId('profile-picture')).not.toBeInTheDocument();
+    expect(screen.getByTestId('user-short-representation')).toBeInTheDocument();
   });
 
   it('should open modal on button `Bild hochladen` click', async () => {
@@ -116,6 +112,7 @@ describe('WriteCard', () => {
     // ACT
     await user.click(screen.getByText('Bild hochladen'));
 
+    // ASSERT
     expect(screen.getByRole('dialog')).toBeInTheDocument();
   });
 

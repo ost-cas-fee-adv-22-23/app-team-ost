@@ -15,7 +15,6 @@ import userEvent from '@testing-library/user-event';
  * Mit diesen Tests wird einzig die Komposition getestet.
  */
 describe('FileuploadModal', () => {
-  // todo: Was ist mit display fileInputError und isOpen = false? Sollen diese Mappings ebenfalls geprüft werden? Im render Testfall oder in einem eigenen Fall?
   it('should render FileuploadModal', async () => {
     // ARRANGE
     const handleFileChange = jest.fn();
@@ -106,8 +105,7 @@ describe('FileuploadModal', () => {
     expect(screen.getByTestId('button-save')).toHaveAttribute('disabled');
   });
 
-  // todo: Dieser Test prüft auch gleich die Upload Funktionalität. Soll dieser Test beides Prüfen oder soll der Test für den save Button ausgelagert werden?
-  it('should enable save button if an image has been selected', async () => {
+  it('should enable save button if an image has been selected and upload the image', async () => {
     // ARRANGE
     const user = userEvent.setup();
     const handleFileChange = jest.fn();
