@@ -65,6 +65,8 @@ ZITADEL_ISSUER= { Zitadel Issuer URL }
 ZITADEL_CLIENT_ID= { Zitadel Client ID => Is available in your account }
 REVALIDATE_SECRET_TOKEN= { Revalidate API Secret }
 NEXT_PUBLIC_URL= { Public URL of the application is used to create the share url => for local development: http://localhost:3000/ }
+ZITADEL_USERNAME= { Username of the e2e Testuser }
+ZITADEL_PASSWORD= { Password of the e2e Testuser }
 ```
 
 ## Run/Build Project
