@@ -14,8 +14,10 @@ test.describe('Create a mumble', () => {
     await page.getByTestId('button-submit').click();
 
     //We set a timeout here because the mumble is not immediately visible
-    await page.goto('/', { timeout: 10000 });
-    await expect(page.getByText(testdate)).toBeVisible();
+    await expect(async () => {
+      await page.goto('/');
+      await expect(page.getByText(testdate)).toBeVisible();
+    }).toPass();
   });
 
   test('should detect wrong file format', async ({ page }) => {
@@ -58,13 +60,14 @@ test.describe('Like a Mumble', () => {
     await page.getByTestId('button-submit').click();
 
     // Navigate to home and like the mumble
-    //We set a timeout here because the mumble is not immediately visible
-    await page.goto('/', { timeout: 10000 });
-    await page
-      .getByRole('article')
-      .filter({ hasText: `I like this mumble at ${testdate}` })
-      .getByRole('button', { name: 'Like' })
-      .click();
+    await expect(async () => {
+      await page.goto('/');
+      await page
+        .getByRole('article')
+        .filter({ hasText: `I like this mumble at ${testdate}` })
+        .getByRole('button', { name: 'Like' })
+        .click();
+    }).toPass();
 
     // Navigate to user profile and verify the liked mumble
     await page.getByRole('navigation').getByRole('link', { name: 'toenn' }).click();

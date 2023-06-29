@@ -21,7 +21,7 @@ export const useFetchMumblesRefresh = (
   }
 
   const { data, error, isLoading } = useSWR<MumbleList, FetchPagesApiError>(`/api/mumbles?${urlParams}`, fetcher, {
-    refreshInterval: 5000,
+    refreshInterval: 30000,
   });
   return {
     data,
