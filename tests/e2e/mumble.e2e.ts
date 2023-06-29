@@ -13,7 +13,8 @@ test.describe('Create a mumble', () => {
     await newMumble.fill(`Playwright Test - ${testdate}`);
     await page.getByTestId('button-submit').click();
 
-    //We set a timeout here because the mumble is not immediately visible
+    //We expect to pass the test if the mumble is visible on the home page
+    //As the mumble is not visible immediately, we need to wait for it
     await expect(async () => {
       await page.goto('/');
       await expect(page.getByText(testdate)).toBeVisible();
@@ -60,6 +61,8 @@ test.describe('Like a Mumble', () => {
     await page.getByTestId('button-submit').click();
 
     // Navigate to home and like the mumble
+    //We expect to pass the test if the mumble is visible on the home page
+    //As the mumble is not visible immediately, we need to wait for it
     await expect(async () => {
       await page.goto('/');
       await page
