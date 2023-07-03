@@ -1,0 +1,88 @@
+@startuml frontend architecture
+
+skinparam BackgroundColor FFFFFF
+skinparam shadowing false
+skinparam RoundCorner 6
+skinparam ArrowColor 475569
+skinparam FontColor 475569
+skinparam SequenceLifeLineBorderColor 475569
+skinparam SequenceGroupHeaderFontColor 475569
+skinparam SequenceGroupFontColor 475569
+skinparam SequenceGroupBorderColor 475569
+skinparam SequenceGroupBorderThickness 1
+
+skinparam folder {
+    BackgroundColor e2e8f0
+    BorderColor 475569
+    FontColor 454645
+}
+
+skinparam actor {
+    BackgroundColor 454645
+    BorderColor db2777
+    FontColor db2777
+}
+
+
+left to right direction
+
+actor "User" as client #db2777
+rectangle "mumble-app team-ost Next.js" #ddd6fe {
+    folder src {
+        folder components #FFF [
+            components
+            ....
+            - Cards
+            - Modals
+            ...
+        ]
+        folder helper #FFF [
+            helper
+            ....
+            - api functions
+                - getAllMumbles
+                - getMoreMumbles
+                - postNewMumble
+                - getMumbleWithId(id)
+                - getUser(id)
+            - helper functions
+            ...
+        ]
+        folder pages #FFF {
+            folder api #f1f5f9 [
+                api
+                ....
+                - loadMoreMumbles
+                - createNewMumble
+                - like/dislikeMumble
+                - responseToMumble
+                ...
+            ]
+        }
+        
+        folder types #FFF [
+            types
+            ....
+            - global types
+                - mumble
+                - user
+                ...
+        ]
+    }
+}
+() "Qwacker REST-API" as QAPI #db2777
+database "QwackerDB" as QDB #db2777
+
+api --> helper : calls
+QAPI <-- helper : REST api call
+QAPI --> helper : response
+client --> api : interactions
+pages <..> helper
+QAPI <--> QDB : data
+
+pages --> client : ssr or ssg pages
+
+@enduml
+
+
+https://blog.anoff.io/puml-cheatsheet.pdf

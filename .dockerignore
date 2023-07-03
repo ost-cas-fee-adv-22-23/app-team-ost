@@ -1,0 +1,13 @@
+node_modules
+.husky/
+.next/
+.vscode/
+.commitlintrc.js
+.dependency-cruiser.js
+.env
+.eslintrc.json
+.gitignore
+.lintstagedrc.json
+.prettierignore
+.prettierrc
+Dockerfile

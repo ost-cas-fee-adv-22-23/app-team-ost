@@ -1,3 +1,10 @@
 {
-  "extends": "next/core-web-vitals"
+  "extends": ["@smartive/eslint-config/react", "next/core-web-vitals", "prettier"],
+  "settings": {
+    "import/resolver": {
+      "typescript": {
+        "directory": "."
+      }
+    }
+  }
 }
